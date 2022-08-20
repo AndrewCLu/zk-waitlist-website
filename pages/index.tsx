@@ -1,15 +1,20 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Index.module.css'
+import Head from 'next/head';
+import Script from 'next/script';
+import Image from 'next/image';
+import styles from '../styles/Index.module.css';
 
 export default function IndexPage() {
   return (
-    <div className={styles.container}>ß
+    <div className={styles.container}>
       <Head>
         <title>ZK Waitlist</title>
         <meta name="description" content="A private waitlist" />
         <link rel="icon" href="/zk.ico" />
       </Head>
+      <Script>
+        src="https://cdn.ethers.io/lib/ethers-5.2.esm.min.js"
+        strategy="lazyOnload"
+      </Script>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
