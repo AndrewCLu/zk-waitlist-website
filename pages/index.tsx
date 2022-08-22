@@ -2,8 +2,33 @@ import Head from 'next/head';
 import Script from 'next/script';
 import Image from 'next/image';
 import styles from '../styles/Index.module.css';
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
 
 export default function IndexPage() {
+  const [haveMetamask, setHaveMetamask] = useState(false);
+  const [metamaskIsConnected, setMetamaskIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (typeof (window as any).ethereum !== 'undefined') {
+      setHaveMetamask(true);
+    } else {
+      setHaveMetamask(false);
+    }
+  })
+
+  const connectToMetamask = async () => {
+    if (!haveMetamask) {
+      console.log("Must have metamask installed!");
+      return;
+    }
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    console.log("Connected to Metamask")
+    setMetamaskIsConnected(true);
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,10 +36,12 @@ export default function IndexPage() {
         <meta name="description" content="A private waitlist" />
         <link rel="icon" href="/zk.ico" />
       </Head>
-      <Script>
-        src="https://cdn.ethers.io/lib/ethers-5.2.esm.min.js"
+      <Script 
+        src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
         strategy="lazyOnload"
-      </Script>
+      />
+
+      {metamaskIsConnected ? "Metamask is connected" : <button onClick={connectToMetamask}>Connect To Metamask</button>}
 
       <main className={styles.main}>
         <h1 className={styles.title}>
