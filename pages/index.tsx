@@ -5,9 +5,12 @@ import styles from '../styles/Index.module.css';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
+const GOERLI_CHAIN_ID = 5;
+
 export default function IndexPage() {
   const [haveMetamask, setHaveMetamask] = useState(false);
   const [metamaskIsConnected, setMetamaskIsConnected] = useState(false);
+  const [networkIsGoerli, setNetworkIsGoerli] = useState(false);
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
@@ -18,7 +21,16 @@ export default function IndexPage() {
     } else {
       setHaveMetamask(false);
     }
-  })
+  });
+
+  // Checks to see if the current network is Goerli
+  const checkProviderNetwork = async (provider: ethers.providers.Provider): Promise<boolean> => {
+    const network = await provider.getNetwork();
+    if (!network || network.chainId != GOERLI_CHAIN_ID) {
+      return false;
+    }
+    return true;
+  }
 
   // Tries to authorize metamask
   const connectToMetamask = async () => {
@@ -26,14 +38,21 @@ export default function IndexPage() {
       console.log("Must have metamask installed!");
       return;
     }
-
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    if (!provider) {
+      console.log("Could not connect to Metamask");
+    }
     const accounts = await provider.send("eth_requestAccounts", []);
     if (accounts.length == 0) {
-      console.log("Could not connect to Metamask");
+      console.log("No accounts found in Metamask");
       return;
     }
-
+    // Check that network is set to Goerli
+    const goerli = await checkProviderNetwork(provider);
+    if (goerli) {
+      setNetworkIsGoerli(true);
+    }
+    // Update state vars
     const signer = provider.getSigner();
     setProvider(provider);
     setSigner(signer);
@@ -56,7 +75,14 @@ export default function IndexPage() {
       {haveMetamask 
         ? 
           <div>
-          {metamaskIsConnected ? "Metamask is connected" : <button onClick={connectToMetamask}>Connect To Metamask</button>} 
+            {metamaskIsConnected 
+              ? 
+                <div>
+                  {networkIsGoerli ? "Connected to goerli" : "Please change to Goerli network and refresh the page."}
+                </div>
+              : 
+                <button onClick={connectToMetamask}>Connect To Metamask</button>
+            } 
           </div> 
         :
           "Please install metamask"
