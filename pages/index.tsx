@@ -11,6 +11,7 @@ export default function IndexPage() {
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
+  // Check if metamask is installed
   useEffect(() => {
     if (typeof (window as any).ethereum !== 'undefined') {
       setHaveMetamask(true);
@@ -19,6 +20,7 @@ export default function IndexPage() {
     }
   })
 
+  // Tries to authorize metamask
   const connectToMetamask = async () => {
     if (!haveMetamask) {
       console.log("Must have metamask installed!");
@@ -31,7 +33,7 @@ export default function IndexPage() {
       console.log("Could not connect to Metamask");
       return;
     }
-    
+
     const signer = provider.getSigner();
     setProvider(provider);
     setSigner(signer);
@@ -51,7 +53,14 @@ export default function IndexPage() {
         strategy="lazyOnload"
       />
 
-      {metamaskIsConnected ? "Metamask is connected" : <button onClick={connectToMetamask}>Connect To Metamask</button>}
+      {haveMetamask 
+        ? 
+          <div>
+          {metamaskIsConnected ? "Metamask is connected" : <button onClick={connectToMetamask}>Connect To Metamask</button>} 
+          </div> 
+        :
+          "Please install metamask"
+      }
 
       <main className={styles.main}>
         <h1 className={styles.title}>
