@@ -8,6 +8,8 @@ import { ethers } from 'ethers';
 export default function IndexPage() {
   const [haveMetamask, setHaveMetamask] = useState(false);
   const [metamaskIsConnected, setMetamaskIsConnected] = useState(false);
+  const [provider, setProvider] = useState<ethers.providers.Provider>();
+  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
   useEffect(() => {
     if (typeof (window as any).ethereum !== 'undefined') {
@@ -22,11 +24,19 @@ export default function IndexPage() {
       console.log("Must have metamask installed!");
       return;
     }
+
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    await provider.send("eth_requestAccounts", []);
+    const accounts = await provider.send("eth_requestAccounts", []);
+    if (accounts.length == 0) {
+      console.log("Could not connect to Metamask");
+      return;
+    }
+    
     const signer = provider.getSigner();
-    console.log("Connected to Metamask")
+    setProvider(provider);
+    setSigner(signer);
     setMetamaskIsConnected(true);
+    console.log("Connected to Metamask")
   }
 
   return (
