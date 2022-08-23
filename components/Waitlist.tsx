@@ -1,6 +1,10 @@
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 
-export default function Waitlist (props) {
+type WaitlistProps = {
+  signer?: ethers.Signer;
+}
+export default function Waitlist (props: WaitlistProps) {
   const { signer } = props;
   const [accountBalance, setAccountBalance] = useState('');
 
@@ -9,6 +13,7 @@ export default function Waitlist (props) {
   })
 
   const updateAccountBalance = async () => {
+    if (!signer) { return; }
     const balance = await signer.getBalance();
     setAccountBalance(balance.toString());
   }

@@ -5,6 +5,7 @@ import styles from '../styles/Index.module.css';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import Metamask from '../components/Metamask';
+import Waitlist from '../components/Waitlist';
 import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
 
 export default function IndexPage() {
@@ -86,7 +87,11 @@ export default function IndexPage() {
         strategy="lazyOnload"
       />
 
-      <Metamask metamaskState={metamaskState}/>
+      {
+        metamaskState === MetamaskConnectionStates.CONNECTED ?
+        <Waitlist signer={signer}/> :
+        <Metamask metamaskState={metamaskState}/>
+      }
 
       <main className={styles.main}>
         <h1 className={styles.title}>
