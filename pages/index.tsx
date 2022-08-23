@@ -34,22 +34,26 @@ export default function IndexPage() {
 
   // Refresh the page if user changes metamask accounts or chain
   // Only refresh the page if a provider has already been initialized
-  // TODO: Close these event listeners
   useEffect(() => {
     console.log("Setting event handlers...")
     const { ethereum } = window as any
-    ethereum.on("accountsChanged", () => {
-      if (provider) {
-        window.location.reload();
-      }
-    })
-    
-    ethereum.on("chainChanged", () => {
-      if (provider) {
-        window.location.reload();
-      }
-    })
+    ethereum.on("accountsChanged", reloadPageIfHasProvider)
+    ethereum.on("chainChanged", reloadPageIfHasProvider)
+
+    // Clean up the event listeners
+    return () => {
+      console.log("Closing event handlers...")
+      ethereum.removeListener('accountsChanged', reloadPageIfHasProvider);
+      ethereum.removeListener('chainChanged', reloadPageIfHasProvider);
+    }
   })
+
+  // Reloads the page if a provider has already been configured
+  const reloadPageIfHasProvider = () => {
+    if (provider) {
+      window.location.reload();
+    }
+  }
 
   // Checks to see if the current network is Goerli
   const checkProviderNetwork = async (provider: ethers.providers.Provider): Promise<boolean> => {
