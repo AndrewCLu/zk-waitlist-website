@@ -38,28 +38,25 @@ export default function IndexPage() {
   }, [])
 
   // Refresh the page if user changes metamask accounts or chain
-  // Only refresh the page if a provider has already been initialized
   useEffect(() => {
-    // Helper function to reload page if a provider has already been configured
-    const reloadPageIfHasProvider = () => {
-      if (provider) {
-        window.location.reload();
-      }
-    }
-
     console.log("Setting event handlers...")
     const { ethereum } = window as any
     if (!ethereum) { return; }
     // Set up event listeners
-    ethereum.on("accountsChanged", reloadPageIfHasProvider)
-    ethereum.on("chainChanged", reloadPageIfHasProvider)
+    ethereum.on("accountsChanged", reloadPage)
+    ethereum.on("chainChanged", reloadPage)
     // Clean up the event listeners
     return () => {
       console.log("Closing event handlers...")
-      ethereum.removeListener('accountsChanged', reloadPageIfHasProvider);
-      ethereum.removeListener('chainChanged', reloadPageIfHasProvider);
+      ethereum.removeListener('accountsChanged', reloadPage);
+      ethereum.removeListener('chainChanged', reloadPage);
     }
   })
+
+  // Helper function to reload the page
+  const reloadPage = () => {
+    window.location.reload();
+  }
 
   // Checks to see if the current network is Goerli
   const checkProviderNetwork = async (provider: ethers.providers.Provider): Promise<boolean> => {
@@ -100,9 +97,6 @@ export default function IndexPage() {
   }
 
   // Tries to authorize metamask
-  // TODO: Refactor this method so that it doesn't need to perform all the metamask checks.
-  // Instead, have updateMetamask state return an error indicating if some data is not complete
-  // TODO: Handle situation where user rejects metamask
   const connectToMetamask = async () => {
     console.log("Attempting to connect to metamask...");
     if (metamaskState === MetamaskConnectionStates.NOT_INSTALLED) {
@@ -111,8 +105,13 @@ export default function IndexPage() {
     }
     setMetamaskState(MetamaskConnectionStates.CONNECTING);
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    await provider?.send("eth_requestAccounts", []);
-    updateMetamaskState();
+    try {
+      await provider?.send("eth_requestAccounts", []);
+    } catch {
+      console.log("Failed to connect to metamask")
+      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
+      return;
+    }
   }
 
   return (
