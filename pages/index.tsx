@@ -20,19 +20,7 @@ export default function IndexPage() {
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
-  // Check if metamask is installed
-  useEffect(() => {
-    console.log("Checking to see if metamask is installed...")
-    if (typeof (window as any).ethereum !== 'undefined') {
-      console.log("Metamask is installed!")
-      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
-    } else {
-      console.log("Metamask is not installed.")
-      setMetamaskState(MetamaskConnectionStates.NOT_INSTALLED);
-    }
-  }, []);
-
-  // Checks to see if metamask is connected
+  // Checks the current state of metamask connection
   useEffect(() => {
     updateMetamaskState();
   }, [])
@@ -69,7 +57,6 @@ export default function IndexPage() {
 
   // Checks if metamask is already connected, and if so, updates state
   const updateMetamaskState = async () => {
-    console.log("Updating metamask state...")
     const { ethereum } = window as any;
     if (!ethereum) {
       setMetamaskState(MetamaskConnectionStates.NOT_INSTALLED); 
