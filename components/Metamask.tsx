@@ -12,7 +12,7 @@ export default function Metamask(props: MetamaskProps) {
   const connectToMetamask = async () => {
     console.log("Attempting to connect to metamask...");
     if (metamaskState === MetamaskConnectionStates.NOT_INSTALLED) {
-      console.log("Must have metamask installed! Please install Metamask and refresh the page");
+      console.log("Must have metamask installed!");
       return;
     }
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -28,11 +28,11 @@ export default function Metamask(props: MetamaskProps) {
       case MetamaskConnectionStates.UNDEFINED:
         return <div>loading...</div>;
       case MetamaskConnectionStates.NOT_INSTALLED:
-        return <div>Please install metamask</div>;
+        return <div>Please install metamask and refresh the page</div>;
       case MetamaskConnectionStates.NOT_CONNECTED:
         return <div><button onClick={connectToMetamask}>Connect To Metamask</button></div>;
       case MetamaskConnectionStates.WRONG_NETWORK:
-        return <div>Please change to Goerli network and refresh the page.</div>;
+        return <div>Please change to Goerli network</div>;
       case MetamaskConnectionStates.CONNECTED:
         return <div>Connected to metamask!</div>;
     }
