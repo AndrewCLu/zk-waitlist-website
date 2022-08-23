@@ -4,18 +4,10 @@ import Image from 'next/image';
 import styles from '../styles/Index.module.css';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-
-const GOERLI_CHAIN_ID = 5;
+import Metamask from '../components/Metamask';
+import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
 
 export default function IndexPage() {
-  enum MetamaskConnectionStates {
-    NOT_INSTALLED,
-    NOT_CONNECTED,
-    CONNECTING,
-    WRONG_NETWORK,
-    CONNECTED
-  }
-  
   const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>();
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
@@ -25,7 +17,7 @@ export default function IndexPage() {
     updateMetamaskState();
   }, [])
 
-  // Refresh the page if user changes metamask accounts or chain
+  // Refresh the page if user's metamask connection changes
   useEffect(() => {
     console.log("Setting event handlers...")
     const { ethereum } = window as any
@@ -83,24 +75,6 @@ export default function IndexPage() {
     console.log("Connected successfully to Metamask!");
   }
 
-  // Tries to authorize metamask
-  const connectToMetamask = async () => {
-    console.log("Attempting to connect to metamask...");
-    if (metamaskState === MetamaskConnectionStates.NOT_INSTALLED) {
-      console.log("Must have metamask installed! Please install Metamask and refresh the page");
-      return;
-    }
-    setMetamaskState(MetamaskConnectionStates.CONNECTING);
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    try {
-      await provider?.send("eth_requestAccounts", []);
-    } catch {
-      console.log("Failed to connect to metamask")
-      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
-      return;
-    }
-  }
-
   return (
     <div className={styles.container}>
       <Head>
@@ -113,21 +87,7 @@ export default function IndexPage() {
         strategy="lazyOnload"
       />
 
-      {metamaskState !== MetamaskConnectionStates.NOT_INSTALLED 
-        ? 
-          <div>
-            {metamaskState === MetamaskConnectionStates.CONNECTED || metamaskState === MetamaskConnectionStates.WRONG_NETWORK
-              ? 
-                <div>
-                  {metamaskState === MetamaskConnectionStates.WRONG_NETWORK ? "Please change to Goerli network and refresh the page.": "Connected to goerli"}
-                </div>
-              : 
-                <button onClick={connectToMetamask}>Connect To Metamask</button>
-            } 
-          </div> 
-        :
-          "Please install metamask"
-      }
+      <Metamask metamaskState={metamaskState}/>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
