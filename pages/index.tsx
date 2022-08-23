@@ -8,9 +8,15 @@ import { ethers } from 'ethers';
 const GOERLI_CHAIN_ID = 5;
 
 export default function IndexPage() {
-  const [haveMetamask, setHaveMetamask] = useState(false);
-  const [metamaskIsConnected, setMetamaskIsConnected] = useState(false);
-  const [networkIsGoerli, setNetworkIsGoerli] = useState(false);
+  enum MetamaskConnectionStates {
+    NOT_INSTALLED,
+    NOT_CONNECTED,
+    CONNECTING,
+    WRONG_NETWORK,
+    CONNECTED
+  }
+  
+  const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>();
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
@@ -19,27 +25,34 @@ export default function IndexPage() {
     console.log("Checking to see if metamask is installed...")
     if (typeof (window as any).ethereum !== 'undefined') {
       console.log("Metamask is installed!")
-      setHaveMetamask(true);
+      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
     } else {
       console.log("Metamask is not installed.")
-      setHaveMetamask(false);
+      setMetamaskState(MetamaskConnectionStates.NOT_INSTALLED);
     }
   }, []);
 
   // Checks to see if metamask is connected
   useEffect(() => {
-    console.log("Updating metamask state...")
     updateMetamaskState();
   }, [])
 
   // Refresh the page if user changes metamask accounts or chain
   // Only refresh the page if a provider has already been initialized
   useEffect(() => {
+    // Helper function to reload page if a provider has already been configured
+    const reloadPageIfHasProvider = () => {
+      if (provider) {
+        window.location.reload();
+      }
+    }
+
     console.log("Setting event handlers...")
     const { ethereum } = window as any
+    if (!ethereum) { return; }
+    // Set up event listeners
     ethereum.on("accountsChanged", reloadPageIfHasProvider)
     ethereum.on("chainChanged", reloadPageIfHasProvider)
-
     // Clean up the event listeners
     return () => {
       console.log("Closing event handlers...")
@@ -47,13 +60,6 @@ export default function IndexPage() {
       ethereum.removeListener('chainChanged', reloadPageIfHasProvider);
     }
   })
-
-  // Reloads the page if a provider has already been configured
-  const reloadPageIfHasProvider = () => {
-    if (provider) {
-      window.location.reload();
-    }
-  }
 
   // Checks to see if the current network is Goerli
   const checkProviderNetwork = async (provider: ethers.providers.Provider): Promise<boolean> => {
@@ -66,33 +72,31 @@ export default function IndexPage() {
 
   // Checks if metamask is already connected, and if so, updates state
   const updateMetamaskState = async () => {
+    console.log("Updating metamask state...")
     const { ethereum } = window as any;
     if (!ethereum) {
-      return;
+      setMetamaskState(MetamaskConnectionStates.NOT_INSTALLED); 
+      return; 
     }
+
     const provider = new ethers.providers.Web3Provider(ethereum);
-    if (!provider) {
-      return;
+    const signer = provider?.getSigner();
+    const accounts = await provider?.listAccounts();
+    if (!provider || !signer || accounts.length == 0) { 
+      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
+      return; 
     }
-    const signer = provider.getSigner();
-    if (!signer) {
-      return;
-    }
-    const accounts = await provider.listAccounts();
-    if (accounts.length == 0) {
+
+    const correctNetwork = await checkProviderNetwork(provider);
+    if (!correctNetwork) {
+      setMetamaskState(MetamaskConnectionStates.WRONG_NETWORK);
       return;
     }
 
     setProvider(provider);
     setSigner(signer);
-    setMetamaskIsConnected(true);
-    console.log("Connected to Metamask");
-
-    // Check that network is set to Goerli
-    const goerli = await checkProviderNetwork(provider);
-    if (goerli) {
-      setNetworkIsGoerli(true);
-    }
+    setMetamaskState(MetamaskConnectionStates.CONNECTED);
+    console.log("Connected successfully to Metamask!");
   }
 
   // Tries to authorize metamask
@@ -100,21 +104,14 @@ export default function IndexPage() {
   // Instead, have updateMetamask state return an error indicating if some data is not complete
   // TODO: Handle situation where user rejects metamask
   const connectToMetamask = async () => {
-    if (!haveMetamask) {
+    console.log("Attempting to connect to metamask...");
+    if (metamaskState === MetamaskConnectionStates.NOT_INSTALLED) {
       console.log("Must have metamask installed! Please install Metamask and refresh the page");
       return;
     }
+    setMetamaskState(MetamaskConnectionStates.CONNECTING);
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    if (!provider) {
-      console.log("Could not connect to Metamask");
-      return;
-    }
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    if (!signer) {
-      console.log("No signer found in metamask");
-      return;
-    }
+    await provider?.send("eth_requestAccounts", []);
     updateMetamaskState();
   }
 
@@ -130,13 +127,13 @@ export default function IndexPage() {
         strategy="lazyOnload"
       />
 
-      {haveMetamask 
+      {metamaskState !== MetamaskConnectionStates.NOT_INSTALLED 
         ? 
           <div>
-            {metamaskIsConnected 
+            {metamaskState === MetamaskConnectionStates.CONNECTED || metamaskState === MetamaskConnectionStates.WRONG_NETWORK
               ? 
                 <div>
-                  {networkIsGoerli ? "Connected to goerli" : "Please change to Goerli network and refresh the page."}
+                  {metamaskState === MetamaskConnectionStates.WRONG_NETWORK ? "Please change to Goerli network and refresh the page.": "Connected to goerli"}
                 </div>
               : 
                 <button onClick={connectToMetamask}>Connect To Metamask</button>
