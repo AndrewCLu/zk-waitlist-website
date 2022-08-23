@@ -8,7 +8,7 @@ import Metamask from '../components/Metamask';
 import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
 
 export default function IndexPage() {
-  const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>();
+  const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>(MetamaskConnectionStates.UNDEFINED);
   const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
@@ -38,7 +38,7 @@ export default function IndexPage() {
     window.location.reload();
   }
 
-  // Checks to see if the current network is Goerli
+  // Checks if the network a provider is connected to is supported
   const checkProviderNetwork = async (provider: ethers.providers.Provider): Promise<boolean> => {
     const network = await provider.getNetwork();
     if (!network || network.chainId != GOERLI_CHAIN_ID) {
@@ -47,7 +47,7 @@ export default function IndexPage() {
     return true;
   }
 
-  // Checks if metamask is already connected, and if so, updates state
+  // Determines current state of metamask connection
   const updateMetamaskState = async () => {
     const { ethereum } = window as any;
     if (!ethereum) {
@@ -72,7 +72,6 @@ export default function IndexPage() {
     setProvider(provider);
     setSigner(signer);
     setMetamaskState(MetamaskConnectionStates.CONNECTED);
-    console.log("Connected successfully to Metamask!");
   }
 
   return (

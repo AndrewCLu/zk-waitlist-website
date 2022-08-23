@@ -15,14 +15,11 @@ export default function Metamask(props: MetamaskProps) {
       console.log("Must have metamask installed! Please install Metamask and refresh the page");
       return;
     }
-    setMetamaskState(MetamaskConnectionStates.CONNECTING);
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
     try {
       await provider?.send("eth_requestAccounts", []);
     } catch {
-      console.log("Failed to connect to metamask")
-      setMetamaskState(MetamaskConnectionStates.NOT_CONNECTED);
-      return;
+      console.log("Failed to connect to metamask");
     }
   }
 
