@@ -61,7 +61,6 @@ export default function IndexPage() {
   }
 
   // Checks if metamask is already connected, and if so, updates state
-  // Todo: Clear state upon page refresh
   const updateMetamaskState = async () => {
     const { ethereum } = window as any;
     if (!ethereum) {
@@ -73,6 +72,10 @@ export default function IndexPage() {
     }
     const signer = provider.getSigner();
     if (!signer) {
+      return;
+    }
+    const accounts = await provider.listAccounts();
+    if (accounts.length == 0) {
       return;
     }
 
@@ -91,6 +94,7 @@ export default function IndexPage() {
   // Tries to authorize metamask
   // TODO: Refactor this method so that it doesn't need to perform all the metamask checks.
   // Instead, have updateMetamask state return an error indicating if some data is not complete
+  // TODO: Handle situation where user rejects metamask
   const connectToMetamask = async () => {
     if (!haveMetamask) {
       console.log("Must have metamask installed! Please install Metamask and refresh the page");
