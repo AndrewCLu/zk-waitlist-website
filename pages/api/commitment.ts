@@ -2,17 +2,23 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 const snarkjs = require("snarkjs");
 const path = require('path');
 
-interface ExtendedNextApiRequest extends NextApiRequest {
+interface CommitmentApiRequest extends NextApiRequest {
   query: {
     secret: string
   }
 }
 
+type CommitmentApiResponse = NextApiResponse<Commitment | ErrorResponse>;
+
 type Commitment = {
   commitment: string
 }
 
-export default async function handler(req: ExtendedNextApiRequest, res: NextApiResponse<Commitment>) {
+type ErrorResponse = {
+  error: string
+}
+
+export default async function handler(req: CommitmentApiRequest, res: CommitmentApiResponse) {
   const {
     query: { secret }
   } = req
@@ -21,7 +27,7 @@ export default async function handler(req: ExtendedNextApiRequest, res: NextApiR
   try {
     BigInt(secret);
   } catch (e) {
-    res.status(400);
+    res.status(400).send({ error: 'failed to fetch data' })
     return;
   }
 

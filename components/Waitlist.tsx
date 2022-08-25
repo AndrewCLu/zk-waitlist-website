@@ -20,7 +20,16 @@ export default function Waitlist (props: WaitlistProps) {
   // TODO: Account for errors returned by api
   const generateCommitment = async () => {
     setDisplayCommitment(true);
-    await fetch('/api/commitment').then(res => res.json()).then(json => setCommitment(json.publicSignals[0]));
+    await fetch('/api/commitment')
+      .then(res => {
+        if (res.status === 400) {
+          setDisplayCommitment(false);
+          alert('Failed to generate commitment!');
+          return;
+        }
+        return res.json();
+      })
+      .then(json => setCommitment(json.commitment));
   }
 
   return (
