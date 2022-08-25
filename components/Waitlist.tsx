@@ -12,10 +12,19 @@ export default function Waitlist (props: WaitlistProps) {
     updateAccountBalance();
   })
 
+  useEffect(() => {
+    getProof();
+  })
+
   const updateAccountBalance = async () => {
     if (!signer) { return; }
     const balance = await signer.getBalance();
     setAccountBalance(balance.toString());
+  }
+
+  const getProof = async () => {
+    const json = fetch('/api/commitment').then(res => res.json)
+    console.log(await json)
   }
 
   return (
