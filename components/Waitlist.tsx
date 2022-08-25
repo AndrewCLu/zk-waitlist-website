@@ -18,13 +18,8 @@ export default function Waitlist (props: WaitlistProps) {
   }
 
   const generateCommitment = async () => {
-    setCommitment('hey');
     setDisplayCommitment(true);
-  }
-
-  const getProof = async () => {
-    const json = fetch('/api/commitment').then(res => res.json)
-    console.log(await json)
+    await fetch('/api/commitment').then(res => res.json()).then(json => setCommitment(json.publicSignals[0]));
   }
 
   return (
