@@ -17,6 +17,7 @@ export default function Waitlist (props: WaitlistProps) {
     setDisplayCommitment(false);
   }
 
+  // TODO: Account for errors returned by api
   const generateCommitment = async () => {
     setDisplayCommitment(true);
     await fetch('/api/commitment').then(res => res.json()).then(json => setCommitment(json.publicSignals[0]));
