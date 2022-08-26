@@ -7,6 +7,7 @@ export default function Redeem() {
   const [commitments, setCommitments] = useState<string[]>(['','','','']);
   const [secret, setSecret] = useState('');
   const [redeemable, setRedeemable] = useState('');
+  const [redeemableIndex, setRedeemableIndex] = useState<number>();
 
   const updateCommitments = (e: React.ChangeEvent<HTMLInputElement>) => {
     const index = parseInt(e.currentTarget.name);
@@ -22,6 +23,43 @@ export default function Redeem() {
 
   const updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSecret(e.currentTarget.value);
+  }
+
+  // Checks to see if provided secret can redeem any of the commitments
+  // Displays the commitment if successful
+  const checkRedeemable = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (secret.length === 0) { 
+      alert('Secret cannot be empty!');
+      return; 
+    }
+    for (let i of commitments) {
+      if (!i.match(nonemptyAlphanumericRegex)) { 
+        alert('All commitments must be non-empty and alphanumeric!');
+        return; 
+      }
+    }
+    const url = '/api/commitment?secret='+secret;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (res.status === 200) {
+      const commitment = json.commitment;
+      commitments.forEach((c, i) => {
+        if (c === commitment) {
+          setRedeemableIndex(i);
+          setRedeemable(commitment);
+          setDisplayRedeemable(true);
+          return;
+        }
+      });
+      alert('Unable to redeem any commitment with the provided secret!');
+      return;
+    } else {
+      alert('Unable to generate commitment!');
+      if (res.status === 400) {
+        console.log(json.error);
+      }
+    }
   }
 
   // Generates a proof to lock the waitlist by calling the api/locker
@@ -74,7 +112,7 @@ export default function Redeem() {
         </div>
         :
         <div>
-          <form onSubmit={generateProof}>
+          <form onSubmit={checkRedeemable}>
             <label>
               Commitment 0:
               <input type="text" value={commitments[0]} name="0" onChange={updateCommitments} /> 
