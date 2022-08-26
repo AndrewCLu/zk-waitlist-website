@@ -62,17 +62,26 @@ export default function Redeem() {
     }
   }
 
-  // Generates a proof to lock the waitlist by calling the api/locker
-  const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Generates a proof to redeem the spot on the waitlist 
+  // corresponding to the provided secret and submits the proof
+  const submitRedemption = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+    if (secret.length === 0) { 
+      alert('Secret cannot be empty!');
+      return; 
+    }
     for (let i of commitments) {
       if (!i.match(nonemptyAlphanumericRegex)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }
     }
+    if (redeemable.length === 0) {
+      alert('No redeemable commitment!');
+      return;
+    }
     const commitmentString = commitments.join(',')
-    const url = '/api/locker?commitments=' + commitmentString;
+    const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
