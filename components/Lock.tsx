@@ -32,7 +32,19 @@ export default function Lock () {
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
-    console.log(json);
+    if (res.status === 200) {
+      const { proof, publicSignals } = json;
+      console.log('Proof: ', proof);
+      console.log('Public signals: ', publicSignals);
+      setProof(publicSignals[0]);
+      setDisplayProof(true);
+      return;
+    } else {
+      alert('Unable to generate proof!');
+      if (res.status === 400) {
+        console.log(json.error);
+      }
+    }
   }
 
   const resetDisplayProof = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -56,21 +68,25 @@ export default function Lock () {
         <div>
           <form onSubmit={generateProof}>
             <label>
-              Input 0:
+              Commitment 0:
               <input type="text" value={commitments[0]} name="0" onChange={updateCommitments} /> 
             </label>
+            <br/>
             <label>
-              Input 1:
+              Commitment 1:
               <input type="text" value={commitments[1]} name="1" onChange={updateCommitments} /> 
             </label>
+            <br/>
             <label>
-              Input 2:
+              Commitment 2:
               <input type="text" value={commitments[2]} name="2" onChange={updateCommitments} /> 
             </label>
+            <br/>
             <label>
-              Input 3:
+              Commitment 3:
               <input type="text" value={commitments[3]} name="3" onChange={updateCommitments} /> 
             </label>
+            <br/>
             <input type="submit" value="Submit" />
           </form>
         </div>

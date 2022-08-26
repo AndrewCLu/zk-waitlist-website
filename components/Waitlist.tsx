@@ -12,6 +12,7 @@ export default function Waitlist (props: WaitlistProps) {
   return (
     <div>
       <Commit/>
+      <br></br>
       <Lock />
     </div>
   )

@@ -31,14 +31,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (typeof commitments !== 'string') {
     return res.status(400).send({ error: 'invalid commitments' });
   }
-  const inputArray = commitments.split(',')
-  for (let i of inputArray) {
+  const commitmentArray = commitments.split(',')
+  for (let i of commitmentArray) {
     if (!i.match(nonemptyAlphanumericRegex)) {
       return res.status(400).send({ error: 'one or more commitments is either empty or nonalphanumeric' });
     }
   }
 
-  const proofResult = await generateLockerProof(inputArray);
+  const proofResult = await generateLockerProof(commitmentArray);
   if (proofResult instanceof Error) {
     return res.status(400).send({ error: proofResult.message });
   }

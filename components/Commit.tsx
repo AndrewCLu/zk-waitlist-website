@@ -15,7 +15,7 @@ export default function Commit () {
   const generateCommitment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (secret.length === 0) { 
-      alert('Commitment cannot be empty!');
+      alert('Secret cannot be empty!');
       return; 
     }
     const url = '/api/commitment?secret='+secret;
