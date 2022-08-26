@@ -3,8 +3,8 @@ import { nonemptyAlphanumericRegex } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
 const path = require('path');
 
-const generateLockerProof = async (inputs: string[]): Promise<{proof: any, publicSignals: any} | Error> => {
-  const proofInput = {'inputs': inputs}
+const generateLockerProof = async (commitments: string[]): Promise<{proof: any, publicSignals: any} | Error> => {
+  const proofInput = {'commitments': commitments}
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
@@ -19,7 +19,7 @@ const generateLockerProof = async (inputs: string[]): Promise<{proof: any, publi
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
-    query: { inputs }
+    query: { commitments }
   } = req;
 
   // Only allow GET requests
@@ -27,14 +27,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Inputs must all be nonempty alphanumeric strings
-  if (typeof inputs !== 'string') {
-    return res.status(400).send({ error: 'invalid inputs' });
+  // Commitments must all be nonempty alphanumeric strings
+  if (typeof commitments !== 'string') {
+    return res.status(400).send({ error: 'invalid commitments' });
   }
-  const inputArray = inputs.split(',')
+  const inputArray = commitments.split(',')
   for (let i of inputArray) {
     if (!i.match(nonemptyAlphanumericRegex)) {
-      return res.status(400).send({ error: 'one or more inputs is either empty or nonalphanumeric' });
+      return res.status(400).send({ error: 'one or more commitments is either empty or nonalphanumeric' });
     }
   }
 
