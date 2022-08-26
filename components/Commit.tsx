@@ -35,6 +35,7 @@ export default function Commit () {
 
   const resetDisplayCommitment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+    setSecret('');
     setDisplayCommitment(false);
   }
 
