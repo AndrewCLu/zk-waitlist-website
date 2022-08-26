@@ -6,3 +6,4 @@ export enum MetamaskConnectionStates {
   WRONG_NETWORK,
   CONNECTED
 }
+export const nonemptyAlphanumericRegex = /^[a-z0-9]+$/i;

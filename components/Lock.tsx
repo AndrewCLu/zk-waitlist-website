@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
+import { nonemptyAlphanumericRegex } from '../utils/Constants';
 
 export default function Lock () {
   const [displayProof, setDisplayProof] = useState(false);
@@ -21,7 +22,6 @@ export default function Lock () {
   // Generates a proof to lock the waitlist by calling the api/locker
   const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const nonemptyAlphanumericRegex = /^[a-z0-9]+$/i;
     for (let i of inputs) {
       if (!i.match(nonemptyAlphanumericRegex)) { 
         alert('All inputs must be non-empty and alphanumeric!');
