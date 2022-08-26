@@ -45,5 +45,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (commitmentResult instanceof Error) {
     return res.status(400).send({ error: commitmentResult.message });
   }
-  res.status(200).json({ commitmentResult });
+  res.status(200).json({ commitment: commitmentResult });
 }
