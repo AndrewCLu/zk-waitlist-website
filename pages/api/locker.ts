@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { nonemptyAlphanumericRegex } from '../../utils/Constants';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
 const path = require('path');
 
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const commitmentArray = commitments.split(',')
   for (let i of commitmentArray) {
-    if (!i.match(nonemptyAlphanumericRegex)) {
+    if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) {
       return res.status(400).send({ error: 'one or more commitments is either empty or nonalphanumeric' });
     }
   }

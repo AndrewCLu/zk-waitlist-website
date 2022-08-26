@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { nonemptyAlphanumericRegex } from '../utils/Constants';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
 export default function Lock () {
   const [displayRoot, setDisplayRoot] = useState(false);
@@ -23,7 +23,7 @@ export default function Lock () {
   const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     for (let i of commitments) {
-      if (!i.match(nonemptyAlphanumericRegex)) { 
+      if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }

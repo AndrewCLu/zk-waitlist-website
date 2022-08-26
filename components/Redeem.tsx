@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { nonemptyAlphanumericRegex } from '../utils/Constants';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
 export default function Redeem() {
   const [displayRedeemable, setDisplayRedeemable] = useState(false);
@@ -35,7 +35,7 @@ export default function Redeem() {
       return; 
     }
     for (let i of commitments) {
-      if (!i.match(nonemptyAlphanumericRegex)) { 
+      if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }
@@ -76,7 +76,7 @@ export default function Redeem() {
       return; 
     }
     for (let i of commitments) {
-      if (!i.match(nonemptyAlphanumericRegex)) { 
+      if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }
