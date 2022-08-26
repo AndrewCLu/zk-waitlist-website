@@ -21,8 +21,9 @@ export default function Lock () {
   // Generates a proof to lock the waitlist by calling the api/locker
   const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    for (let i in inputs) {
-      if (!i.match(/^[a-z0-9]+$/i)) { 
+    const nonemptyAlphanumericRegex = /^[a-z0-9]+$/i;
+    for (let i of inputs) {
+      if (!i.match(nonemptyAlphanumericRegex)) { 
         alert('All inputs must be non-empty and alphanumeric!');
         return; 
       }
