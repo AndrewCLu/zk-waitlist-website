@@ -32,8 +32,17 @@ const generateMerkleProof = (
 
   let merkle_branch: string[] = [];
   let node_is_left: string[] = [];
+  let currIndex = index;
   for (let i=0; i<treeDepth; i++) {
-
+    if (currIndex % 2 == 0) {
+      node_is_left.push('0');
+      merkle_branch.push(merkleTree[currIndex + 1]);
+    } else {
+      node_is_left.push('1');
+      merkle_branch.push(merkleTree[currIndex - 1]);
+    }
+    // Advance to the next level of the tree
+    currIndex = Math.floor(currIndex / 2) + treeSize;
   }
 
   return { merkle_branch, node_is_left }
@@ -97,13 +106,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).send({ error: 'redeemable index out of bounds' });
   }
 
-  const merkleTreeResult = generateMerkleTree(commitmentArray);
+  // Build a Merkle tree from the commitments
+  const merkleTreeResult = await generateMerkleTree(commitmentArray);
   if (merkleTreeResult instanceof Error) {
     return res.status(400).send({ error: merkleTreeResult.message });
   }
 
-  const { merkle_branch, node_is_left } = generateMerkleProof(merkleTreeResult, redeemableIndexNumber);
+  // Generate a Merkle proof for the provided index
+  const merkleProofResult = generateMerkleProof(merkleTreeResult, redeemableIndexNumber);
+  if (merkleProofResult instanceof Error) {
+    return res.status(400).send({ error: merkleProofResult.message });
+  }
+  const { merkle_branch, node_is_left } = merkleProofResult;
 
+  // Generate proof for redemption using the Merkle proof
   const proofResult = await generateRedeemerProof(secret, merkle_branch, node_is_left);
   if (proofResult instanceof Error) {
     return res.status(400).send({ error: proofResult.message });
