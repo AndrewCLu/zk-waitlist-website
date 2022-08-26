@@ -8,7 +8,7 @@ export default function Redeem() {
   const [secret, setSecret] = useState('');
   const [redeemable, setRedeemable] = useState('');
   const [redeemableIndex, setRedeemableIndex] = useState<number>();
-  const [successfulRedemption, setSuccessfulRedemption] = useState(true);
+  const [successfulRedemption, setSuccessfulRedemption] = useState(false);
 
   const updateCommitments = (e: React.ChangeEvent<HTMLInputElement>) => {
     const index = parseInt(e.currentTarget.name);
@@ -45,15 +45,19 @@ export default function Redeem() {
     const json = await res.json();
     if (res.status === 200) {
       const commitment = json.commitment;
+      let redeemable = false;
       commitments.forEach((c, i) => {
         if (c === commitment) {
+          redeemable = true;
           setRedeemableIndex(i);
           setRedeemable(commitment);
           setDisplayRedeemable(true);
           return;
         }
       });
-      alert('Unable to redeem any commitment with the provided secret!');
+      if (!redeemable) {
+        alert('Unable to redeem any commitment with the provided secret!');
+      }
       return;
     } else {
       alert('Unable to generate commitment!');
