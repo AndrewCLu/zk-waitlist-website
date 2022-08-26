@@ -17,6 +17,28 @@ const generateMerkleTree = async (commitments: string[]): Promise<string[] | Err
   }
 }
 
+const generateMerkleProof = (
+  merkleTree: string[], 
+  index: number
+): {merkle_branch: string[], node_is_left: string[]} | Error => {
+  const treeSize = merkleTree.length;
+  const treeDepth = Math.log2(treeSize);
+  if (!Number.isInteger(treeDepth)) {
+    return Error('Merkle tree size must be a power of 2');
+  }
+  if (!Number.isInteger(index) || index < 0 || index >= treeSize) {
+    return Error('Index out of bounds');
+  }
+
+  let merkle_branch: string[] = [];
+  let node_is_left: string[] = [];
+  for (let i=0; i<treeDepth; i++) {
+
+  }
+
+  return { merkle_branch, node_is_left }
+}
+
 const generateRedeemerProof = async (
   secret: string, 
   merkle_branch: string[], 
@@ -71,7 +93,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).send({ error: 'redeemable index must be a number' });
   }
   const redeemableIndexNumber = redeemableIndex as number;
-  if (redeemableIndexNumber < 0 || redeemableIndexNumber >= commitmentArray.length) {
+  if (!Number.isInteger(redeemableIndexNumber) || redeemableIndexNumber < 0 || redeemableIndexNumber >= commitmentArray.length) {
     return res.status(400).send({ error: 'redeemable index out of bounds' });
   }
 
