@@ -3,30 +3,41 @@ import React, { useState } from 'react';
 
 export default function Lock () {
   const [displayProof, setDisplayProof] = useState(false);
-  const [inputs, setInputs] = useState<string[4]>([]);
+  const [inputs, setInputs] = useState<string[]>(['','','','']);
   const [proof, setProof] = useState('');
 
   const updateInputs = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs(e.currentTarget.value);
+    const index = parseInt(e.currentTarget.name);
+    const newValue = e.currentTarget.value;
+    setInputs(currInputs => {
+      return [
+        ...currInputs.slice(0, index),
+        newValue,
+        ...currInputs.slice(index + 1),
+      ]
+    });
   }
 
   // Generates a proof to lock the waitlist by calling the api/locker
   const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (secret.length === 0) { return; }
-    const url = '/api/commitment?secret='+secret;
-    const res = await fetch(url);
-    const json = await res.json();
-    if (res.status === 200) {
-      setCommitment(json.commitment);
-      setDisplayCommitment(true);
-      return;
-    } else {
-      alert('Unable to generate commitment');
-      if (res.status === 400) {
-        console.log(json.error);
-      }
-    }
+    // for (i in inputs) {
+    //   if (i.length === 0) { return; }
+    // }
+    // if (secret.length === 0) { return; }
+    // const url = '/api/commitment?secret='+secret;
+    // const res = await fetch(url);
+    // const json = await res.json();
+    // if (res.status === 200) {
+    //   setCommitment(json.commitment);
+    //   setDisplayCommitment(true);
+    //   return;
+    // } else {
+    //   alert('Unable to generate commitment');
+    //   if (res.status === 400) {
+    //     console.log(json.error);
+    //   }
+    // }
   }
 
   const resetDisplayProof = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
