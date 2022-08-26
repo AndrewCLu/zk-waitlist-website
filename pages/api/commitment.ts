@@ -22,6 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     query: { secret }
   } = req;
 
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   // Secret must be a string
   if (typeof secret !== 'string') {
     return res.status(400).send({ error: 'invalid secret parameter' });

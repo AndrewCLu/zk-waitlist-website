@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type WaitlistProps = {
   signer?: ethers.Signer;
@@ -7,29 +7,33 @@ type WaitlistProps = {
 export default function Waitlist (props: WaitlistProps) {
   const { signer } = props;
   const [displayCommitment, setDisplayCommitment] = useState(false);
-  const [secret, setSecret] = useState('');
+  const [secret, setSecret] = useState<string>('');
   const [commitment, setCommitment] = useState('');
 
   const updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSecret(e.currentTarget.value);
   }
-  const resetDisplayCommitment = () => {
+  const resetDisplayCommitment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     setDisplayCommitment(false);
   }
 
-  // TODO: Account for errors returned by api
-  const generateCommitment = async () => {
-    setDisplayCommitment(true);
-    await fetch('/api/commitment')
-      .then(res => {
-        if (res.status === 400) {
-          setDisplayCommitment(false);
-          alert('Failed to generate commitment!');
-          return;
-        }
-        return res.json();
-      })
-      .then(json => setCommitment(json.commitment));
+  const generateCommitment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (secret.length === 0) { return; }
+    const url = '/api/commitment?secret='+secret;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (res.status === 200) {
+      setCommitment(json.commitment);
+      setDisplayCommitment(true);
+      return;
+    } else {
+      alert('Unable to generate commitment');
+      if (res.status === 400) {
+        console.log(json.error);
+      }
+    }
   }
 
   return (
