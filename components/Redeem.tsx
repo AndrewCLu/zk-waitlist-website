@@ -80,8 +80,16 @@ export default function Redeem() {
       alert('No redeemable commitment!');
       return;
     }
+    if (typeof redeemableIndex !== 'number') {
+      alert('Must provide redeemable index!');
+      return;
+    }
+    if (!Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= commitments.length) {
+      alert('Redeemable index is out of bounds!');
+      return;
+    }
     const commitmentString = commitments.join(',')
-    const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString;
+    const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {

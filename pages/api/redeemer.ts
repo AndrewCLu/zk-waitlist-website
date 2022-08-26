@@ -97,12 +97,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  // Redeemable index must be a number representing a valid index in the commitments array
-  if (typeof redeemableIndex !== 'number') {
-    return res.status(400).send({ error: 'redeemable index must be a number' });
+  // Redeemable index must be a string representing a valid index in the commitments array
+  if (typeof redeemableIndex !== 'string') {
+    return res.status(400).send({ error: 'redeemable index must string representing an integer' });
   }
-  const redeemableIndexNumber = redeemableIndex as number;
-  if (!Number.isInteger(redeemableIndexNumber) || redeemableIndexNumber < 0 || redeemableIndexNumber >= commitmentArray.length) {
+  let redeemableIndexNumber;
+  try {
+    redeemableIndexNumber = parseInt(redeemableIndex);
+  } catch (e) {
+    return res.status(400).send({ error: 'redeemable index must string representing an integer' });
+  }
+  if (redeemableIndexNumber < 0 || redeemableIndexNumber >= commitmentArray.length) {
     return res.status(400).send({ error: 'redeemable index out of bounds' });
   }
 
