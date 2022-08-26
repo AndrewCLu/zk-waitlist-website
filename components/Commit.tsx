@@ -14,7 +14,10 @@ export default function Commit () {
   // Displays the commitment if successful
   const generateCommitment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (secret.length === 0) { return; }
+    if (secret.length === 0) { 
+      alert('Commitment cannot be empty!');
+      return; 
+    }
     const url = '/api/commitment?secret='+secret;
     const res = await fetch(url);
     const json = await res.json();
@@ -23,7 +26,7 @@ export default function Commit () {
       setDisplayCommitment(true);
       return;
     } else {
-      alert('Unable to generate commitment');
+      alert('Unable to generate commitment!');
       if (res.status === 400) {
         console.log(json.error);
       }

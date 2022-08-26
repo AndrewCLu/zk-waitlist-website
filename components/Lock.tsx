@@ -21,23 +21,17 @@ export default function Lock () {
   // Generates a proof to lock the waitlist by calling the api/locker
   const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // for (i in inputs) {
-    //   if (i.length === 0) { return; }
-    // }
-    // if (secret.length === 0) { return; }
-    // const url = '/api/commitment?secret='+secret;
-    // const res = await fetch(url);
-    // const json = await res.json();
-    // if (res.status === 200) {
-    //   setCommitment(json.commitment);
-    //   setDisplayCommitment(true);
-    //   return;
-    // } else {
-    //   alert('Unable to generate commitment');
-    //   if (res.status === 400) {
-    //     console.log(json.error);
-    //   }
-    // }
+    for (let i in inputs) {
+      if (!i.match(/^[a-z0-9]+$/i)) { 
+        alert('All inputs must be non-empty and alphanumeric!');
+        return; 
+      }
+    }
+    const inputString = inputs.join(',')
+    const url = '/api/locker?inputs=' + inputString;
+    const res = await fetch(url);
+    const json = await res.json();
+    console.log(json);
   }
 
   const resetDisplayProof = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
