@@ -94,7 +94,7 @@ export default function Redeem() {
       return;
     }
     const commitmentString = commitments.join(',')
-    const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString;
+    const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString();
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {

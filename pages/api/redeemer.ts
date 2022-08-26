@@ -3,8 +3,8 @@ import { nonemptyAlphanumericRegex } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
 const path = require('path');
 
-const generateMerkleTree = async (commitments: string[]): Promise<string[] | Error> => {
-  const proofInput = {'commitments': commitments}
+const generateMerkleTree = async (inputs: string[]): Promise<string[] | Error> => {
+  const proofInput = {'inputs': inputs}
   try {
     const { publicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
@@ -22,11 +22,12 @@ const generateMerkleProof = (
   index: number
 ): {merkle_branch: string[], node_is_left: string[]} | Error => {
   const treeSize = merkleTree.length;
-  const treeDepth = Math.log2(treeSize);
+  const treeDepth = Math.log2((treeSize + 1) / 2);
+  const numLeaves = (2 ** treeDepth);
   if (!Number.isInteger(treeDepth)) {
     return Error('Merkle tree size must be a power of 2');
   }
-  if (!Number.isInteger(index) || index < 0 || index >= treeSize) {
+  if (!Number.isInteger(index) || index < 0 || index >= numLeaves) {
     return Error('Index out of bounds');
   }
 
@@ -34,7 +35,7 @@ const generateMerkleProof = (
   let node_is_left: string[] = [];
   let currIndex = index;
   for (let i=0; i<treeDepth; i++) {
-    if (currIndex % 2 == 0) {
+    if (currIndex % 2 === 0) {
       node_is_left.push('0');
       merkle_branch.push(merkleTree[currIndex + 1]);
     } else {
@@ -42,7 +43,7 @@ const generateMerkleProof = (
       merkle_branch.push(merkleTree[currIndex - 1]);
     }
     // Advance to the next level of the tree
-    currIndex = Math.floor(currIndex / 2) + treeSize;
+    currIndex = Math.floor(currIndex / 2) + numLeaves;
   }
 
   return { merkle_branch, node_is_left }
@@ -84,7 +85,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (typeof secret !== 'string') {
     return res.status(400).send({ error: 'invalid secret parameter' });
   }
-  const secretString = secret as string;
 
   // Commitments must all be nonempty alphanumeric strings
   if (typeof commitments !== 'string') {
