@@ -13,7 +13,7 @@ const generateCommitment = async (secret: string): Promise<string | Error> => {
     );
     return publicSignals[0];
   } catch (e) {
-    return Error('Failed to generate proof')
+    return Error('Failed to generate proof');
   }
 }
 
