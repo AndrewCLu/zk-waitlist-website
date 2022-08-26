@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { nonemptyAlphanumericRegex } from '../utils/Constants';
 
 export default function Lock () {
-  const [displayProof, setDisplayProof] = useState(false);
+  const [displayRoot, setDisplayRoot] = useState(false);
   const [commitments, setCommitments] = useState<string[]>(['','','','']);
-  const [proof, setProof] = useState('');
+  const [root, setRoot] = useState('');
 
   const updateCommitments = (e: React.ChangeEvent<HTMLInputElement>) => {
     const index = parseInt(e.currentTarget.name);
@@ -36,8 +36,8 @@ export default function Lock () {
       const { proof, publicSignals } = json;
       console.log('Proof: ', proof);
       console.log('Public signals: ', publicSignals);
-      setProof(publicSignals[0]);
-      setDisplayProof(true);
+      setRoot(publicSignals[0]);
+      setDisplayRoot(true);
       return;
     } else {
       alert('Unable to generate proof!');
@@ -47,22 +47,22 @@ export default function Lock () {
     }
   }
 
-  const resetDisplayProof = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const resetDisplayRoot = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setDisplayProof(false);
+    setDisplayRoot(false);
   }
 
   return (
     <div>
       { 
-        displayProof
+        displayRoot
         ? 
         <div>
           <div>
-            Here is your proof:
-            {proof}
+            Proof generated with Merkle root:
+            {root}
           </div>
-          <button onClick={resetDisplayProof}>Generate new proof</button>
+          <button onClick={resetDisplayRoot}>Generate new proof</button>
         </div>
         :
         <div>
