@@ -37,13 +37,23 @@ const generateRedeemerProof = async (
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
-    query: { commitments }
+    query: { 
+      secret,
+      commitments,
+      redeemableIndex
+    }
   } = req;
 
   // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  // Secret must be a string
+  if (typeof secret !== 'string') {
+    return res.status(400).send({ error: 'invalid secret parameter' });
+  }
+  const secretString = secret as string;
 
   // Commitments must all be nonempty alphanumeric strings
   if (typeof commitments !== 'string') {
@@ -56,7 +66,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  const proofResult = await generateLockerProof(commitmentArray);
+  // Redeemable index must be a number representing a valid index in the commitments array
+  if (typeof redeemableIndex !== 'number') {
+    return res.status(400).send({ error: 'redeemable index must be a number' });
+  }
+  const redeemableIndexNumber = redeemableIndex as number;
+  if (redeemableIndexNumber < 0 || redeemableIndexNumber >= commitmentArray.length) {
+    return res.status(400).send({ error: 'redeemable index out of bounds' });
+  }
+
+  const merkleTreeResult = generateMerkleTree(commitmentArray);
+  if (merkleTreeResult instanceof Error) {
+    return res.status(400).send({ error: merkleTreeResult.message });
+  }
+
+  const { merkle_branch, node_is_left } = generateMerkleProof(merkleTreeResult, redeemableIndexNumber);
+
+  const proofResult = await generateRedeemerProof(secret, merkle_branch, node_is_left);
   if (proofResult instanceof Error) {
     return res.status(400).send({ error: proofResult.message });
   }
