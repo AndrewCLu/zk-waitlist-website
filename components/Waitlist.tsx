@@ -32,8 +32,8 @@ export default function Waitlist (props: WaitlistProps) {
     const usedWaitlistSpots: number = await waitlist.usedWaitlistSpots();
     const maxWaitlistSpots: number = await waitlist.maxWaitlistSpots();
     for (let i=0; i<usedWaitlistSpots; i++) {
-      const c: string = await waitlist.commitments(i);
-      commitments.push(c);
+      const c = await waitlist.commitments(i);
+      commitments.push(c.toString());
     }
     const isLocked: boolean = await waitlist.isLocked();
     const merkleRoot: string = await waitlist.merkleRoot();
