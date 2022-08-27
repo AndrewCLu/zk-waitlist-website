@@ -19,17 +19,34 @@ type WaitlistContractStateType = {
   merkleRoot: string
 }
 
-function displayWaitlistContractState(props: WaitlistContractStateType) {
+type DisplayWaitlistContractStateProps = {
+  waitlistContractState?: WaitlistContractStateType,
+  updateWaitlistContractState: () => void
+}
+
+function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) {
+  const updateButton = <button onClick={props.updateWaitlistContractState}>Update Waitlist State</button>;
+  if (!props.waitlistContractState) {
+    return (
+      <div>
+        {updateButton}
+        <br/>
+        Loading waitlist state...
+      </div>
+    )
+  }
   return (
     <div>
+      {updateButton}
+      <br/>
       The following commitments are claimed in the waitlist: 
       <br/>
-      {props.commitments.map((c, i) => 
+      {props.waitlistContractState.commitments.map((c, i) => 
         <div key={i}>{i + '. ' + c}</div>
       )}
-      There are {props.maxWaitlistSpots - props.commitments.length} spots remaining on the waitlist.
+      There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
       <br/>
-      {props.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
+      {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
     </div>
   )
 }
@@ -44,12 +61,18 @@ export default function Waitlist (props: WaitlistProps) {
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
 
   useEffect(() => {
+    updateWaitlistContractState();
+  }, [waitlistContract])
+
+  useEffect(() => {
     const waitlistContract: ethers.Contract = new ethers.Contract(WAITLIST_CONTRACT_ADDRESS, WAITLIST_CONTRACT_ABI, signer);
     setWaitlistContract(waitlistContract);
-    updateWaitlistContractState(waitlistContract);
   }, [signer])
 
-  const updateWaitlistContractState = async (waitlist: ethers.Contract) => {
+  const updateWaitlistContractState = async () => {
+    const waitlist = waitlistContract;
+    if (!waitlist) { return; }
+
     const commitments: string[] = []
     const usedWaitlistSpots: number = await waitlist.usedWaitlistSpots();
     const maxWaitlistSpots: number = await waitlist.maxWaitlistSpots();
@@ -71,7 +94,7 @@ export default function Waitlist (props: WaitlistProps) {
   const updateWaitlistStateClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!waitlistContract) { return; }
-    updateWaitlistContractState(waitlistContract);
+    updateWaitlistContractState();
   }
 
   let displayState: WaitlistDisplayStates;
@@ -87,13 +110,7 @@ export default function Waitlist (props: WaitlistProps) {
 
   return (
     <div>
-      <div>
-        <div>
-          <button onClick={updateWaitlistStateClick}>Update Waitlist State</button>
-        </div>
-        {waitlistContractState ? displayWaitlistContractState(waitlistContractState) : <div>Loading waitlist state...</div>}
-      </div>
-      
+      {displayWaitlistContractState({ waitlistContractState, updateWaitlistContractState })}
     </div>
   )
 }
