@@ -59,6 +59,14 @@ export default function Waitlist (props: WaitlistProps) {
         <div>
           <button onClick={updateWaitlistStateClick}>Update Waitlist State</button>
         </div>
+        <div>
+          The following commitments are claimed in the waitlist: 
+          {waitlistContractState?.commitments}
+          <br/>
+          There are {waitlistContractState?.maxWaitlistSpots! - waitlistContractState?.commitments?.length!} spots remaining on the waitlist.
+          <br/>
+          {waitlistContractState?.isLocked ? <div>The waitlist is locked</div> : <div>The waitlist is not locked</div>}
+        </div>
       </div>
       {
         waitlistContract 
