@@ -5,13 +5,6 @@ import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
 
-enum WaitlistDisplayStates {
-  NONE,
-  COMMIT,
-  LOCK,
-  REDEEM
-}
-
 type WaitlistContractStateType = {
   commitments: string[],
   isLocked: boolean,
@@ -91,26 +84,39 @@ export default function Waitlist (props: WaitlistProps) {
     setWaitlistContractState(newState);
   }
 
-  const updateWaitlistStateClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    if (!waitlistContract) { return; }
-    updateWaitlistContractState();
-  }
-
-  let displayState: WaitlistDisplayStates;
-  if (!waitlistContractState) {
-    displayState = WaitlistDisplayStates.NONE;
-  } else if (waitlistContractState.isLocked) {
-    displayState = WaitlistDisplayStates.REDEEM;
-  } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
-    displayState = WaitlistDisplayStates.LOCK;
-  } else {
-    displayState = WaitlistDisplayStates.COMMIT;
+  const getWaitlistDisplayComponent = () => {
+    if (!waitlistContractState || !waitlistContract) {
+      return (
+        <div>
+          Loading waitlist state...
+        </div>
+      )
+    } else if (waitlistContractState.isLocked) {
+      return (
+        <div>
+          <Redeem/>
+        </div>
+      )
+    } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
+      return (
+        <div>
+          <Lock/>
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          <Commit waitlistContract={waitlistContract!} />
+        </div>
+      )
+    }
   }
 
   return (
     <div>
       {displayWaitlistContractState({ waitlistContractState, updateWaitlistContractState })}
+      <br/>
+      {getWaitlistDisplayComponent()}
     </div>
   )
 }
