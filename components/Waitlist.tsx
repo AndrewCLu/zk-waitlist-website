@@ -12,6 +12,21 @@ type WaitlistContractStateType = {
   merkleRoot: string
 }
 
+function displayWaitlistContractState(props: WaitlistContractStateType) {
+  return (
+    <div>
+      The following commitments are claimed in the waitlist: 
+      <br/>
+      {props.commitments.map((c, i) => 
+        <div key={i}>{i + '. ' + c}</div>
+      )}
+      There are {props.maxWaitlistSpots - props.commitments.length} spots remaining on the waitlist.
+      <br/>
+      {props.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
+    </div>
+  )
+}
+
 type WaitlistProps = {
   signer?: ethers.Signer;
 }
@@ -24,7 +39,7 @@ export default function Waitlist (props: WaitlistProps) {
   useEffect(() => {
     const waitlistContract: ethers.Contract = new ethers.Contract(WAITLIST_CONTRACT_ADDRESS, WAITLIST_CONTRACT_ABI, signer);
     setWaitlistContract(waitlistContract);
-    console.log(waitlistContract.interface)
+    updateWaitlistContractState(waitlistContract);
   }, [signer])
 
   const updateWaitlistContractState = async (waitlist: ethers.Contract) => {
@@ -43,7 +58,6 @@ export default function Waitlist (props: WaitlistProps) {
       maxWaitlistSpots,
       merkleRoot
     }
-    console.log(newState)
     setWaitlistContractState(newState);
   }
 
@@ -59,14 +73,7 @@ export default function Waitlist (props: WaitlistProps) {
         <div>
           <button onClick={updateWaitlistStateClick}>Update Waitlist State</button>
         </div>
-        <div>
-          The following commitments are claimed in the waitlist: 
-          {waitlistContractState?.commitments}
-          <br/>
-          There are {waitlistContractState?.maxWaitlistSpots! - waitlistContractState?.commitments?.length!} spots remaining on the waitlist.
-          <br/>
-          {waitlistContractState?.isLocked ? <div>The waitlist is locked</div> : <div>The waitlist is not locked</div>}
-        </div>
+        {waitlistContractState ? displayWaitlistContractState(waitlistContractState) : <div>Loading waitlist state...</div>}
       </div>
       {
         waitlistContract 
