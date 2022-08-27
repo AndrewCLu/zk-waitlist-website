@@ -5,6 +5,13 @@ import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
 
+enum WaitlistDisplayStates {
+  NONE,
+  COMMIT,
+  LOCK,
+  REDEEM
+}
+
 type WaitlistContractStateType = {
   commitments: string[],
   isLocked: boolean,
@@ -67,6 +74,17 @@ export default function Waitlist (props: WaitlistProps) {
     updateWaitlistContractState(waitlistContract);
   }
 
+  let displayState: WaitlistDisplayStates;
+  if (!waitlistContractState) {
+    displayState = WaitlistDisplayStates.NONE;
+  } else if (waitlistContractState.isLocked) {
+    displayState = WaitlistDisplayStates.REDEEM;
+  } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
+    displayState = WaitlistDisplayStates.LOCK;
+  } else {
+    displayState = WaitlistDisplayStates.COMMIT;
+  }
+
   return (
     <div>
       <div>
@@ -75,20 +93,7 @@ export default function Waitlist (props: WaitlistProps) {
         </div>
         {waitlistContractState ? displayWaitlistContractState(waitlistContractState) : <div>Loading waitlist state...</div>}
       </div>
-      {
-        waitlistContract 
-        ?
-        <div>
-          <br/>
-          <Commit waitlistContract={waitlistContract}/>
-          <br/>
-          <Lock />
-          <br/>
-          <Redeem />
-        </div>
-        : 
-        <div></div>
-      } 
+      
     </div>
   )
 }

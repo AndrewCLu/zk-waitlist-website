@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 type CommitProps = {
   waitlistContract: ethers.Contract
 }
+
 export default function Commit (props: CommitProps) {
   const [displayCommitment, setDisplayCommitment] = useState(false);
   const [secret, setSecret] = useState<string>('');
@@ -74,6 +75,7 @@ export default function Commit (props: CommitProps) {
         </div>
         :
         <div>
+          Choose a secret to join the waitlist:
           <form onSubmit={generateCommitment}>
             <label>
               Secret:
