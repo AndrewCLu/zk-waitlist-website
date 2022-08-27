@@ -1,7 +1,10 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 
-export default function Commit () {
+type CommitProps = {
+  waitlistContract: ethers.Contract
+}
+export default function Commit (props: CommitProps) {
   const [displayCommitment, setDisplayCommitment] = useState(false);
   const [secret, setSecret] = useState<string>('');
   const [commitment, setCommitment] = useState('');
@@ -33,6 +36,23 @@ export default function Commit () {
     }
   }
 
+  const joinWaitlist = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (commitment.length === 0) {
+      alert('Must provide commitment string!');
+      return; 
+    }
+    try {
+      const joinResult = await props.waitlistContract.join(commitment);
+      console.log(joinResult);
+    } catch (e) {
+      console.log('Failed to join waitlist');
+      return;
+    }
+    setSecret('');
+    setDisplayCommitment(false);
+  }
+
   const resetDisplayCommitment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setSecret('');
@@ -49,6 +69,7 @@ export default function Commit () {
             Here is your commitment:
             {commitment}
           </div>
+          <button onClick={joinWaitlist}>Join the waitlist</button>
           <button onClick={resetDisplayCommitment}>Generate new commitment</button>
         </div>
         :

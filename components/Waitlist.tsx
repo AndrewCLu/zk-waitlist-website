@@ -60,12 +60,20 @@ export default function Waitlist (props: WaitlistProps) {
           <button onClick={updateWaitlistStateClick}>Update Waitlist State</button>
         </div>
       </div>
-      <br/>
-      <Commit/>
-      <br/>
-      <Lock />
-      <br/>
-      <Redeem />
+      {
+        waitlistContract 
+        ?
+        <div>
+          <br/>
+          <Commit waitlistContract={waitlistContract}/>
+          <br/>
+          <Lock />
+          <br/>
+          <Redeem />
+        </div>
+        : 
+        <div></div>
+      } 
     </div>
   )
 }
