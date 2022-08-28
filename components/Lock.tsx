@@ -15,14 +15,14 @@ type LockProps = {
 
 export default function Lock (props: LockProps) {
   const [lockdisplayState, setLockDisplayState] = useState<LockDisplayStates>(LockDisplayStates.LOCKABLE);
-  const [errorMessage, setErorrMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [root, setRoot] = useState();
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
   const lockWaitlist = async () => {
     for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
-        setErorrMessage('All commitments must be non-empty and alphanumeric!');
+        setErrorMessage('All commitments must be non-empty and alphanumeric!');
         setLockDisplayState(LockDisplayStates.FAILURE);
         return; 
       }
@@ -39,12 +39,12 @@ export default function Lock (props: LockProps) {
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
       } catch (e) {
-        setErorrMessage('Failed to submit locking transaction!');
+        setErrorMessage('Failed to submit locking transaction!');
         setLockDisplayState(LockDisplayStates.FAILURE);
         return;
       }
     } else {
-      setErorrMessage('Unable to generate proof to lock waitlist!');
+      setErrorMessage('Unable to generate proof to lock waitlist!');
       setLockDisplayState(LockDisplayStates.FAILURE);
       if (res.status === 400) {
         console.log(json.error);
@@ -54,7 +54,7 @@ export default function Lock (props: LockProps) {
 
   const resetLockDisplayState = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setErorrMessage('');
+    setErrorMessage('');
     setLockDisplayState(LockDisplayStates.LOCKABLE);
   }
 

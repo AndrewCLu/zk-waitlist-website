@@ -94,7 +94,7 @@ export default function Waitlist (props: WaitlistProps) {
     } else if (waitlistContractState.isLocked) {
       return (
         <div>
-          <Redeem/>
+          <Redeem waitlistContract={waitlistContract!} commitments={waitlistContractState.commitments} />
         </div>
       )
     } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {

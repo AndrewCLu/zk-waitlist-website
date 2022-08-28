@@ -72,36 +72,34 @@ export default function Redeem(props: RedeemProps) {
       alert('Secret cannot be empty!');
       return; 
     }
-    for (let i of commitments) {
+    for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }
     }
-    if (redeemable.length === 0) {
-      alert('No redeemable commitment!');
+    if (typeof redeemableIndex !== 'number' || !Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= props.commitments.length) {
+      alert('No commitment is redeemable!');
       return;
     }
-    if (typeof redeemableIndex !== 'number') {
-      alert('Must provide redeemable index!');
-      return;
-    }
-    if (!Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= commitments.length) {
-      alert('Redeemable index is out of bounds!');
-      return;
-    }
-    const commitmentString = commitments.join(',')
+    const commitmentString = props.commitments.join(',')
     const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString();
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
       const { proof, publicSignals } = json;
-      console.log('Proof: ', proof);
-      console.log('Public signals: ', publicSignals);
-      setSuccessfulRedemption(true);
-      return;
+      try {
+        await props.waitlistContract.redeem(proof, publicSignals);
+        setRedeemDisplayState(RedeemDisplayStates.SUCCESS);
+        return;
+      } catch (e) {
+        setErrorMessage('Failed to submit redemption transaction!');
+        setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+        return;
+      }
     } else {
-      alert('Unable to generate proof!');
+      setErrorMessage('Unable to generate proof to redeem your spot!');
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       if (res.status === 400) {
         console.log(json.error);
       }
