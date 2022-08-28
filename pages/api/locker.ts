@@ -2,15 +2,21 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
 const path = require('path');
+const fs = require('fs');
 
+// Generates a locker proof and returns the proof and publicSignals as Solidity calldata
 const generateLockerProof = async (commitments: string[]): Promise<{proof: any, publicSignals: any} | Error> => {
   const proofInput = {'commitments': commitments};
   try {
-    const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+    const { proof: rawProof, publicSignals: rawPublicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
       path.join('circuits/locker/', 'locker.wasm'), 
       path.join('circuits/locker/', 'locker_final.zkey')
     );
+    const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
+    const proof = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
+    const publicSignals = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
+
     return { proof, publicSignals };
   } catch (e) {
     return Error('Failed to generate proof');

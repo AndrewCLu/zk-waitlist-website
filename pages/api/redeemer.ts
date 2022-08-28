@@ -56,11 +56,14 @@ const generateRedeemerProof = async (
 ): Promise<{proof: any, publicSignals: any} | Error> => {
   const proofInput = {'secret': secret, 'merkle_branch': merkle_branch, 'node_is_left': node_is_left};
   try {
-    const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+    const { proof: rawProof, publicSignals: rawPublicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
       path.join('circuits/redeemer/', 'redeemer.wasm'), 
       path.join('circuits/redeemer/', 'redeemer_final.zkey')
     );
+    const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
+    const proof = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
+    const publicSignals = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
     return { proof, publicSignals };
   } catch (e) {
     return Error('Failed to generate proof');

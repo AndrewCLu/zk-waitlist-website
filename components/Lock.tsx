@@ -73,7 +73,7 @@ export default function Lock (props: LockProps) {
             {root ? (
               <div>
                 <br/>
-                'Locked with Merkle root: ' + {root}
+                Locked with Merkle root: {root}
               </div>
             ) : null}
           </div>
