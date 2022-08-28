@@ -54,6 +54,7 @@ export default function Lock (props: LockProps) {
 
   const resetLockDisplayState = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+    setErorrMessage('');
     setLockDisplayState(LockDisplayStates.LOCKABLE);
   }
 

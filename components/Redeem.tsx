@@ -2,39 +2,37 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
-export default function Redeem() {
-  const [displayRedeemable, setDisplayRedeemable] = useState(false);
-  const [commitments, setCommitments] = useState<string[]>(['','','','']);
-  const [secret, setSecret] = useState('');
-  const [redeemable, setRedeemable] = useState('');
-  const [redeemableIndex, setRedeemableIndex] = useState<number>();
-  const [successfulRedemption, setSuccessfulRedemption] = useState(false);
+enum RedeemDisplayStates {
+  ENTER_SECRET,
+  REDEEMABLE,
+  NOT_REDEEMABLE,
+  SUCCESS,
+  FAILURE
+}
 
-  const updateCommitments = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const index = parseInt(e.currentTarget.name);
-    const newValue = e.currentTarget.value;
-    setCommitments(currCommitments => {
-      return [
-        ...currCommitments.slice(0, index),
-        newValue,
-        ...currCommitments.slice(index + 1),
-      ]
-    });
-  }
+type RedeemProps = {
+  waitlistContract: ethers.Contract,
+  commitments: string[]
+}
+
+export default function Redeem(props: RedeemProps) {
+  const [redeemDisplayState, setRedeemDisplayState] = useState<RedeemDisplayStates>(RedeemDisplayStates.ENTER_SECRET);
+  const [secret, setSecret] = useState('');
+  const [redeemableIndex, setRedeemableIndex] = useState<number>();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSecret(e.currentTarget.value);
   }
 
   // Checks to see if provided secret can redeem any of the commitments
-  // Displays the commitment if successful
   const checkRedeemable = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (secret.length === 0) { 
       alert('Secret cannot be empty!');
       return; 
     }
-    for (let i of commitments) {
+    for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
@@ -46,21 +44,20 @@ export default function Redeem() {
     if (res.status === 200) {
       const commitment = json.commitment;
       let redeemable = false;
-      commitments.forEach((c, i) => {
+      props.commitments.forEach((c, i) => {
         if (c === commitment) {
           redeemable = true;
           setRedeemableIndex(i);
-          setRedeemable(commitment);
-          setDisplayRedeemable(true);
+          setRedeemDisplayState(RedeemDisplayStates.REDEEMABLE);
           return;
         }
       });
       if (!redeemable) {
-        alert('Unable to redeem any commitment with the provided secret!');
+        setRedeemDisplayState(RedeemDisplayStates.NOT_REDEEMABLE);
+        return;
       }
-      return;
     } else {
-      alert('Unable to generate commitment!');
+      alert('Unable to check if your secret is redeemable.');
       if (res.status === 400) {
         console.log(json.error);
       }
@@ -128,6 +125,41 @@ export default function Redeem() {
     setSuccessfulRedemption(false);
   }
 
+  const getRedeemDisplayComponent = () => {
+    switch(redeemDisplayState) {
+      case RedeemDisplayStates.ENTER_SECRET:
+        return (
+          <div>
+            Enter your secret to redeem a waitlist spot:
+            <br/>
+            <form onSubmit={checkRedeemable}>
+              <label>
+                Secret:
+                <input type="number" value={secret} onChange={updateSecret} /> 
+              </label>
+              <br/>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+        )
+      case RedeemDisplayStates.NOT_REDEEMABLE:
+        return (
+          <div>
+            Unable to redeem any waitlist spot with the secret you provided. Try another?
+            <br/>
+            <form onSubmit={checkRedeemable}>
+              <label>
+                Secret:
+                <input type="number" value={secret} onChange={updateSecret} /> 
+              </label>
+              <br/>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+        )
+    }
+  }
+
   return (
     <div>
       {
@@ -151,37 +183,7 @@ export default function Redeem() {
             <button onClick={submitRedemption}>Redeem my spot</button>
             <button onClick={resetDisplayRedeemable}>Cancel</button>
           </div>
-          :
-          <div>
-            <form onSubmit={checkRedeemable}>
-              <label>
-                Commitment 0:
-                <input type="text" value={commitments[0]} name="0" onChange={updateCommitments} /> 
-              </label>
-              <br/>
-              <label>
-                Commitment 1:
-                <input type="text" value={commitments[1]} name="1" onChange={updateCommitments} /> 
-              </label>
-              <br/>
-              <label>
-                Commitment 2:
-                <input type="text" value={commitments[2]} name="2" onChange={updateCommitments} /> 
-              </label>
-              <br/>
-              <label>
-                Commitment 3:
-                <input type="text" value={commitments[3]} name="3" onChange={updateCommitments} /> 
-              </label>
-              <br/>
-              <label>
-                Secret:
-                <input type="number" value={secret} onChange={updateSecret} /> 
-              </label>
-              <br/>
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
+          
         }
         </div>
       }
