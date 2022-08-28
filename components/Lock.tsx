@@ -2,38 +2,36 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
-export default function Lock () {
+type LockProps = {
+  waitlistContract: ethers.Contract,
+  commitments: string[]
+}
+
+export default function Lock (props: LockProps) {
   const [displayRoot, setDisplayRoot] = useState(false);
-  const [commitments, setCommitments] = useState<string[]>(['','','','']);
   const [root, setRoot] = useState('');
 
-  const updateCommitments = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const index = parseInt(e.currentTarget.name);
-    const newValue = e.currentTarget.value;
-    setCommitments(currCommitments => {
-      return [
-        ...currCommitments.slice(0, index),
-        newValue,
-        ...currCommitments.slice(index + 1),
-      ]
-    });
-  }
-
-  // Generates a proof to lock the waitlist by calling the api/locker
-  const generateProof = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    for (let i of commitments) {
+  // Generates proof to lock the waitlist and submits proof to Ethereum
+  const lockWaitlist = async () => {
+    for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         alert('All commitments must be non-empty and alphanumeric!');
         return; 
       }
     }
-    const commitmentString = commitments.join(',')
+    const commitmentString = props.commitments.join(',')
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
       const { proof, publicSignals } = json;
+      try {
+        const lockResult = await props.waitlistContract.lock(proof, publicSignals);
+        console.log(lockResult);
+      } catch (e) {
+        console.log('Failed to lock waitlist');
+        return;
+      }
       console.log('Proof: ', proof);
       console.log('Public signals: ', publicSignals);
       setRoot(publicSignals[0]);
@@ -62,33 +60,13 @@ export default function Lock () {
             Proof generated with Merkle root:
             {root}
           </div>
-          <button onClick={resetDisplayRoot}>Generate new proof</button>
+          <br/>
+          <button onClick={submitLockProof}>Lock the waitlist</button>
+          <button onClick={resetDisplayRoot}>Cancel</button>
         </div>
         :
         <div>
-          <form onSubmit={generateProof}>
-            <label>
-              Commitment 0:
-              <input type="text" value={commitments[0]} name="0" onChange={updateCommitments} /> 
-            </label>
-            <br/>
-            <label>
-              Commitment 1:
-              <input type="text" value={commitments[1]} name="1" onChange={updateCommitments} /> 
-            </label>
-            <br/>
-            <label>
-              Commitment 2:
-              <input type="text" value={commitments[2]} name="2" onChange={updateCommitments} /> 
-            </label>
-            <br/>
-            <label>
-              Commitment 3:
-              <input type="text" value={commitments[3]} name="3" onChange={updateCommitments} /> 
-            </label>
-            <br/>
-            <input type="submit" value="Submit" />
-          </form>
+          <button onClick={lockWaitlist}>Lock the waitlist</button>
         </div>
       }
     </div>
