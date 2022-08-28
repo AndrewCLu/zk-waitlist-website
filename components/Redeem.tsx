@@ -108,21 +108,12 @@ export default function Redeem(props: RedeemProps) {
     }
   }
 
-  const resetDisplayRedeemable = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const resetRedeemDisplayState = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setSecret('');
-    setRedeemable('');
     setRedeemableIndex(undefined);
-    setDisplayRedeemable(false);
-  }
-
-  const resetSuccessfulRedemption = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    setSecret('');
-    setRedeemable('');
-    setRedeemableIndex(undefined);
-    setDisplayRedeemable(false);
-    setSuccessfulRedemption(false);
+    setErrorMessage('');
+    setRedeemDisplayState(RedeemDisplayStates.ENTER_SECRET);
   }
 
   const getRedeemDisplayComponent = () => {
@@ -142,19 +133,43 @@ export default function Redeem(props: RedeemProps) {
             </form>
           </div>
         )
+      case RedeemDisplayStates.REDEEMABLE:
+        return (
+          <div>
+            Your secret can redeem the waitlist spot with commitment:
+            <br/>
+            {props.commitments[redeemableIndex!]}
+            <br/>
+            <button onClick={submitRedemption}>Redeem my spot</button>
+            <button onClick={resetRedeemDisplayState}>Cancel</button>
+          </div>
+        )
       case RedeemDisplayStates.NOT_REDEEMABLE:
         return (
           <div>
             Unable to redeem any waitlist spot with the secret you provided. Try another?
             <br/>
-            <form onSubmit={checkRedeemable}>
-              <label>
-                Secret:
-                <input type="number" value={secret} onChange={updateSecret} /> 
-              </label>
-              <br/>
-              <input type="submit" value="Submit" />
-            </form>
+            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
+          </div>
+        )
+      case RedeemDisplayStates.SUCCESS:
+        return (
+          <div>
+            Successfully redeemed the waitlist spot corresponding to commitment: 
+            <br/>
+            {props.commitments[redeemableIndex!]}
+            <br/>
+            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
+          </div>
+        )
+      case RedeemDisplayStates.FAILURE:
+        return (
+          <div>
+            Failed to redeem your waitlist spot. 
+            <br/>
+            Error message: {errorMessage}
+            <br/>
+            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
           </div>
         )
     }
@@ -162,31 +177,7 @@ export default function Redeem(props: RedeemProps) {
 
   return (
     <div>
-      {
-        successfulRedemption 
-        ? 
-        <div>
-          Successfully redeemed the waitlist spot corresponding to commitment: {redeemable}
-          <button onClick={resetSuccessfulRedemption}>Redeem another spot</button>
-        </div>
-        :
-        <div>
-        { 
-          displayRedeemable
-          ? 
-          <div>
-            <div>
-              Your secret can redeem the waitlist spot with commitment:
-              {redeemable}
-              Do you wish to redeem?
-            </div>
-            <button onClick={submitRedemption}>Redeem my spot</button>
-            <button onClick={resetDisplayRedeemable}>Cancel</button>
-          </div>
-          
-        }
-        </div>
-      }
+      {getRedeemDisplayComponent()}
     </div>
   )
 }
