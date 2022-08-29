@@ -40,6 +40,7 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
       There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
       <br/>
       {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
+      Merkle root: {props.waitlistContractState.merkleRoot}
     </div>
   )
 }
@@ -74,7 +75,8 @@ export default function Waitlist (props: WaitlistProps) {
       commitments.push(c.toString());
     }
     const isLocked: boolean = await waitlist.isLocked();
-    const merkleRoot: string = await waitlist.merkleRoot();
+    const merkleRootHex: string = await waitlist.merkleRoot();
+    const merkleRoot = merkleRootHex.toString();
     const newState: WaitlistContractStateType = {
       commitments,
       isLocked,

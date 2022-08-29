@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
-const path = require('path');
 const fs = require('fs');
 
 // Generates a locker proof and returns the proof and publicSignals as Solidity calldata
@@ -10,13 +9,17 @@ const generateLockerProof = async (commitments: string[]): Promise<{proof: any, 
   try {
     const { proof: rawProof, publicSignals: rawPublicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
-      path.join('circuits/locker/', 'locker.wasm'), 
-      path.join('circuits/locker/', 'locker_final.zkey')
+      'circuits/locker/locker.wasm', 
+      'circuits/locker/locker_final.zkey'
     );
+    const verificationKey = JSON.parse(fs.readFileSync('circuits/locker/locker_verification_key.json'));
+    const verified = await snarkjs.plonk.verify(verificationKey, rawPublicSignals, rawProof);
+    if (!verified) {
+      throw Error('Unable to verify proof');
+    }
     const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
-    const proof = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
-    const publicSignals = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
-
+    const proof: string = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
+    const publicSignals: string[] = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
     return { proof, publicSignals };
   } catch (e) {
     return Error('Failed to generate proof');
