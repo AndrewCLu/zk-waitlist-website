@@ -7,3 +7,4 @@
 - Display claimed nullifiers (change contract to also hold list of nullifiers)
 - Get error messages from snarkjs library - convert e to error type
 - Separate solidity calldata conversion into helper
+- Display commitments/merkle roots as hex

@@ -78,16 +78,17 @@ export default function Waitlist (props: WaitlistProps) {
     if (!waitlist) { return; }
 
     try {
-      const usedWaitlistSpots: number = await waitlist.getNumCommitments();
-      const maxWaitlistSpots: number = await waitlist.maxWaitlistSpots();
+      const usedWaitlistSpots: ethers.BigNumber = await waitlist.getNumCommitments();
+      const maxWaitlistSpotsBigNumber: ethers.BigNumber = await waitlist.maxWaitlistSpots();
+      const maxWaitlistSpots: number = maxWaitlistSpotsBigNumber.toNumber();
       const commitments: string[] = []
-      for (let i=0; i<usedWaitlistSpots; i++) {
+      for (let i=0; i<usedWaitlistSpots.toNumber(); i++) {
         const c = await waitlist.commitments(i);
         commitments.push(c.toString());
       }
       const isLocked: boolean = await waitlist.isLocked();
-      const merkleRootHex: string = await waitlist.merkleRoot();
-      const merkleRoot = merkleRootHex.toString();
+      const merkleRootBigNumber: ethers.BigNumber = await waitlist.merkleRoot();
+      const merkleRoot: string = merkleRootBigNumber.toString();
       const newState: WaitlistContractStateType = {
         commitments,
         isLocked,
@@ -102,6 +103,7 @@ export default function Waitlist (props: WaitlistProps) {
   }
 
   const getWaitlistDisplayComponent = () => {
+    console.log(waitlistContract, waitlistContractState)
     if (!waitlistContractState || !waitlistContract) {
       return null;
     } else if (waitlistContractState.isLocked) {
