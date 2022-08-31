@@ -1,11 +1,13 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
+import { getErrorMessage, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
 enum RedeemDisplayStates {
   ENTER_SECRET,
+  CHECKING_SECRET,
   REDEEMABLE,
   NOT_REDEEMABLE,
+  REDEEMING,
   SUCCESS,
   FAILURE
 }
@@ -21,23 +23,26 @@ export default function Redeem(props: RedeemProps) {
   const [redeemableIndex, setRedeemableIndex] = useState<number>();
   const [errorMessage, setErrorMessage] = useState('');
 
-  const updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSecret(e.currentTarget.value);
+  const updateSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSecret(event.currentTarget.value);
   }
 
   // Checks to see if provided secret can redeem any of the commitments
-  const checkRedeemable = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const checkRedeemable = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (secret.length === 0) { 
-      alert('Secret cannot be empty!');
+      setErrorMessage('Secret cannot be empty!');
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
     for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
-        alert('All commitments must be non-empty and alphanumeric!');
-        return; 
+        setErrorMessage('All commitments must be non-empty and alphanumeric!');
+        setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+        return;
       }
     }
+    setRedeemDisplayState(RedeemDisplayStates.CHECKING_SECRET);
     const url = '/api/commitment?secret='+secret;
     const res = await fetch(url);
     const json = await res.json();
@@ -54,60 +59,68 @@ export default function Redeem(props: RedeemProps) {
       });
       if (!redeemable) {
         setRedeemDisplayState(RedeemDisplayStates.NOT_REDEEMABLE);
-        return;
       }
     } else {
-      alert('Unable to check if your secret is redeemable.');
+      let errorMessage = 'Unable to check if your secret is redeemable';
       if (res.status === 400) {
-        console.log(json.error);
+        errorMessage += ': ' + json.error;
       }
+      setErrorMessage(errorMessage);
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
     }
   }
 
   // Generates a proof to redeem the spot on the waitlist 
   // corresponding to the provided secret and submits the proof
-  const submitRedemption = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+  const submitRedemption = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
     if (secret.length === 0) { 
-      alert('Secret cannot be empty!');
+      setErrorMessage('Secret cannot be empty!');
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
     for (let i of props.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
-        alert('All commitments must be non-empty and alphanumeric!');
-        return; 
+        setErrorMessage('All commitments must be non-empty and alphanumeric!');
+        setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+        return;
       }
     }
     if (typeof redeemableIndex !== 'number' || !Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= props.commitments.length) {
-      alert('No commitment is redeemable!');
-      return;
+      setErrorMessage('No commitment is redeemable!');
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+      return; 
     }
-    const commitmentString = props.commitments.join(',')
+    setRedeemDisplayState(RedeemDisplayStates.REDEEMING);
+    const commitmentString = props.commitments.join(',');
     const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString();
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
-      const { proof, publicSignals } = json;
       try {
-        await props.waitlistContract.redeem(proof, publicSignals);
+        const { proof, publicSignals } = json;
+        const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
+        const redeemTx = await props.waitlistContract.redeem(proof, publicSignalsCalldata);
+        await redeemTx.wait();
         setRedeemDisplayState(RedeemDisplayStates.SUCCESS);
         return;
-      } catch (e) {
-        setErrorMessage('Failed to submit redemption transaction!');
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error));
         setRedeemDisplayState(RedeemDisplayStates.FAILURE);
         return;
       }
     } else {
-      setErrorMessage('Unable to generate proof to redeem your spot!');
-      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+      let errorMessage = 'Unable to generate proof to redeem your spot';
       if (res.status === 400) {
-        console.log(json.error);
+        errorMessage += ': ' + json.error;
       }
+      setErrorMessage(errorMessage);
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
     }
   }
 
-  const resetRedeemDisplayState = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+  const resetRedeemDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
     setSecret('');
     setRedeemableIndex(undefined);
     setErrorMessage('');
@@ -131,6 +144,12 @@ export default function Redeem(props: RedeemProps) {
             </form>
           </div>
         )
+      case RedeemDisplayStates.CHECKING_SECRET:
+        return (
+          <div>
+            Checking to see if your secret can be redeemed. This will take a few seconds...
+          </div>
+        )
       case RedeemDisplayStates.REDEEMABLE:
         return (
           <div>
@@ -145,9 +164,9 @@ export default function Redeem(props: RedeemProps) {
       case RedeemDisplayStates.NOT_REDEEMABLE:
         return (
           <div>
-            Unable to redeem any waitlist spot with the secret you provided. Try another?
+            The secret you provided does not correspond to any waitlist spot.
             <br/>
-            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
+            <button onClick={resetRedeemDisplayState}>Try again</button>
           </div>
         )
       case RedeemDisplayStates.SUCCESS:
@@ -157,17 +176,21 @@ export default function Redeem(props: RedeemProps) {
             <br/>
             {props.commitments[redeemableIndex!]}
             <br/>
-            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
+            <button onClick={resetRedeemDisplayState}>Ok</button>
+          </div>
+        )
+      case RedeemDisplayStates.REDEEMING:
+        return (
+          <div>
+            Redeeming your waitlist spot. This may take a while...
           </div>
         )
       case RedeemDisplayStates.FAILURE:
         return (
           <div>
-            Failed to redeem your waitlist spot. 
+            Failed to redeem your waitlist spot: {errorMessage}
             <br/>
-            Error message: {errorMessage}
-            <br/>
-            <button onClick={resetRedeemDisplayState}>Back to Redemptions Page</button>
+            <button onClick={resetRedeemDisplayState}>Go Back</button>
           </div>
         )
     }
