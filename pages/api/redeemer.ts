@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
+const fs = require('fs');
 
 const generateMerkleTree = async (inputs: string[]): Promise<string[] | Error> => {
   const proofInput = {'inputs': inputs}
@@ -60,9 +61,14 @@ const generateRedeemerProof = async (
       'circuits/redeemer/redeemer.wasm', 
       'circuits/redeemer/redeemer_final.zkey'
     );
+    const verificationKey = JSON.parse(fs.readFileSync('circuits/redeemer/redeemer_verification_key.json'));
+    const verified = await snarkjs.plonk.verify(verificationKey, rawPublicSignals, rawProof);
+    if (!verified) {
+      throw Error('Unable to verify proof');
+    }
     const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
-    const proof = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
-    const publicSignals = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
+    const proof: string = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
+    const publicSignals: string[] = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
     return { proof, publicSignals };
   } catch (e) {
     return Error('Failed to generate proof');
