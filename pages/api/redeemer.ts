@@ -1,15 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
 const snarkjs = require('snarkjs');
-const path = require('path');
 
 const generateMerkleTree = async (inputs: string[]): Promise<string[] | Error> => {
   const proofInput = {'inputs': inputs}
   try {
     const { publicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
-      path.join('circuits/merkle_tree/', 'merkle_tree.wasm'), 
-      path.join('circuits/merkle_tree/', 'merkle_tree_final.zkey')
+      'circuits/merkle_tree/merkle_tree.wasm', 
+      'circuits/merkle_tree/merkle_tree_final.zkey'
     );
     return publicSignals as string[];
   } catch (e) {
@@ -58,8 +57,8 @@ const generateRedeemerProof = async (
   try {
     const { proof: rawProof, publicSignals: rawPublicSignals } = await snarkjs.plonk.fullProve(
       proofInput, 
-      path.join('circuits/redeemer/', 'redeemer.wasm'), 
-      path.join('circuits/redeemer/', 'redeemer_final.zkey')
+      'circuits/redeemer/redeemer.wasm', 
+      'circuits/redeemer/redeemer_final.zkey'
     );
     const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
     const proof = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
