@@ -9,7 +9,6 @@ import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
 
 export default function IndexPage() {
   const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>(MetamaskConnectionStates.UNDEFINED);
-  const [provider, setProvider] = useState<ethers.providers.Provider>();
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
 
   // Checks the current state of metamask connection
@@ -19,7 +18,6 @@ export default function IndexPage() {
 
   // Refresh the page if user's metamask connection changes
   useEffect(() => {
-    console.log("Setting event handlers...")
     const { ethereum } = window as any
     if (!ethereum) { return; }
     // Set up event listeners
@@ -27,7 +25,6 @@ export default function IndexPage() {
     ethereum.on("chainChanged", reloadPage)
     // Clean up the event listeners
     return () => {
-      console.log("Closing event handlers...")
       ethereum.removeListener('accountsChanged', reloadPage);
       ethereum.removeListener('chainChanged', reloadPage);
     }
@@ -69,7 +66,6 @@ export default function IndexPage() {
       return;
     }
 
-    setProvider(provider);
     setSigner(signer);
     setMetamaskState(MetamaskConnectionStates.CONNECTED);
   }
