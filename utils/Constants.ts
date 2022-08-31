@@ -6,6 +6,10 @@ export enum MetamaskConnectionStates {
   WRONG_NETWORK,
   CONNECTED
 }
+export const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message
+  return "Unknown error"
+}
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
 export const WAITLIST_CONTRACT_ADDRESS = "0x58B1DCcdb20562537dFfcc83694D1D2524A82e0a";
 export const WAITLIST_CONTRACT_ABI = [

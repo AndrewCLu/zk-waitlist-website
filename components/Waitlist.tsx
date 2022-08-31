@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import { WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/Constants';
+import { getErrorMessage, WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/Constants';
 import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
@@ -14,17 +14,25 @@ type WaitlistContractStateType = {
 
 type DisplayWaitlistContractStateProps = {
   waitlistContractState?: WaitlistContractStateType,
+  waitlistContractStateLoading: boolean,
   updateWaitlistContractState: () => void
 }
 
 function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) {
   const updateButton = <button onClick={props.updateWaitlistContractState}>Update Waitlist State</button>;
+  if (props.waitlistContractStateLoading) {
+    return (
+      <div>
+        Loading waitlist state...
+      </div>
+    )
+  }
   if (!props.waitlistContractState) {
     return (
       <div>
         {updateButton}
         <br/>
-        Loading waitlist state...
+        Could not fetch waitlist state.
       </div>
     )
   }
@@ -53,6 +61,7 @@ export default function Waitlist (props: WaitlistProps) {
   const { signer } = props;
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
+  const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
 
   useEffect(() => {
     updateWaitlistContractState();
@@ -64,35 +73,37 @@ export default function Waitlist (props: WaitlistProps) {
   }, [signer])
 
   const updateWaitlistContractState = async () => {
+    setWaitlistContractStateLoading(true);
     const waitlist = waitlistContract;
     if (!waitlist) { return; }
 
-    const usedWaitlistSpots: number = await waitlist.getNumCommitments();
-    const maxWaitlistSpots: number = await waitlist.maxWaitlistSpots();
-    const commitments: string[] = []
-    for (let i=0; i<usedWaitlistSpots; i++) {
-      const c = await waitlist.commitments(i);
-      commitments.push(c.toString());
+    try {
+      const usedWaitlistSpots: number = await waitlist.getNumCommitments();
+      const maxWaitlistSpots: number = await waitlist.maxWaitlistSpots();
+      const commitments: string[] = []
+      for (let i=0; i<usedWaitlistSpots; i++) {
+        const c = await waitlist.commitments(i);
+        commitments.push(c.toString());
+      }
+      const isLocked: boolean = await waitlist.isLocked();
+      const merkleRootHex: string = await waitlist.merkleRoot();
+      const merkleRoot = merkleRootHex.toString();
+      const newState: WaitlistContractStateType = {
+        commitments,
+        isLocked,
+        maxWaitlistSpots,
+        merkleRoot
+      }
+      setWaitlistContractState(newState);
+    } catch (error) {
+      console.log("Failed to load waitlist state: ", getErrorMessage(error));
     }
-    const isLocked: boolean = await waitlist.isLocked();
-    const merkleRootHex: string = await waitlist.merkleRoot();
-    const merkleRoot = merkleRootHex.toString();
-    const newState: WaitlistContractStateType = {
-      commitments,
-      isLocked,
-      maxWaitlistSpots,
-      merkleRoot
-    }
-    setWaitlistContractState(newState);
+    setWaitlistContractStateLoading(false);
   }
 
   const getWaitlistDisplayComponent = () => {
     if (!waitlistContractState || !waitlistContract) {
-      return (
-        <div>
-          Loading waitlist state...
-        </div>
-      )
+      return null;
     } else if (waitlistContractState.isLocked) {
       return (
         <div>
@@ -116,7 +127,7 @@ export default function Waitlist (props: WaitlistProps) {
 
   return (
     <div>
-      {displayWaitlistContractState({ waitlistContractState, updateWaitlistContractState })}
+      {displayWaitlistContractState({ waitlistContractState, waitlistContractStateLoading, updateWaitlistContractState })}
       <br/>
       {getWaitlistDisplayComponent()}
     </div>
