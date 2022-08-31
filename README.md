@@ -7,4 +7,6 @@
 - Display claimed nullifiers (change contract to also hold list of nullifiers)
 - Get error messages from snarkjs library - convert e to error type
 - Separate solidity calldata conversion into helper
-- Display commitments/merkle roots as hex
+- Display commitments/nullifiers/merkle roots as hex
+- Create separate ui states for generating proof vs sending tx in lock and redeem
+- Do not display a commit/lock/redeem state while loading waitlist contract - refactor display state to waitlist level enum
