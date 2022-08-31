@@ -77,6 +77,13 @@ export default function Waitlist (props: WaitlistProps) {
     const isLocked: boolean = await waitlist.isLocked();
     const merkleRootHex: string = await waitlist.merkleRoot();
     const merkleRoot = merkleRootHex.toString();
+    console.log(waitlistContract.interface)
+    console.log(maxWaitlistSpots)
+    console.log(usedWaitlistSpots)
+    console.log(isLocked)
+    console.log(await waitlist.lockerVerifier())
+    console.log(await waitlist.redeemerVerifier())
+    console.log(commitments)
     const newState: WaitlistContractStateType = {
       commitments,
       isLocked,

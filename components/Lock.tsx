@@ -4,6 +4,7 @@ import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
 enum LockDisplayStates {
   LOCKABLE,
+  LOCKING,
   SUCCESS,
   FAILURE
 }
@@ -27,16 +28,17 @@ export default function Lock (props: LockProps) {
         return; 
       }
     }
+    setLockDisplayState(LockDisplayStates.LOCKING);
     const commitmentString = props.commitments.join(',')
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
-      const { proof, publicSignals } = json;
       try {
+        const { proof, publicSignals } = json;
         const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
         const tx = await props.waitlistContract.lock(proof, publicSignalsCalldata);
-        const receipt = await tx.wait();
+        await tx.wait();
         setRoot(publicSignals[0]);
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
@@ -66,6 +68,12 @@ export default function Lock (props: LockProps) {
         return (
           <div>
             <button onClick={lockWaitlist}>Lock the waitlist</button>
+          </div>
+        )
+      case LockDisplayStates.LOCKING:
+        return (
+          <div>
+            Locking the waitlist. This may take a while...
           </div>
         )
       case LockDisplayStates.SUCCESS:
