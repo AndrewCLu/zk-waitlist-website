@@ -7,7 +7,7 @@ export enum MetamaskConnectionStates {
   CONNECTED
 }
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
-export const WAITLIST_CONTRACT_ADDRESS = "0x92324bE0E3e89CC5CeD23a26644c63218093cD8e";
+export const WAITLIST_CONTRACT_ADDRESS = "0x58B1DCcdb20562537dFfcc83694D1D2524A82e0a";
 export const WAITLIST_CONTRACT_ABI = [
   {
     "inputs": [
@@ -108,6 +108,32 @@ export const WAITLIST_CONTRACT_ABI = [
       }
     ],
     "name": "commitments",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNumCommitments",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNumNullifiers",
     "outputs": [
       {
         "internalType": "uint256",
