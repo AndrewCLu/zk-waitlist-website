@@ -6,9 +6,10 @@ import Lock from './Lock';
 import Redeem from './Redeem';
 
 type WaitlistContractStateType = {
-  commitments: string[],
-  isLocked: boolean,
   maxWaitlistSpots: number,
+  commitments: string[],
+  nullifiers: string[],
+  isLocked: boolean,
   merkleRoot: string
 }
 
@@ -45,6 +46,11 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
       {props.waitlistContractState.commitments.map((c, i) => 
         <div key={i}>{i + '. ' + c}</div>
       )}
+      The following nullifiers have been used: 
+      <br/>
+      {props.waitlistContractState.nullifiers.map((n, i) => 
+        <div key={i}>{i + '. ' + n}</div>
+      )}
       There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
       <br/>
       {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
@@ -78,21 +84,28 @@ export default function Waitlist (props: WaitlistProps) {
     if (!waitlist) { return; }
 
     try {
-      const usedWaitlistSpots: ethers.BigNumber = await waitlist.getNumCommitments();
       const maxWaitlistSpotsBigNumber: ethers.BigNumber = await waitlist.maxWaitlistSpots();
       const maxWaitlistSpots: number = maxWaitlistSpotsBigNumber.toNumber();
+      const numCommitments: ethers.BigNumber = await waitlist.getNumCommitments();
       const commitments: string[] = []
-      for (let i=0; i<usedWaitlistSpots.toNumber(); i++) {
+      for (let i=0; i<numCommitments.toNumber(); i++) {
         const c = await waitlist.commitments(i);
         commitments.push(c.toString());
+      }
+      const numNullifiers: ethers.BigNumber = await waitlist.getNumNullifiers();
+      const nullifiers: string[] = []
+      for (let i=0; i<numNullifiers.toNumber(); i++) {
+        const n = await waitlist.nullifiers(i);
+        nullifiers.push(n.toString());
       }
       const isLocked: boolean = await waitlist.isLocked();
       const merkleRootBigNumber: ethers.BigNumber = await waitlist.merkleRoot();
       const merkleRoot: string = merkleRootBigNumber.toString();
       const newState: WaitlistContractStateType = {
-        commitments,
-        isLocked,
         maxWaitlistSpots,
+        commitments,
+        nullifiers,
+        isLocked,
         merkleRoot
       }
       setWaitlistContractState(newState);
@@ -103,7 +116,6 @@ export default function Waitlist (props: WaitlistProps) {
   }
 
   const getWaitlistDisplayComponent = () => {
-    console.log(waitlistContract, waitlistContractState)
     if (!waitlistContractState || !waitlistContract) {
       return null;
     } else if (waitlistContractState.isLocked) {
