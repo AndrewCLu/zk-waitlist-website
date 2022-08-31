@@ -7,14 +7,14 @@ export enum MetamaskConnectionStates {
   CONNECTED
 }
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
-export const WAITLIST_CONTRACT_ADDRESS = "0xE795C70D979f95fcD98358e4FC13635FEF2843B4";
+export const WAITLIST_CONTRACT_ADDRESS = "0x92324bE0E3e89CC5CeD23a26644c63218093cD8e";
 export const WAITLIST_CONTRACT_ABI = [
   {
     "inputs": [
       {
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "_maxWaitlistSpots",
-        "type": "uint8"
+        "type": "uint256"
       },
       {
         "internalType": "address",
@@ -40,10 +40,10 @@ export const WAITLIST_CONTRACT_ABI = [
         "type": "address"
       },
       {
-        "indexed": false,
-        "internalType": "uint8",
+        "indexed": true,
+        "internalType": "uint256",
         "name": "waitlistNumber",
-        "type": "uint8"
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -140,13 +140,7 @@ export const WAITLIST_CONTRACT_ABI = [
       }
     ],
     "name": "join",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -164,13 +158,7 @@ export const WAITLIST_CONTRACT_ABI = [
       }
     ],
     "name": "lock",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -192,9 +180,9 @@ export const WAITLIST_CONTRACT_ABI = [
     "name": "maxWaitlistSpots",
     "outputs": [
       {
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint8"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -203,6 +191,25 @@ export const WAITLIST_CONTRACT_ABI = [
   {
     "inputs": [],
     "name": "merkleRoot",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "nullifiers",
     "outputs": [
       {
         "internalType": "uint256",
@@ -227,13 +234,7 @@ export const WAITLIST_CONTRACT_ABI = [
       }
     ],
     "name": "redeem",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -245,19 +246,6 @@ export const WAITLIST_CONTRACT_ABI = [
         "internalType": "contract IVerifier",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "usedWaitlistSpots",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",
