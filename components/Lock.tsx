@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
+import { getErrorMessage, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
 
 enum LockDisplayStates {
   LOCKABLE,
@@ -16,7 +16,7 @@ type LockProps = {
 
 export default function Lock (props: LockProps) {
   const [lockDisplayState, setLockDisplayState] = useState<LockDisplayStates>(LockDisplayStates.LOCKABLE);
-  const [root, setRoot] = useState();
+  const [root, setRoot] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
@@ -29,7 +29,7 @@ export default function Lock (props: LockProps) {
       }
     }
     setLockDisplayState(LockDisplayStates.LOCKING);
-    const commitmentString = props.commitments.join(',')
+    const commitmentString = props.commitments.join(',');
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
@@ -37,27 +37,29 @@ export default function Lock (props: LockProps) {
       try {
         const { proof, publicSignals } = json;
         const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
-        const tx = await props.waitlistContract.lock(proof, publicSignalsCalldata);
-        await tx.wait();
+        const lockTx = await props.waitlistContract.lock(proof, publicSignalsCalldata);
+        await lockTx.wait();
         setRoot(publicSignals[0]);
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
-      } catch (e) {
-        setErrorMessage('Failed to submit locking transaction!');
+      } catch (error) {
+        setErrorMessage(getErrorMessage(error));
         setLockDisplayState(LockDisplayStates.FAILURE);
         return;
       }
     } else {
-      setErrorMessage('Unable to generate proof to lock waitlist!');
-      setLockDisplayState(LockDisplayStates.FAILURE);
+      let errorMessage = 'Unable to generate proof to lock waitlist';
       if (res.status === 400) {
-        console.log(json.error);
+        errorMessage += ': ' + json.error;
       }
+      setErrorMessage(errorMessage);
+      setLockDisplayState(LockDisplayStates.FAILURE);
     }
   }
 
-  const resetLockDisplayState = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+  const resetLockDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    setRoot('');
     setErrorMessage('');
     setLockDisplayState(LockDisplayStates.LOCKABLE);
   }
@@ -79,21 +81,15 @@ export default function Lock (props: LockProps) {
       case LockDisplayStates.SUCCESS:
         return (
           <div>
-            Successfully locked the waitlist! 
-            {root ? (
-              <div>
-                <br/>
-                Locked with Merkle root: {root}
-              </div>
-            ) : null}
+            Successfully locked the waitlist with Merkle root: 
+            <br/>
+            {root}
           </div>
         )
       case LockDisplayStates.FAILURE:
         return (
           <div>
-            Failed to lock the waitlist.
-            <br/>
-            Error message: {errorMessage}
+            Failed to lock the waitlist: {errorMessage}
             <br/>
             <button onClick={resetLockDisplayState}>Go Back</button>
           </div>
