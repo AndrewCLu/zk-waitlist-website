@@ -34,7 +34,9 @@ export default function Lock (props: LockProps) {
     if (res.status === 200) {
       const { proof, publicSignals } = json;
       try {
-        await props.waitlistContract.lock(proof, publicSignals);
+        const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
+        const tx = await props.waitlistContract.lock(proof, publicSignalsCalldata);
+        const receipt = await tx.wait();
         setRoot(publicSignals[0]);
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
