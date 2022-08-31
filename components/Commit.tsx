@@ -60,8 +60,8 @@ export default function Commit (props: CommitProps) {
     }
     setCommitDisplayState(CommitDisplayStates.SUBMITTING);
     try {
-      const joinResult = await props.waitlistContract.join(commitment);
-      console.log(joinResult);
+      const joinTx = await props.waitlistContract.join(commitment);
+      await joinTx.wait();
       setCommitDisplayState(CommitDisplayStates.SUCCESS);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
