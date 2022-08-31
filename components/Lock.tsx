@@ -15,9 +15,9 @@ type LockProps = {
 }
 
 export default function Lock (props: LockProps) {
-  const [lockdisplayState, setLockDisplayState] = useState<LockDisplayStates>(LockDisplayStates.LOCKABLE);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [lockDisplayState, setLockDisplayState] = useState<LockDisplayStates>(LockDisplayStates.LOCKABLE);
   const [root, setRoot] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
   const lockWaitlist = async () => {
@@ -63,7 +63,7 @@ export default function Lock (props: LockProps) {
   }
 
   const getLockDisplayComponent = () => {
-    switch(lockdisplayState) {
+    switch(lockDisplayState) {
       case LockDisplayStates.LOCKABLE:
         return (
           <div>

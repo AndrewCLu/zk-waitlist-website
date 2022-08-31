@@ -1,90 +1,146 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
+import { getErrorMessage } from '../utils/Constants';
+
+enum CommitDisplayStates {
+  ENTER_SECRET,
+  GENERATING,
+  GENERATED,
+  SUBMITTING,
+  SUCCESS,
+  FAILURE
+}
 
 type CommitProps = {
   waitlistContract: ethers.Contract
 }
 
 export default function Commit (props: CommitProps) {
-  const [displayCommitment, setDisplayCommitment] = useState(false);
+  const [commitDisplayState, setCommitDisplayState] = useState<CommitDisplayStates>(CommitDisplayStates.ENTER_SECRET);
   const [secret, setSecret] = useState<string>('');
   const [commitment, setCommitment] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const updateSecret = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSecret(e.currentTarget.value);
+  const updateSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSecret(event.currentTarget.value);
   }
 
   // Generates a commitment by passing the secret to the api/commitment endpoint
   // Displays the commitment if successful
-  const generateCommitment = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const generateCommitment = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (secret.length === 0) { 
-      alert('Secret cannot be empty!');
+      setErrorMessage('Secret cannot be empty!');
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
       return; 
     }
+    setCommitDisplayState(CommitDisplayStates.GENERATING);
     const url = '/api/commitment?secret='+secret;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
       setCommitment(json.commitment);
-      setDisplayCommitment(true);
-      return;
+      setCommitDisplayState(CommitDisplayStates.GENERATED);
     } else {
-      alert('Unable to generate commitment!');
+      let errorMessage = 'Unable to generate commitment';
       if (res.status === 400) {
-        console.log(json.error);
+        errorMessage += ': ' + json.error;
       }
+      setErrorMessage(errorMessage);
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
     }
   }
 
-  const joinWaitlist = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+  const joinWaitlist = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
     if (commitment.length === 0) {
-      alert('Must provide commitment string!');
+      setErrorMessage('Must provide commitment string!');
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
       return; 
     }
+    setCommitDisplayState(CommitDisplayStates.SUBMITTING);
     try {
       const joinResult = await props.waitlistContract.join(commitment);
       console.log(joinResult);
-    } catch (e) {
-      console.log('Failed to join waitlist');
-      return;
+      setCommitDisplayState(CommitDisplayStates.SUCCESS);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
     }
-    setSecret('');
-    setDisplayCommitment(false);
   }
 
-  const resetDisplayCommitment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
+  const resetCommitDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
     setSecret('');
-    setDisplayCommitment(false);
+    setCommitment('');
+    setErrorMessage('');
+    setCommitDisplayState(CommitDisplayStates.ENTER_SECRET);
+  }
+
+  const getCommitDisplayComponent = () => {
+    switch(commitDisplayState) {
+      case CommitDisplayStates.ENTER_SECRET:
+        return (
+          <div>
+            Choose a secret to join the waitlist:
+            <form onSubmit={generateCommitment}>
+              <label>
+                Secret:
+                <input type="number" value={secret} onChange={updateSecret} /> 
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+        )
+      case CommitDisplayStates.GENERATING:
+        return (
+          <div>
+            Generating a commitment based on the secret you chose. This will take a second...
+          </div>
+        )
+      case CommitDisplayStates.GENERATED:
+        return (
+          <div>
+            <div>
+              Successfully generated a commitment based on your secret:
+              <br/>
+              {commitment}
+            </div>
+            <br/>
+            <button onClick={joinWaitlist}>Join the waitlist</button>
+            <button onClick={resetCommitDisplayState}>Use a different secret</button>
+          </div>
+        )
+      case CommitDisplayStates.SUBMITTING:
+        return (
+          <div>
+            Joining the waitlist using the commitment. This may take a while...
+          </div>
+        )
+      case CommitDisplayStates.SUCCESS:
+        return (
+          <div>
+            Successfully joined the waitlist using commitment:
+            <br/>
+            {commitment}
+            <br/>
+            <button onClick={resetCommitDisplayState}>Ok</button>
+          </div>
+        )
+      case CommitDisplayStates.FAILURE:
+        return (
+          <div>
+            Failed to claim your spot on the waitlist: {errorMessage}
+            <br/>
+            <button onClick={resetCommitDisplayState}>Try again</button>
+          </div>
+        )
+    }
   }
 
   return (
     <div>
-      { 
-        displayCommitment
-        ? 
-        <div>
-          <div>
-            Here is your commitment:
-            {commitment}
-          </div>
-          <button onClick={joinWaitlist}>Join the waitlist</button>
-          <button onClick={resetDisplayCommitment}>Generate new commitment</button>
-        </div>
-        :
-        <div>
-          Choose a secret to join the waitlist:
-          <form onSubmit={generateCommitment}>
-            <label>
-              Secret:
-              <input type="number" value={secret} onChange={updateSecret} /> 
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
-        </div>
-      }
+      {getCommitDisplayComponent()}
     </div>
   )
 }
