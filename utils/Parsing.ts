@@ -1,0 +1,1 @@
+export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
