@@ -46,12 +46,12 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
       The following commitments are claimed in the waitlist: 
       <br/>
       {props.waitlistContractState.commitments.map((c, i) => 
-        <div key={i}>{i + '. ' + getLeadingHexFromBigNumberString(c) + '...'}</div>
+        <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(c) + '...'}</div>
       )}
       The following nullifiers have been used: 
       <br/>
       {props.waitlistContractState.nullifiers.map((n, i) => 
-        <div key={i}>{i + '. ' + getLeadingHexFromBigNumberString(n) + '...'}</div>
+        <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(n) + '...'}</div>
       )}
       There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
       <br/>
