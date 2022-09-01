@@ -2,6 +2,7 @@
 
 import { getErrorMessage } from "./Errors";
 const snarkjs = require('snarkjs');
+const path = require('path');
 const fs = require('fs');
 
 export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
@@ -15,8 +16,8 @@ export const generateProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input, 
-      'circuits/' + {circuit} + '/' + {circuit} + '.wasm', 
-      'circuits/' + {circuit} + '/' + {circuit} + '_final.zkey'
+      path.join('circuits', circuit, circuit + '.wasm'),
+      path.join('circuits', circuit, circuit + '_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
@@ -32,8 +33,8 @@ export const verifyProof = async (
   circuit: string
 ): Promise<boolean> => {
   try {
-    const verificationKeyFile = 'circuits/' + {circuit} + '/' + {circuit} + '_verification_key.json';
-    const verificationKey = JSON.parse(fs.readFileSync(verificationKeyFile));
+    const verificationKeyPath = path.join('circuits', circuit, circuit + '_verification_key.json');
+    const verificationKey = JSON.parse(fs.readFileSync(verificationKeyPath));
     const verified = await snarkjs.plonk.verify(verificationKey, publicSignals, proof);
     return verified;
   } catch (error) {
