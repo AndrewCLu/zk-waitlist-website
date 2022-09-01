@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
 // Takes a string s which represents a BigNumber and returns its hex string equivalent
 // Returns the original string if conversion fails

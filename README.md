@@ -5,7 +5,6 @@
 - Get error messages from snarkjs library - convert e to error type
 - Separate solidity calldata conversion into helper
 - Make errors and zk util
-- Create module for displaying commitments/nullifiers/merkle roots as hex, truncating hex strings, etc
 - Create separate ui states for generating proof vs sending tx in lock and redeem
 - Display waitlist spots claimed/redeemed by a given user
 - Remove loading state from waitlist display/make a more discreet animation
