@@ -5,6 +5,7 @@ import { getErrorMessage } from '../utils/Errors';
 import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
+import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 
 type WaitlistContractStateType = {
   maxWaitlistSpots: number,
@@ -45,17 +46,17 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
       The following commitments are claimed in the waitlist: 
       <br/>
       {props.waitlistContractState.commitments.map((c, i) => 
-        <div key={i}>{i + '. ' + c}</div>
+        <div key={i}>{i + '. ' + getLeadingHexFromBigNumberString(c) + '...'}</div>
       )}
       The following nullifiers have been used: 
       <br/>
       {props.waitlistContractState.nullifiers.map((n, i) => 
-        <div key={i}>{i + '. ' + n}</div>
+        <div key={i}>{i + '. ' + getLeadingHexFromBigNumberString(n) + '...'}</div>
       )}
       There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
       <br/>
       {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
-      Merkle root: {props.waitlistContractState.merkleRoot}
+      Merkle root: {getHexFromBigNumberString(props.waitlistContractState.merkleRoot)}
     </div>
   )
 }

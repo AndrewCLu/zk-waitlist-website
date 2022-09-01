@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
+import { getHexFromBigNumberString, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
 
 enum RedeemDisplayStates {
@@ -156,7 +156,7 @@ export default function Redeem(props: RedeemProps) {
           <div>
             Your secret can redeem the waitlist spot with commitment:
             <br/>
-            {props.commitments[redeemableIndex!]}
+            {getHexFromBigNumberString(props.commitments[redeemableIndex!])}
             <br/>
             <button onClick={submitRedemption}>Redeem my spot</button>
             <button onClick={resetRedeemDisplayState}>Cancel</button>
@@ -175,7 +175,7 @@ export default function Redeem(props: RedeemProps) {
           <div>
             Successfully redeemed the waitlist spot corresponding to commitment: 
             <br/>
-            {props.commitments[redeemableIndex!]}
+            {getHexFromBigNumberString(props.commitments[redeemableIndex!])}
             <br/>
             <button onClick={resetRedeemDisplayState}>Ok</button>
           </div>

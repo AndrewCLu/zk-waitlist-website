@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
+import { getHexFromBigNumberString } from '../utils/Parsing';
 
 enum CommitDisplayStates {
   ENTER_SECRET,
@@ -104,7 +105,7 @@ export default function Commit (props: CommitProps) {
             <div>
               Successfully generated a commitment based on your secret:
               <br/>
-              {commitment}
+              {getHexFromBigNumberString(commitment)}
             </div>
             <br/>
             <button onClick={joinWaitlist}>Join the waitlist</button>

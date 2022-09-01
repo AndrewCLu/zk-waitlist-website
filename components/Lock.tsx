@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
+import { getHexFromBigNumberString, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
 
 enum LockDisplayStates {
@@ -84,7 +84,7 @@ export default function Lock (props: LockProps) {
           <div>
             Successfully locked the waitlist with Merkle root: 
             <br/>
-            {root}
+            {getHexFromBigNumberString(root)}
           </div>
         )
       case LockDisplayStates.FAILURE:
