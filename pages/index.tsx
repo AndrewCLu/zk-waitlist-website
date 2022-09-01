@@ -10,6 +10,7 @@ import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
 export default function IndexPage() {
   const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>(MetamaskConnectionStates.UNDEFINED);
   const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner>();
+  const [provider, setProvider] = useState<ethers.providers.Provider>();
 
   // Checks the current state of metamask connection
   useEffect(() => {
@@ -67,6 +68,7 @@ export default function IndexPage() {
     }
 
     setSigner(signer);
+    setProvider(provider);
     setMetamaskState(MetamaskConnectionStates.CONNECTED);
   }
 
@@ -84,7 +86,7 @@ export default function IndexPage() {
 
       {
         metamaskState === MetamaskConnectionStates.CONNECTED ?
-        <Waitlist signer={signer}/> :
+        <Waitlist signer={signer!} provider={provider!}/> :
         <Metamask metamaskState={metamaskState}/>
       }
     </div>

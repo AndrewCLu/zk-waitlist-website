@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, providers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { getErrorMessage, WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/Constants';
 import Commit from './Commit';
@@ -60,24 +60,59 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
 }
 
 type WaitlistProps = {
-  signer?: ethers.Signer;
+  signer: ethers.Signer;
+  provider: ethers.providers.Provider;
 }
 
 export default function Waitlist (props: WaitlistProps) {
-  const { signer } = props;
+  const { signer, provider } = props;
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
   const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
 
+  // Fetch new waitlist state if the waitlist contract is ever changed
   useEffect(() => {
     updateWaitlistContractState();
   }, [waitlistContract])
 
+  // Connect to the waitlist contract
   useEffect(() => {
     const waitlistContract: ethers.Contract = new ethers.Contract(WAITLIST_CONTRACT_ADDRESS, WAITLIST_CONTRACT_ABI, signer);
     setWaitlistContract(waitlistContract);
   }, [signer])
 
+  // Set listeners to waitlist update events
+  useEffect(() => {
+    const joinFilter = {
+      address: WAITLIST_CONTRACT_ADDRESS,
+      topics: [
+        ethers.utils.id("Join(address,uint256)"),
+      ]
+    };
+    provider.on(joinFilter, () => {
+      updateWaitlistContractState();
+    })
+    const lockFilter = {
+      address: WAITLIST_CONTRACT_ADDRESS,
+      topics: [
+        ethers.utils.id("Lock(address)"),
+      ]
+    };
+    provider.on(lockFilter, () => {
+      updateWaitlistContractState();
+    })
+    const redeemFilter = {
+      address: WAITLIST_CONTRACT_ADDRESS,
+      topics: [
+        ethers.utils.id("Redeem(address,uint256)"),
+      ]
+    };
+    provider.on(redeemFilter, () => {
+      updateWaitlistContractState();
+    })
+  }, [provider])
+
+  // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
     setWaitlistContractStateLoading(true);
     const waitlist = waitlistContract;
