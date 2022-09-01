@@ -1,22 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Parsing';
-const snarkjs = require('snarkjs');
-const fs = require('fs');
+import { generateProof, generateProofWithSolidityCalldata } from '../../utils/ZeroKnowledge';
 
+// Creates a Merkle tree from the given inputs
 const generateMerkleTree = async (inputs: string[]): Promise<string[] | Error> => {
-  const proofInput = {'inputs': inputs}
-  try {
-    const { publicSignals } = await snarkjs.plonk.fullProve(
-      proofInput, 
-      'circuits/merkle_tree/merkle_tree.wasm', 
-      'circuits/merkle_tree/merkle_tree_final.zkey'
-    );
-    return publicSignals as string[];
-  } catch (e) {
-    return Error('Failed to build Merkle tree');
+  const proofInput = {'inputs': inputs};
+  const proofResult = await generateProof(proofInput, 'merkle_tree');
+  if (proofResult instanceof Error) {
+    return proofResult;
   }
+  const { publicSignals } = proofResult;
+  return publicSignals as string[]; 
 }
 
+// Given a Merkle tree and the index of a node, returns a valid Merkle proof for that node
 const generateMerkleProof = (
   merkleTree: string[], 
   index: number
@@ -47,32 +44,6 @@ const generateMerkleProof = (
   }
 
   return { merkle_branch, node_is_left }
-}
-
-const generateRedeemerProof = async (
-  secret: string, 
-  merkle_branch: string[], 
-  node_is_left: string[]
-): Promise<{proof: any, publicSignals: any} | Error> => {
-  const proofInput = {'secret': secret, 'merkle_branch': merkle_branch, 'node_is_left': node_is_left};
-  try {
-    const { proof: rawProof, publicSignals: rawPublicSignals } = await snarkjs.plonk.fullProve(
-      proofInput, 
-      'circuits/redeemer/redeemer.wasm', 
-      'circuits/redeemer/redeemer_final.zkey'
-    );
-    const verificationKey = JSON.parse(fs.readFileSync('circuits/redeemer/redeemer_verification_key.json'));
-    const verified = await snarkjs.plonk.verify(verificationKey, rawPublicSignals, rawProof);
-    if (!verified) {
-      throw Error('Unable to verify proof');
-    }
-    const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(rawProof, rawPublicSignals);
-    const proof: string = solidityCalldata.slice(0, solidityCalldata.indexOf(','));
-    const publicSignals: string[] = JSON.parse(solidityCalldata.slice(solidityCalldata.indexOf(',') + 1));
-    return { proof, publicSignals };
-  } catch (e) {
-    return Error('Failed to generate proof');
-  }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -133,10 +104,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { merkle_branch, node_is_left } = merkleProofResult;
 
   // Generate proof for redemption using the Merkle proof
-  const proofResult = await generateRedeemerProof(secret, merkle_branch, node_is_left);
-  if (proofResult instanceof Error) {
-    return res.status(400).send({ error: proofResult.message });
+  const redeemerProofInput = {'secret': secret, 'merkle_branch': merkle_branch, 'node_is_left': node_is_left};
+  const redeemerProofResult = await generateProofWithSolidityCalldata(redeemerProofInput, 'redeemer');
+  if (redeemerProofResult instanceof Error) {
+    return res.status(400).send({ error: redeemerProofResult.message });
   }
-  const { proof, publicSignals } = proofResult;
-  res.status(200).json({ proof, publicSignals });
+  const { proofCalldata, publicSignalsCalldata } = redeemerProofResult;
+  res.status(200).json({ proof: proofCalldata, publicSignals: publicSignalsCalldata });
 }

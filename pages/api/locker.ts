@@ -16,18 +16,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (typeof commitments !== 'string') {
     return res.status(400).send({ error: 'invalid commitments' });
   }
-  const commitmentArray = commitments.split(',')
+  const commitmentArray = commitments.split(',');
   for (let i of commitmentArray) {
     if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) {
       return res.status(400).send({ error: 'one or more commitments is either empty or nonalphanumeric' });
     }
   }
 
-  const proofInput = {'commitments': commitments};
-  const proofResult = await generateProofWithSolidityCalldata(proofInput, 'locker');
-  if (proofResult instanceof Error) {
-    return res.status(400).send({ error: proofResult.message });
+  // Generate a proof to lock the waitlist
+  const lockerProofInput = {'commitments': commitments};
+  const lockerProofResult = await generateProofWithSolidityCalldata(lockerProofInput, 'locker');
+  if (lockerProofResult instanceof Error) {
+    return res.status(400).send({ error: lockerProofResult.message });
   }
-  const { proofCalldata, publicSignalsCalldata } = proofResult;
+  const { proofCalldata, publicSignalsCalldata } = lockerProofResult;
   res.status(200).json({ proof: proofCalldata, publicSignals: publicSignalsCalldata });
 }
