@@ -11,7 +11,7 @@ export const getErrorMessage = (error: unknown): string => {
   return "Unknown error"
 }
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
-export const WAITLIST_CONTRACT_ADDRESS = "0x58B1DCcdb20562537dFfcc83694D1D2524A82e0a";
+export const WAITLIST_CONTRACT_ADDRESS = "0xEd5Ed9FeCeF6E13235a5F468f6D1E9543758b104";
 export const WAITLIST_CONTRACT_ABI = [
   {
     "inputs": [
@@ -46,12 +46,6 @@ export const WAITLIST_CONTRACT_ABI = [
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "waitlistNumber",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "commitment",
         "type": "uint256"
       }
@@ -63,22 +57,10 @@ export const WAITLIST_CONTRACT_ABI = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "locker",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "numWaitlistedUsers",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "merkleRoot",
-        "type": "uint256"
       }
     ],
     "name": "Lock",
@@ -94,7 +76,7 @@ export const WAITLIST_CONTRACT_ABI = [
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "nullifier",
         "type": "uint256"
