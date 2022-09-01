@@ -4,11 +4,13 @@ import { getErrorMessage } from "./Errors";
 const snarkjs = require('snarkjs');
 const fs = require('fs');
 
+export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
+
 // Runs the prover specified by circuit with given input
 // Returns the resulting proof and publicSignals, or an error if encountered
 export const generateProof = async (
   input: any, 
-  circuit: string
+  circuit: Circuit
 ): Promise<{proof: any, publicSignals: any} | Error> => {
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
@@ -60,7 +62,7 @@ export const getProofSolidityCalldata = async (
 // Returns the calldata or an error if encountered
 export const generateProofWithSolidityCalldata = async (
   input: any, 
-  circuit: string
+  circuit: Circuit
 ): Promise<{proofCalldata: any, publicSignalsCalldata: any} | Error> => {
   const generateProofResult = await generateProof(input, circuit);
   if (generateProofResult instanceof Error) {
