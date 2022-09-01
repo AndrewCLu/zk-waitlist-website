@@ -1,6 +1,6 @@
-import { getErrorMessage } from "./Errors";
-
 // Utils to help with zero knowledge proofs
+
+import { getErrorMessage } from "./Errors";
 const snarkjs = require('snarkjs');
 const fs = require('fs');
 
@@ -54,4 +54,27 @@ export const getProofSolidityCalldata = async (
   } catch (error) {
     return Error(getErrorMessage(error));
   }
+}
+
+// Generates a proof given an input, verifies the proof, then returns the proof as solidity calldata
+// Returns the calldata or an error if encountered
+export const generateProofWithSolidityCalldata = async (
+  input: any, 
+  circuit: string
+): Promise<{proofCalldata: any, publicSignalsCalldata: any} | Error> => {
+  const generateProofResult = await generateProof(input, circuit);
+  if (generateProofResult instanceof Error) {
+    return generateProofResult;
+  }
+  const { proof, publicSignals } = generateProofResult;
+  const verified = await verifyProof(proof, publicSignals, circuit);
+  if (!verified) {
+    return Error('Failed to verify proof.');
+  }
+  const getCalldataResult = await getProofSolidityCalldata(proof, publicSignals);
+  if (getCalldataResult instanceof Error) {
+    return getCalldataResult;
+  }
+  const { proofCalldata, publicSignalsCalldata } = getCalldataResult;
+  return { proofCalldata, publicSignalsCalldata };
 }
