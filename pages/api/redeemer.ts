@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Constants';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Parsing';
 const snarkjs = require('snarkjs');
 const fs = require('fs');
 

@@ -1,11 +1,18 @@
-import { MetamaskConnectionStates } from '../utils/Constants';
 import { ethers } from 'ethers';
 import React from 'react';
+
+export enum MetamaskConnectionStates {
+  UNDEFINED,
+  NOT_INSTALLED,
+  NOT_CONNECTED,
+  WRONG_NETWORK,
+  CONNECTED
+}
 
 type MetamaskProps = {
   metamaskState: MetamaskConnectionStates
 }
-export default function Metamask(props: MetamaskProps) {
+export function Metamask(props: MetamaskProps) {
   const { metamaskState } = props;
 
   // Tries to authorize metamask

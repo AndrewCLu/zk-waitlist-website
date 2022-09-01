@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { getErrorMessage, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Constants';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
+import { getErrorMessage } from '../utils/Errors';
 
 enum RedeemDisplayStates {
   ENTER_SECRET,

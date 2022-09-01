@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { getErrorMessage } from '../utils/Constants';
+import { getErrorMessage } from '../utils/Errors';
 
 enum CommitDisplayStates {
   ENTER_SECRET,

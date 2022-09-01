@@ -1,6 +1,7 @@
-import { ethers, providers } from 'ethers';
+import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import { getErrorMessage, WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/Constants';
+import { WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/WaitlistContract';
+import { getErrorMessage } from '../utils/Errors';
 import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';

@@ -3,9 +3,9 @@ import Script from 'next/script';
 import styles from '../styles/Index.module.css';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import Metamask from '../components/Metamask';
+import { MetamaskConnectionStates, Metamask }  from '../components/Metamask';
 import Waitlist from '../components/Waitlist';
-import { MetamaskConnectionStates, GOERLI_CHAIN_ID } from '../utils/Constants';
+import { GOERLI_CHAIN_ID } from '../utils/WaitlistContract';
 
 export default function IndexPage() {
   const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>(MetamaskConnectionStates.UNDEFINED);
