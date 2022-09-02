@@ -116,9 +116,12 @@ export default function Waitlist (props: WaitlistProps) {
 
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
-    setWaitlistContractStateLoading(true);
     const waitlist = waitlistContract;
     if (!waitlist) { return; }
+    // Set loading animation if the waitlist has not been loaded yet
+    if (!waitlistContractState) {
+      setWaitlistContractStateLoading(true);
+    }
 
     try {
       const maxWaitlistSpotsBigNumber: ethers.BigNumber = await waitlist.maxWaitlistSpots();
