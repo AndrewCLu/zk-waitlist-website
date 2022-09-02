@@ -8,7 +8,8 @@ enum RedeemDisplayStates {
   CHECKING_SECRET,
   REDEEMABLE,
   NOT_REDEEMABLE,
-  REDEEMING,
+  GENERATING_PROOF,
+  SENDING_REDEEM_TX,
   SUCCESS,
   FAILURE
 }
@@ -92,12 +93,13 @@ export default function Redeem(props: RedeemProps) {
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
-    setRedeemDisplayState(RedeemDisplayStates.REDEEMING);
+    setRedeemDisplayState(RedeemDisplayStates.GENERATING_PROOF);
     const commitmentString = props.commitments.join(',');
     const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString();
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
+      setRedeemDisplayState(RedeemDisplayStates.SENDING_REDEEM_TX);
       try {
         const { proof, publicSignals } = json;
         const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
@@ -180,10 +182,16 @@ export default function Redeem(props: RedeemProps) {
             <button onClick={resetRedeemDisplayState}>Ok</button>
           </div>
         )
-      case RedeemDisplayStates.REDEEMING:
+      case RedeemDisplayStates.GENERATING_PROOF:
         return (
           <div>
-            Redeeming your waitlist spot. This may take a while...
+            Generating proof to redeem your spot. This will take a few seconds...
+          </div>
+        )
+      case RedeemDisplayStates.SENDING_REDEEM_TX:
+        return (
+          <div>
+            Sending transaction to redeem your spot. This may take a while...
           </div>
         )
       case RedeemDisplayStates.FAILURE:

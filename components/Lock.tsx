@@ -5,7 +5,8 @@ import { getErrorMessage } from '../utils/Errors';
 
 enum LockDisplayStates {
   LOCKABLE,
-  LOCKING,
+  GENERATING_PROOF,
+  SENDING_LOCK_TX,
   SUCCESS,
   FAILURE
 }
@@ -29,12 +30,13 @@ export default function Lock (props: LockProps) {
         return; 
       }
     }
-    setLockDisplayState(LockDisplayStates.LOCKING);
+    setLockDisplayState(LockDisplayStates.GENERATING_PROOF);
     const commitmentString = props.commitments.join(',');
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
+      setLockDisplayState(LockDisplayStates.SENDING_LOCK_TX);
       try {
         const { proof, publicSignals } = json;
         const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
@@ -73,10 +75,16 @@ export default function Lock (props: LockProps) {
             <button onClick={lockWaitlist}>Lock the waitlist</button>
           </div>
         )
-      case LockDisplayStates.LOCKING:
+      case LockDisplayStates.GENERATING_PROOF:
         return (
           <div>
-            Locking the waitlist. This may take a while...
+            Generating proof to lock the waitlist. This will take a few seconds...
+          </div>
+        )
+      case LockDisplayStates.SENDING_LOCK_TX:
+        return (
+          <div>
+            Sending transaction to lock the waitlist. This may take a while...
           </div>
         )
       case LockDisplayStates.SUCCESS:
