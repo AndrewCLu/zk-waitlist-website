@@ -1,8 +1,10 @@
 # ZK Waitlist Frontend
 
 ## TODO
-- Display correct metamask/contract revert errors when sending transactions or make errors prettier - right now, generic errors are shown
 - Display waitlist spots claimed/redeemed by a given user
+- Have frontend checks that return errors before executing txs matching contract checks
+- Return generic errors from sending tx erroring out
+- Dynamically fetch contract state - dont fetch nullifier info if contract is not locked
 
 ## Deploy Checklist
 - Test an 8 person waitlist

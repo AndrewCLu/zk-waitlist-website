@@ -10,9 +10,11 @@ import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../
 type WaitlistContractStateType = {
   maxWaitlistSpots: number,
   commitments: string[],
-  nullifiers: string[],
+  userCommitments: string[],
   isLocked: boolean,
-  merkleRoot: string
+  merkleRoot: string,
+  nullifiers: string[],
+  userNullifiers: string[],
 }
 
 type DisplayWaitlistContractStateProps = {
@@ -141,13 +143,33 @@ export default function Waitlist (props: WaitlistProps) {
       const isLocked: boolean = await waitlist.isLocked();
       const merkleRootBigNumber: ethers.BigNumber = await waitlist.merkleRoot();
       const merkleRoot: string = merkleRootBigNumber.toString();
+      const commitmentFilter = {
+        address: WAITLIST_CONTRACT_ADDRESS,
+        topics: [
+            ethers.utils.id("Join(address,uint256)"),
+            ethers.utils.hexZeroPad(await signer.getAddress(), 32),
+        ]
+      };
+      const commitmentEvents = await waitlistContract.queryFilter(commitmentFilter);
+      const userCommitments: string[] = commitmentEvents.map((event: ethers.Event) => event["args"]!["commitment"].toString());
+      const nullifierFilter = {
+        address: WAITLIST_CONTRACT_ADDRESS,
+        topics: [
+            ethers.utils.id("Redeem(address,uint256)"),
+            ethers.utils.hexZeroPad(await signer.getAddress(), 32),
+        ]
+      };
+      const nullifierEvents = await waitlistContract.queryFilter(nullifierFilter);
+      const userNullifiers: string[] = nullifierEvents.map((event: ethers.Event) => event["args"]!["nullifier"].toString());
       const newState: WaitlistContractStateType = {
         maxWaitlistSpots,
         commitments,
-        nullifiers,
+        userCommitments,
         isLocked,
-        merkleRoot
-      }
+        merkleRoot,
+        nullifiers,
+        userNullifiers
+      };
       setWaitlistContractState(newState);
     } catch (error) {
       console.log("Failed to load waitlist state: ", getErrorMessage(error));
