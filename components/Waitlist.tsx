@@ -25,6 +25,8 @@ type DisplayWaitlistContractStateProps = {
 
 function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) {
   const updateButton = <button onClick={props.updateWaitlistContractState}>Update Waitlist State</button>;
+  const userCommitments = props.waitlistContractState?.userCommitments;
+  const userNullifiers = props.waitlistContractState?.userNullifiers;
   if (props.waitlistContractStateLoading) {
     return (
       <div>
@@ -45,17 +47,35 @@ function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) 
     <div>
       {updateButton}
       <br/>
-      The following commitments are claimed in the waitlist: 
+      The following commitment(s) are claimed in the waitlist: 
       <br/>
       {props.waitlistContractState.commitments.map((c, i) => 
         <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(c) + '...'}</div>
       )}
-      The following nullifiers have been used: 
+      { (userCommitments && userCommitments.length > 0) ? 
+        <div>
+          You have claimed the waitlist spot(s) corresponding to the following commitment(s): 
+          <br/>
+          {userCommitments.map((c, i) => 
+            <div key={i+1}>{(i+1) + '. ' + getHexFromBigNumberString(c)}</div>
+          )}
+        </div>
+      : null }
+      The following nullifier(s) have been used: 
       <br/>
       {props.waitlistContractState.nullifiers.map((n, i) => 
         <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(n) + '...'}</div>
       )}
-      There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spots remaining on the waitlist.
+      { (userNullifiers && userNullifiers.length > 0) ? 
+        <div>
+          You have redeemed the waitlist spot(s) corresponding to the following nullifiers(s): 
+          <br/>
+          {userNullifiers.map((n, i) => 
+            <div key={i+1}>{(i+1) + '. ' + getHexFromBigNumberString(n)}</div>
+          )}
+        </div>
+      : null }
+      There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spot(s) remaining on the waitlist.
       <br/>
       {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
       Merkle root: {getHexFromBigNumberString(props.waitlistContractState.merkleRoot)}
