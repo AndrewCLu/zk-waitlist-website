@@ -15,7 +15,8 @@ enum CommitDisplayStates {
 
 type CommitProps = {
   waitlistContract: ethers.Contract,
-  waitlistContractState: WaitlistContractStateType
+  waitlistContractState: WaitlistContractStateType,
+  updateWaitlistContractState: () => void,
 }
 
 export default function Commit (props: CommitProps) {
@@ -97,6 +98,7 @@ export default function Commit (props: CommitProps) {
 
   const resetCommitDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
+    props.updateWaitlistContractState();
     setSecret('');
     setCommitment('');
     setErrorMessage('');

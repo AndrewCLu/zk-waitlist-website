@@ -203,19 +203,19 @@ export default function Waitlist (props: WaitlistProps) {
     } else if (waitlistContractState.isLocked) {
       return (
         <div>
-          <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} />
+          <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
         </div>
       )
     } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
       return (
         <div>
-          <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} />
+          <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
         </div>
       )
     } else {
       return (
         <div>
-          <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} />
+          <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
         </div>
       )
     }

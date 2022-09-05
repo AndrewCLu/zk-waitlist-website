@@ -17,7 +17,8 @@ enum RedeemDisplayStates {
 
 type RedeemProps = {
   waitlistContract: ethers.Contract,
-  waitlistContractState: WaitlistContractStateType
+  waitlistContractState: WaitlistContractStateType,
+  updateWaitlistContractState: () => void,
 }
 
 export default function Redeem(props: RedeemProps) {
@@ -139,6 +140,7 @@ export default function Redeem(props: RedeemProps) {
 
   const resetRedeemDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
+    props.updateWaitlistContractState();
     setSecret('');
     setRedeemableIndex(undefined);
     setErrorMessage('');

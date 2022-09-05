@@ -14,7 +14,8 @@ enum LockDisplayStates {
 
 type LockProps = {
   waitlistContract: ethers.Contract,
-  waitlistContractState: WaitlistContractStateType
+  waitlistContractState: WaitlistContractStateType,
+  updateWaitlistContractState: () => void,
 }
 
 export default function Lock (props: LockProps) {
@@ -74,6 +75,7 @@ export default function Lock (props: LockProps) {
 
   const resetLockDisplayState = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
+    props.updateWaitlistContractState();
     setRoot('');
     setErrorMessage('');
     setLockDisplayState(LockDisplayStates.LOCKABLE);
