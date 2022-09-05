@@ -1,7 +1,6 @@
 # ZK Waitlist Frontend
 
 ## TODO
-- Display waitlist spots claimed/redeemed by a given user
 - Have frontend checks that return errors before executing txs matching contract checks
 - Return generic errors from sending tx erroring out
 - Dynamically fetch contract state - dont fetch nullifier info if contract is not locked

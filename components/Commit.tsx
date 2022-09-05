@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
 import { getHexFromBigNumberString } from '../utils/Parsing';
+import { WaitlistContractStateType } from './Waitlist';
 
 enum CommitDisplayStates {
   ENTER_SECRET,
@@ -13,7 +14,8 @@ enum CommitDisplayStates {
 }
 
 type CommitProps = {
-  waitlistContract: ethers.Contract
+  waitlistContract: ethers.Contract,
+  waitlistContractState: WaitlistContractStateType
 }
 
 export default function Commit (props: CommitProps) {
@@ -58,6 +60,28 @@ export default function Commit (props: CommitProps) {
       setErrorMessage('Must provide commitment string!');
       setCommitDisplayState(CommitDisplayStates.FAILURE);
       return; 
+    } 
+    if (props.waitlistContractState.isLocked) {
+      setErrorMessage('The waitlist has been locked! No more entries are allowed.');
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
+      return; 
+    }
+    if (props.waitlistContractState.userCommitments.length > 0) {
+      setErrorMessage('You have already claimed a spot on the waitlist!');
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
+      return; 
+    }
+    if (props.waitlistContractState.commitments.length >= props.waitlistContractState.maxWaitlistSpots) {
+      setErrorMessage('The waitlist is full! No more entries are allowed.');
+      setCommitDisplayState(CommitDisplayStates.FAILURE);
+      return; 
+    }
+    for (const c of props.waitlistContractState.commitments) {
+      if (commitment === c) {
+        setErrorMessage('This secret has already been used to claim a spot. Please try another.');
+        setCommitDisplayState(CommitDisplayStates.FAILURE);
+        return; 
+      }
     }
     setCommitDisplayState(CommitDisplayStates.SUBMITTING);
     try {
@@ -65,7 +89,8 @@ export default function Commit (props: CommitProps) {
       await joinTx.wait();
       setCommitDisplayState(CommitDisplayStates.SUCCESS);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrorMessage("Failed to send transaction to claim your spot on the waitlist.");
+      console.log(getErrorMessage(error));
       setCommitDisplayState(CommitDisplayStates.FAILURE);
     }
   }

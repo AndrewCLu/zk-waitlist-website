@@ -7,7 +7,7 @@ import Lock from './Lock';
 import Redeem from './Redeem';
 import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 
-type WaitlistContractStateType = {
+export type WaitlistContractStateType = {
   maxWaitlistSpots: number,
   commitments: string[],
   userCommitments: string[],
@@ -215,7 +215,7 @@ export default function Waitlist (props: WaitlistProps) {
     } else {
       return (
         <div>
-          <Commit waitlistContract={waitlistContract!} />
+          <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} />
         </div>
       )
     }
