@@ -1,7 +1,9 @@
 # ZK Waitlist Frontend
 
 ## TODO
-- Dynamically fetch contract state - dont fetch nullifier info if contract is not locked
+- Update waitlist contract state fetch to not change if there is a new waitlist contract
+- Add buttons on success states to refresh waitlist contract state - successful commitment, lock, etc
+- Create waitlist contract display states and pass to waitlist contract display
 
 ## Deploy Checklist
 - Test an 8 person waitlist

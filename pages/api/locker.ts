@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Generate a proof to lock the waitlist
-  const lockerProofInput = {'commitments': commitments};
+  const lockerProofInput = {'commitments': commitmentArray};
   const lockerProofResult = await generateProofWithSolidityCalldata(lockerProofInput, 'locker');
   if (lockerProofResult instanceof Error) {
     return res.status(400).send({ error: lockerProofResult.message });
