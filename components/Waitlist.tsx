@@ -102,7 +102,7 @@ export default function Waitlist (props: WaitlistProps) {
   const { signer, provider } = props;
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
-  const [waitlistDisplayState, setWaitlistDisplayState] = useState<WaitlistDisplayStates>(WaitlistDisplayStates.DEPLOY);
+  const [waitlistDisplayState, setWaitlistDisplayState] = useState<WaitlistDisplayStates>(WaitlistDisplayStates.LOADING);
   const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -238,7 +238,7 @@ export default function Waitlist (props: WaitlistProps) {
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
-            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+            <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
           </div>
         )
       case WaitlistDisplayStates.LOCK:
@@ -250,7 +250,7 @@ export default function Waitlist (props: WaitlistProps) {
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
-            <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
           </div>
         )
       case WaitlistDisplayStates.FAILURE:
