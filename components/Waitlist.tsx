@@ -7,6 +7,14 @@ import Lock from './Lock';
 import Redeem from './Redeem';
 import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 
+export enum WaitlistDisplayStates {
+  DEPLOY, 
+  COMMIT,
+  LOCK,
+  REDEEM,
+  FAILURE
+}
+
 export type WaitlistContractStateType = {
   maxWaitlistSpots: number,
   commitments: string[],
@@ -18,6 +26,7 @@ export type WaitlistContractStateType = {
 }
 
 type DisplayWaitlistContractStateProps = {
+  waitlistDisplayState: WaitlistDisplayStates,
   waitlistContractState?: WaitlistContractStateType,
   waitlistContractStateLoading: boolean,
   updateWaitlistContractState: () => void
@@ -92,7 +101,9 @@ export default function Waitlist (props: WaitlistProps) {
   const { signer, provider } = props;
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
+  const [waitlistDisplayState, setWaitlistDisplayState] = useState<WaitlistDisplayStates>(WaitlistDisplayStates.DEPLOY);
   const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Fetch new waitlist state if the waitlist contract is ever changed
   useEffect(() => {
@@ -139,7 +150,10 @@ export default function Waitlist (props: WaitlistProps) {
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
     const waitlist = waitlistContract;
-    if (!waitlist) { return; }
+    if (!waitlist) { 
+      setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
+      return; 
+    }
     // Set loading animation if the waitlist has not been loaded yet
     if (!waitlistContractState) {
       setWaitlistContractStateLoading(true);
@@ -191,39 +205,59 @@ export default function Waitlist (props: WaitlistProps) {
         userNullifiers
       };
       setWaitlistContractState(newState);
+      // Set current "mode" the waitlist is in
+      if (isLocked) {
+        setWaitlistDisplayState(WaitlistDisplayStates.REDEEM);
+      } else if (commitments.length === maxWaitlistSpots) {
+        setWaitlistDisplayState(WaitlistDisplayStates.LOCK);
+      } else {
+        setWaitlistDisplayState(WaitlistDisplayStates.COMMIT);
+      }
     } catch (error) {
-      console.log("Failed to load waitlist state: ", getErrorMessage(error));
+      setErrorMessage(getErrorMessage(error));
+      setWaitlistDisplayState(WaitlistDisplayStates.FAILURE);
     }
     setWaitlistContractStateLoading(false);
   }
 
   const getWaitlistDisplayComponent = () => {
-    if (!waitlistContractState || !waitlistContract) {
-      return null;
-    } else if (waitlistContractState.isLocked) {
-      return (
-        <div>
-          <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
-        </div>
-      )
-    } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
-      return (
-        <div>
-          <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
-        </div>
-      )
-    } else {
-      return (
-        <div>
-          <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} updateWaitlistContractState={updateWaitlistContractState}/>
-        </div>
-      )
+    switch (waitlistDisplayState) {
+      case WaitlistDisplayStates.DEPLOY:
+        return (
+          <div>
+            Need to deploy contract. 
+          </div>
+        )
+      case WaitlistDisplayStates.COMMIT:
+        return (
+          <div>
+            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+          </div>
+        )
+      case WaitlistDisplayStates.LOCK:
+        return (
+          <div>
+            <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+          </div>
+        )
+      case WaitlistDisplayStates.REDEEM:
+        return (
+          <div>
+            <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+          </div>
+        )
+      case WaitlistDisplayStates.FAILURE:
+        return (
+          <div>
+            Error: {errorMessage}
+          </div>
+        )
     }
   }
 
   return (
     <div>
-      {displayWaitlistContractState({ waitlistContractState, waitlistContractStateLoading, updateWaitlistContractState })}
+      {displayWaitlistContractState({ waitlistDisplayState, waitlistContractState, waitlistContractStateLoading, updateWaitlistContractState })}
       <br/>
       {getWaitlistDisplayComponent()}
     </div>
