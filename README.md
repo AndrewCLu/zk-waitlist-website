@@ -1,8 +1,6 @@
 # ZK Waitlist Frontend
 
 ## TODO
-- Have frontend checks that return errors before executing txs matching contract checks
-- Return generic errors from sending tx erroring out
 - Dynamically fetch contract state - dont fetch nullifier info if contract is not locked
 
 ## Deploy Checklist

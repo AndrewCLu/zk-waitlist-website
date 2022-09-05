@@ -57,7 +57,8 @@ export default function Lock (props: LockProps) {
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
       } catch (error) {
-        setErrorMessage(getErrorMessage(error));
+        setErrorMessage('Failed to send transaction to lock the waitlist.');
+        console.log(getErrorMessage(error));
         setLockDisplayState(LockDisplayStates.FAILURE);
         return;
       }

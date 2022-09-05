@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getHexFromBigNumberString, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
+import { WaitlistContractStateType } from './Waitlist';
 
 enum RedeemDisplayStates {
   ENTER_SECRET,
@@ -16,7 +17,7 @@ enum RedeemDisplayStates {
 
 type RedeemProps = {
   waitlistContract: ethers.Contract,
-  commitments: string[]
+  waitlistContractState: WaitlistContractStateType
 }
 
 export default function Redeem(props: RedeemProps) {
@@ -37,7 +38,7 @@ export default function Redeem(props: RedeemProps) {
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
-    for (let i of props.commitments) {
+    for (let i of props.waitlistContractState.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         setErrorMessage('All commitments must be non-empty and alphanumeric!');
         setRedeemDisplayState(RedeemDisplayStates.FAILURE);
@@ -51,7 +52,7 @@ export default function Redeem(props: RedeemProps) {
     if (res.status === 200) {
       const commitment = json.commitment;
       let redeemable = false;
-      props.commitments.forEach((c, i) => {
+      props.waitlistContractState.commitments.forEach((c, i) => {
         if (c === commitment) {
           redeemable = true;
           setRedeemableIndex(i);
@@ -81,20 +82,25 @@ export default function Redeem(props: RedeemProps) {
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
-    for (let i of props.commitments) {
+    for (let i of props.waitlistContractState.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         setErrorMessage('All commitments must be non-empty and alphanumeric!');
         setRedeemDisplayState(RedeemDisplayStates.FAILURE);
         return;
       }
     }
-    if (typeof redeemableIndex !== 'number' || !Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= props.commitments.length) {
+    if (typeof redeemableIndex !== 'number' || !Number.isInteger(redeemableIndex) || redeemableIndex < 0 || redeemableIndex >= props.waitlistContractState.commitments.length) {
       setErrorMessage('No commitment is redeemable!');
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
       return; 
     }
+    if (!props.waitlistContractState.isLocked) {
+      setErrorMessage('Waitlist has not yet been locked. No redemptions can be made at this time.');
+      setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+      return;
+    }
     setRedeemDisplayState(RedeemDisplayStates.GENERATING_PROOF);
-    const commitmentString = props.commitments.join(',');
+    const commitmentString = props.waitlistContractState.commitments.join(',');
     const url = '/api/redeemer?secret=' + secret + '&commitments=' + commitmentString + '&redeemableIndex=' + redeemableIndex.toString();
     const res = await fetch(url);
     const json = await res.json();
@@ -103,12 +109,21 @@ export default function Redeem(props: RedeemProps) {
       try {
         const { proof, publicSignals } = json;
         const publicSignalsCalldata = (publicSignals as string[]).map(ps => ethers.BigNumber.from(ps));
+        const nullifier = publicSignalsCalldata[0].toString();
+        for (const n of props.waitlistContractState.nullifiers) {
+          if (nullifier === n) {
+            setErrorMessage('The secret you inputted has already been used to redeem a waitlist spot!');
+            setRedeemDisplayState(RedeemDisplayStates.FAILURE);
+            return;
+          }
+        }
         const redeemTx = await props.waitlistContract.redeem(proof, publicSignalsCalldata);
         await redeemTx.wait();
         setRedeemDisplayState(RedeemDisplayStates.SUCCESS);
         return;
       } catch (error) {
-        setErrorMessage(getErrorMessage(error));
+        setErrorMessage('Failed to send transaction to redeem your spot on the waitlist.');
+        console.log(getErrorMessage(error));
         setRedeemDisplayState(RedeemDisplayStates.FAILURE);
         return;
       }
@@ -158,7 +173,7 @@ export default function Redeem(props: RedeemProps) {
           <div>
             Your secret can redeem the waitlist spot with commitment:
             <br/>
-            {getHexFromBigNumberString(props.commitments[redeemableIndex!])}
+            {getHexFromBigNumberString(props.waitlistContractState.commitments[redeemableIndex!])}
             <br/>
             <button onClick={submitRedemption}>Redeem my spot</button>
             <button onClick={resetRedeemDisplayState}>Cancel</button>
@@ -177,7 +192,7 @@ export default function Redeem(props: RedeemProps) {
           <div>
             Successfully redeemed the waitlist spot corresponding to commitment: 
             <br/>
-            {getHexFromBigNumberString(props.commitments[redeemableIndex!])}
+            {getHexFromBigNumberString(props.waitlistContractState.commitments[redeemableIndex!])}
             <br/>
             <button onClick={resetRedeemDisplayState}>Ok</button>
           </div>
