@@ -209,7 +209,7 @@ export default function Waitlist (props: WaitlistProps) {
     } else if (waitlistContractState.commitments.length === waitlistContractState.maxWaitlistSpots) {
       return (
         <div>
-          <Lock waitlistContract={waitlistContract!} commitments={waitlistContractState.commitments} />
+          <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState} />
         </div>
       )
     } else {

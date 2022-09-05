@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getHexFromBigNumberString, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
+import { WaitlistContractStateType } from './Waitlist';
 
 enum LockDisplayStates {
   LOCKABLE,
@@ -13,7 +14,7 @@ enum LockDisplayStates {
 
 type LockProps = {
   waitlistContract: ethers.Contract,
-  commitments: string[]
+  waitlistContractState: WaitlistContractStateType
 }
 
 export default function Lock (props: LockProps) {
@@ -23,15 +24,25 @@ export default function Lock (props: LockProps) {
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
   const lockWaitlist = async () => {
-    for (let i of props.commitments) {
+    for (let i of props.waitlistContractState.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) { 
         setErrorMessage('All commitments must be non-empty and alphanumeric!');
         setLockDisplayState(LockDisplayStates.FAILURE);
         return; 
       }
     }
+    if (props.waitlistContractState.isLocked) {
+      setErrorMessage('The waitlist has already been locked!');
+      setLockDisplayState(LockDisplayStates.FAILURE);
+      return; 
+    }
+    if (props.waitlistContractState.commitments.length !== props.waitlistContractState.maxWaitlistSpots) {
+      setErrorMessage('The waitlist is not full yet. Please wait for the waitlist to fill up before locking.');
+      setLockDisplayState(LockDisplayStates.FAILURE);
+      return; 
+    }
     setLockDisplayState(LockDisplayStates.GENERATING_PROOF);
-    const commitmentString = props.commitments.join(',');
+    const commitmentString = props.waitlistContractState.commitments.join(',');
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
