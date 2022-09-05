@@ -8,6 +8,7 @@ import Redeem from './Redeem';
 import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 
 export enum WaitlistDisplayStates {
+  LOADING,
   DEPLOY, 
   COMMIT,
   LOCK,
@@ -222,6 +223,12 @@ export default function Waitlist (props: WaitlistProps) {
 
   const getWaitlistDisplayComponent = () => {
     switch (waitlistDisplayState) {
+      case WaitlistDisplayStates.LOADING:
+        return (
+          <div>
+            Loading waitlist...
+          </div>
+        )
       case WaitlistDisplayStates.DEPLOY:
         return (
           <div>
