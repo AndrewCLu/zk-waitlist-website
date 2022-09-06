@@ -58,37 +58,6 @@ export default function Waitlist (props: WaitlistProps) {
     updateWaitlistContractState();
   }, [waitlistContract])
 
-  // Set listeners to waitlist update events
-  useEffect(() => {
-    const joinFilter = {
-      address: WAITLIST_CONTRACT_ADDRESS,
-      topics: [
-        ethers.utils.id("Join(address,uint256)"),
-      ]
-    };
-    provider.on(joinFilter, () => {
-      updateWaitlistContractState();
-    })
-    const lockFilter = {
-      address: WAITLIST_CONTRACT_ADDRESS,
-      topics: [
-        ethers.utils.id("Lock(address)"),
-      ]
-    };
-    provider.on(lockFilter, () => {
-      updateWaitlistContractState();
-    })
-    const redeemFilter = {
-      address: WAITLIST_CONTRACT_ADDRESS,
-      topics: [
-        ethers.utils.id("Redeem(address,uint256)"),
-      ]
-    };
-    provider.on(redeemFilter, () => {
-      updateWaitlistContractState();
-    })
-  }, [provider])
-
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
     if (waitlistContractAddress.length === 0) {
