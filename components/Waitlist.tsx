@@ -44,12 +44,8 @@ export default function Waitlist (props: WaitlistProps) {
 
   // Connect to the waitlist contract
   useEffect(() => {
-    // Contract address has not been set yet
-    if (waitlistContractAddress.length === 0) {
-      setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
-      return;
-    }
-    const waitlistContract: ethers.Contract = new ethers.Contract(WAITLIST_CONTRACT_ADDRESS, WAITLIST_CONTRACT_ABI, signer);
+    if (waitlistContractAddress.length === 0) { return; }
+    const waitlistContract: ethers.Contract = new ethers.Contract(waitlistContractAddress, WAITLIST_CONTRACT_ABI, signer);
     setWaitlistContract(waitlistContract);
   }, [signer, waitlistContractAddress])
 
@@ -68,11 +64,8 @@ export default function Waitlist (props: WaitlistProps) {
     if (!waitlist) { 
       return; 
     }
-    // Set loading animation if the waitlist has not been loaded yet
-    if (!waitlistContractState) {
-      setWaitlistContractStateLoading(true);
-    }
 
+    setWaitlistContractStateLoading(true);
     try {
       const maxWaitlistSpotsBigNumber: ethers.BigNumber = await waitlist.maxWaitlistSpots();
       const maxWaitlistSpots: number = maxWaitlistSpotsBigNumber.toNumber();
