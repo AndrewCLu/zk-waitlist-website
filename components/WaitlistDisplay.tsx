@@ -10,6 +10,7 @@ type WaitlistDisplayProps = {
   waitlistContractState?: WaitlistContractStateType;
   waitlistContractStateLoading: boolean;
   updateWaitlistContractState: () => void;
+  resetWaitlistDisplayState: () => void;
 };
 
 export default function WaitlistDisplay(props: WaitlistDisplayProps) {
@@ -20,6 +21,12 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const updateButton = (
     <button onClick={props.updateWaitlistContractState}>
       Update Waitlist State
+    </button>
+  );
+
+  const resetButton = (
+    <button onClick={props.resetWaitlistDisplayState}>
+      Create New Waitlist
     </button>
   );
 
@@ -100,7 +107,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
-            {updateButton}
+            {updateButton} {resetButton}
             <br />
             {spotsClaimedComponent}
             <br />
@@ -112,7 +119,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
-            {updateButton}
+            {updateButton} {resetButton}
             <br />
             {spotsClaimedComponent}
             <br />
@@ -124,7 +131,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
-            {updateButton}
+            {updateButton} {resetButton}
             <br />
             {spotsClaimedComponent}
             <br />

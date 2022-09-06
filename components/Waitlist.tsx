@@ -1,10 +1,7 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
-import {
-  WAITLIST_CONTRACT_ABI,
-  WAITLIST_CONTRACT_ADDRESS,
-} from '../utils/WaitlistContract';
+import { WAITLIST_CONTRACT_ABI } from '../utils/WaitlistContract';
 import { getErrorMessage } from '../utils/Errors';
 import Commit from './Commit';
 import Lock from './Lock';
@@ -100,7 +97,7 @@ export default function Waitlist(props: WaitlistProps) {
       const merkleRootBigNumber: ethers.BigNumber = await waitlist.merkleRoot();
       const merkleRoot: string = merkleRootBigNumber.toString();
       const commitmentFilter = {
-        address: WAITLIST_CONTRACT_ADDRESS,
+        address: waitlistContractAddress,
         topics: [
           ethers.utils.id('Join(address,uint256)'),
           ethers.utils.hexZeroPad(await signer.getAddress(), 32),
@@ -113,7 +110,7 @@ export default function Waitlist(props: WaitlistProps) {
         (event: ethers.Event) => event['args']!['commitment'].toString()
       );
       const nullifierFilter = {
-        address: WAITLIST_CONTRACT_ADDRESS,
+        address: waitlistContractAddress,
         topics: [
           ethers.utils.id('Redeem(address,uint256)'),
           ethers.utils.hexZeroPad(await signer.getAddress(), 32),
@@ -165,6 +162,7 @@ export default function Waitlist(props: WaitlistProps) {
         waitlistContractState={waitlistContractState}
         waitlistContractStateLoading={waitlistContractStateLoading}
         updateWaitlistContractState={updateWaitlistContractState}
+        resetWaitlistDisplayState={resetWaitlistDisplayState}
       />
     );
     switch (waitlistDisplayState) {
