@@ -125,6 +125,8 @@ export default function Lock(props: LockProps) {
             Successfully locked the waitlist with Merkle root:
             <br />
             {getHexFromBigNumberString(root)}
+            <br />
+            <button onClick={resetLockDisplayState}>Proceed</button>
           </div>
         );
       case LockDisplayStates.FAILURE:
