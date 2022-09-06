@@ -44,7 +44,8 @@ export default function Deploy(props: DeployProps) {
     );
     const waitlistFactory = new ethers.ContractFactory(
       WAITLIST_CONTRACT_ABI,
-      WAITLIST_CONTRACT_BYTECODE
+      WAITLIST_CONTRACT_BYTECODE,
+      props.signer
     );
 
     try {
