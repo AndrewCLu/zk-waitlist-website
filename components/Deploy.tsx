@@ -70,16 +70,16 @@ export default function Deploy(props: DeployProps) {
 
   const getDeployDisplayComponent = () => {
     switch (deployDisplayState) {
-    case DeployDisplayStates.NOT_DEPLOYED:
-      return (
-        <div>
+      case DeployDisplayStates.NOT_DEPLOYED:
+        return (
+          <div>
             Need to deploy waitlist contract.
-          <br />
-          <button onClick={deployWaitlistContract}>
+            <br />
+            <button onClick={deployWaitlistContract}>
               Deploy Waitlist Contract
-          </button>
-        </div>
-      );
+            </button>
+          </div>
+        );
     }
   };
 

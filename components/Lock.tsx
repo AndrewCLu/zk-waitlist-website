@@ -100,41 +100,41 @@ export default function Lock(props: LockProps) {
 
   const getLockDisplayComponent = () => {
     switch (lockDisplayState) {
-    case LockDisplayStates.LOCKABLE:
-      return (
-        <div>
-          <button onClick={lockWaitlist}>Lock the waitlist</button>
-        </div>
-      );
-    case LockDisplayStates.GENERATING_PROOF:
-      return (
-        <div>
+      case LockDisplayStates.LOCKABLE:
+        return (
+          <div>
+            <button onClick={lockWaitlist}>Lock the waitlist</button>
+          </div>
+        );
+      case LockDisplayStates.GENERATING_PROOF:
+        return (
+          <div>
             Generating proof to lock the waitlist. This will take a few
             seconds...
-        </div>
-      );
-    case LockDisplayStates.SENDING_LOCK_TX:
-      return (
-        <div>
+          </div>
+        );
+      case LockDisplayStates.SENDING_LOCK_TX:
+        return (
+          <div>
             Sending transaction to lock the waitlist. This may take a while...
-        </div>
-      );
-    case LockDisplayStates.SUCCESS:
-      return (
-        <div>
+          </div>
+        );
+      case LockDisplayStates.SUCCESS:
+        return (
+          <div>
             Successfully locked the waitlist with Merkle root:
-          <br />
-          {getHexFromBigNumberString(root)}
-        </div>
-      );
-    case LockDisplayStates.FAILURE:
-      return (
-        <div>
+            <br />
+            {getHexFromBigNumberString(root)}
+          </div>
+        );
+      case LockDisplayStates.FAILURE:
+        return (
+          <div>
             Failed to lock the waitlist: {errorMessage}
-          <br />
-          <button onClick={resetLockDisplayState}>Go Back</button>
-        </div>
-      );
+            <br />
+            <button onClick={resetLockDisplayState}>Go Back</button>
+          </div>
+        );
     }
   };
 

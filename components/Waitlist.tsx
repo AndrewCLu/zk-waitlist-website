@@ -168,55 +168,55 @@ export default function Waitlist(props: WaitlistProps) {
       />
     );
     switch (waitlistDisplayState) {
-    case WaitlistDisplayStates.LOADING:
-      return <div>Loading waitlist...</div>;
-    case WaitlistDisplayStates.DEPLOY:
-      return (
-        <div>
-          <Deploy
-            setDeployedWaitlistContractAddress={setWaitlistContractAddress}
-          />
-        </div>
-      );
-    case WaitlistDisplayStates.COMMIT:
-      return (
-        <div>
-          {waitlistDisplay}
-          <br />
-          <Commit
-            waitlistContract={waitlistContract!}
-            waitlistContractState={waitlistContractState!}
-            updateWaitlistContractState={updateWaitlistContractState}
-          />
-        </div>
-      );
-    case WaitlistDisplayStates.LOCK:
-      return (
-        <div>
-          {waitlistDisplay}
-          <br />
-          <Lock
-            waitlistContract={waitlistContract!}
-            waitlistContractState={waitlistContractState!}
-            updateWaitlistContractState={updateWaitlistContractState}
-          />
-        </div>
-      );
-    case WaitlistDisplayStates.REDEEM:
-      return (
-        <div>
-          {waitlistDisplay}
-          <br />
-          <Redeem
-            waitlistContract={waitlistContract!}
-            waitlistContractState={waitlistContractState!}
-            updateWaitlistContractState={updateWaitlistContractState}
-            resetWaitlistDisplayState={resetWaitlistDisplayState}
-          />
-        </div>
-      );
-    case WaitlistDisplayStates.FAILURE:
-      return <div>Error: {errorMessage}</div>;
+      case WaitlistDisplayStates.LOADING:
+        return <div>Loading waitlist...</div>;
+      case WaitlistDisplayStates.DEPLOY:
+        return (
+          <div>
+            <Deploy
+              setDeployedWaitlistContractAddress={setWaitlistContractAddress}
+            />
+          </div>
+        );
+      case WaitlistDisplayStates.COMMIT:
+        return (
+          <div>
+            {waitlistDisplay}
+            <br />
+            <Commit
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+            />
+          </div>
+        );
+      case WaitlistDisplayStates.LOCK:
+        return (
+          <div>
+            {waitlistDisplay}
+            <br />
+            <Lock
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+            />
+          </div>
+        );
+      case WaitlistDisplayStates.REDEEM:
+        return (
+          <div>
+            {waitlistDisplay}
+            <br />
+            <Redeem
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+              resetWaitlistDisplayState={resetWaitlistDisplayState}
+            />
+          </div>
+        );
+      case WaitlistDisplayStates.FAILURE:
+        return <div>Error: {errorMessage}</div>;
     }
   };
 

@@ -123,65 +123,65 @@ export default function Commit(props: CommitProps) {
 
   const getCommitDisplayComponent = () => {
     switch (commitDisplayState) {
-    case CommitDisplayStates.ENTER_SECRET:
-      return (
-        <div>
+      case CommitDisplayStates.ENTER_SECRET:
+        return (
+          <div>
             Choose a secret to join the waitlist:
-          <form onSubmit={generateCommitment}>
-            <label>
+            <form onSubmit={generateCommitment}>
+              <label>
                 Secret:
-              <input type="number" value={secret} onChange={updateSecret} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
-        </div>
-      );
-    case CommitDisplayStates.GENERATING:
-      return (
-        <div>
+                <input type="number" value={secret} onChange={updateSecret} />
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+        );
+      case CommitDisplayStates.GENERATING:
+        return (
+          <div>
             Generating a commitment based on the secret you chose. This will
             take a second...
-        </div>
-      );
-    case CommitDisplayStates.GENERATED:
-      return (
-        <div>
-          <div>
-              Successfully generated a commitment based on your secret:
-            <br />
-            {getHexFromBigNumberString(commitment)}
           </div>
-          <br />
-          <button onClick={joinWaitlist}>Join the waitlist</button>
-          <button onClick={resetCommitDisplayState}>
+        );
+      case CommitDisplayStates.GENERATED:
+        return (
+          <div>
+            <div>
+              Successfully generated a commitment based on your secret:
+              <br />
+              {getHexFromBigNumberString(commitment)}
+            </div>
+            <br />
+            <button onClick={joinWaitlist}>Join the waitlist</button>
+            <button onClick={resetCommitDisplayState}>
               Use a different secret
-          </button>
-        </div>
-      );
-    case CommitDisplayStates.SUBMITTING:
-      return (
-        <div>
+            </button>
+          </div>
+        );
+      case CommitDisplayStates.SUBMITTING:
+        return (
+          <div>
             Joining the waitlist using the commitment. This may take a while...
-        </div>
-      );
-    case CommitDisplayStates.SUCCESS:
-      return (
-        <div>
+          </div>
+        );
+      case CommitDisplayStates.SUCCESS:
+        return (
+          <div>
             Successfully joined the waitlist using commitment:
-          <br />
-          {commitment}
-          <br />
-          <button onClick={resetCommitDisplayState}>Ok</button>
-        </div>
-      );
-    case CommitDisplayStates.FAILURE:
-      return (
-        <div>
+            <br />
+            {commitment}
+            <br />
+            <button onClick={resetCommitDisplayState}>Ok</button>
+          </div>
+        );
+      case CommitDisplayStates.FAILURE:
+        return (
+          <div>
             Failed to claim your spot on the waitlist: {errorMessage}
-          <br />
-          <button onClick={resetCommitDisplayState}>Try again</button>
-        </div>
-      );
+            <br />
+            <button onClick={resetCommitDisplayState}>Try again</button>
+          </div>
+        );
     }
   };
 

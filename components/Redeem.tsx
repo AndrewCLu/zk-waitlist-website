@@ -197,91 +197,91 @@ export default function Redeem(props: RedeemProps) {
 
   const getRedeemDisplayComponent = () => {
     switch (redeemDisplayState) {
-    case RedeemDisplayStates.ENTER_SECRET:
-      return (
-        <div>
+      case RedeemDisplayStates.ENTER_SECRET:
+        return (
+          <div>
             Enter your secret to redeem a waitlist spot:
-          <br />
-          <form onSubmit={checkRedeemable}>
-            <label>
-                Secret:
-              <input type="number" value={secret} onChange={updateSecret} />
-            </label>
             <br />
-            <input type="submit" value="Submit" />
-          </form>
-        </div>
-      );
-    case RedeemDisplayStates.ALL_SPOTS_REDEEMED:
-      return (
-        <div>
+            <form onSubmit={checkRedeemable}>
+              <label>
+                Secret:
+                <input type="number" value={secret} onChange={updateSecret} />
+              </label>
+              <br />
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+        );
+      case RedeemDisplayStates.ALL_SPOTS_REDEEMED:
+        return (
+          <div>
             All spots on the waitlist have been redeemed.
-          <br />
-          <button onClick={resetWaitlist}>Create a new waitlist</button>
-        </div>
-      );
-    case RedeemDisplayStates.CHECKING_SECRET:
-      return (
-        <div>
+            <br />
+            <button onClick={resetWaitlist}>Create a new waitlist</button>
+          </div>
+        );
+      case RedeemDisplayStates.CHECKING_SECRET:
+        return (
+          <div>
             Checking to see if your secret can be redeemed. This will take a few
             seconds...
-        </div>
-      );
-    case RedeemDisplayStates.REDEEMABLE:
-      return (
-        <div>
+          </div>
+        );
+      case RedeemDisplayStates.REDEEMABLE:
+        return (
+          <div>
             Your secret can redeem the waitlist spot with commitment:
-          <br />
-          {getHexFromBigNumberString(
-            props.waitlistContractState.commitments[redeemableIndex!]
-          )}
-          <br />
-          <button onClick={submitRedemption}>Redeem my spot</button>
-          <button onClick={resetRedeemDisplayState}>Cancel</button>
-        </div>
-      );
-    case RedeemDisplayStates.NOT_REDEEMABLE:
-      return (
-        <div>
+            <br />
+            {getHexFromBigNumberString(
+              props.waitlistContractState.commitments[redeemableIndex!]
+            )}
+            <br />
+            <button onClick={submitRedemption}>Redeem my spot</button>
+            <button onClick={resetRedeemDisplayState}>Cancel</button>
+          </div>
+        );
+      case RedeemDisplayStates.NOT_REDEEMABLE:
+        return (
+          <div>
             The secret you provided does not correspond to any waitlist spot.
-          <br />
-          <button onClick={resetRedeemDisplayState}>Try again</button>
-        </div>
-      );
-    case RedeemDisplayStates.SUCCESS:
-      return (
-        <div>
+            <br />
+            <button onClick={resetRedeemDisplayState}>Try again</button>
+          </div>
+        );
+      case RedeemDisplayStates.SUCCESS:
+        return (
+          <div>
             Successfully redeemed the waitlist spot corresponding to commitment:
-          <br />
-          {getHexFromBigNumberString(
-            props.waitlistContractState.commitments[redeemableIndex!]
-          )}
-          <br />
-          <button onClick={resetRedeemDisplayState}>Ok</button>
-          <button onClick={resetWaitlist}>Create a new waitlist</button>
-        </div>
-      );
-    case RedeemDisplayStates.GENERATING_PROOF:
-      return (
-        <div>
+            <br />
+            {getHexFromBigNumberString(
+              props.waitlistContractState.commitments[redeemableIndex!]
+            )}
+            <br />
+            <button onClick={resetRedeemDisplayState}>Ok</button>
+            <button onClick={resetWaitlist}>Create a new waitlist</button>
+          </div>
+        );
+      case RedeemDisplayStates.GENERATING_PROOF:
+        return (
+          <div>
             Generating proof to redeem your spot. This will take a few
             seconds...
-        </div>
-      );
-    case RedeemDisplayStates.SENDING_REDEEM_TX:
-      return (
-        <div>
+          </div>
+        );
+      case RedeemDisplayStates.SENDING_REDEEM_TX:
+        return (
+          <div>
             Sending transaction to redeem your spot. This may take a while...
-        </div>
-      );
-    case RedeemDisplayStates.FAILURE:
-      return (
-        <div>
+          </div>
+        );
+      case RedeemDisplayStates.FAILURE:
+        return (
+          <div>
             Failed to redeem your waitlist spot: {errorMessage}
-          <br />
-          <button onClick={resetRedeemDisplayState}>Go Back</button>
-        </div>
-      );
+            <br />
+            <button onClick={resetRedeemDisplayState}>Go Back</button>
+          </div>
+        );
     }
   };
 

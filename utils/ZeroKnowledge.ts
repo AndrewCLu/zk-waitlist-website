@@ -1,11 +1,11 @@
 // Utils to help with zero knowledge proofs
 
 import { getErrorMessage } from './Errors';
-/* eslint-disable */
-const snarkjs = require('snarkjs'); 
+/* eslint-disable @typescript-eslint/no-var-requires */
+const snarkjs = require('snarkjs');
 const path = require('path');
 const fs = require('fs');
-/* eslint-enable */ 
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
 

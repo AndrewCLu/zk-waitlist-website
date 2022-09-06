@@ -34,20 +34,20 @@ export function Metamask(props: MetamaskProps) {
 
   const getRenderObject = (): JSX.Element => {
     switch (metamaskState) {
-    case MetamaskConnectionStates.UNDEFINED:
-      return <div>loading...</div>;
-    case MetamaskConnectionStates.NOT_INSTALLED:
-      return <div>Please install metamask and refresh the page</div>;
-    case MetamaskConnectionStates.NOT_CONNECTED:
-      return (
-        <div>
-          <button onClick={connectToMetamask}>Connect To Metamask</button>
-        </div>
-      );
-    case MetamaskConnectionStates.WRONG_NETWORK:
-      return <div>Please change to Goerli network</div>;
-    case MetamaskConnectionStates.CONNECTED:
-      return <div>Connected to metamask!</div>;
+      case MetamaskConnectionStates.UNDEFINED:
+        return <div>loading...</div>;
+      case MetamaskConnectionStates.NOT_INSTALLED:
+        return <div>Please install metamask and refresh the page</div>;
+      case MetamaskConnectionStates.NOT_CONNECTED:
+        return (
+          <div>
+            <button onClick={connectToMetamask}>Connect To Metamask</button>
+          </div>
+        );
+      case MetamaskConnectionStates.WRONG_NETWORK:
+        return <div>Please change to Goerli network</div>;
+      case MetamaskConnectionStates.CONNECTED:
+        return <div>Connected to metamask!</div>;
     }
   };
 

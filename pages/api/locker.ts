@@ -22,11 +22,9 @@ export default async function handler(
   const commitmentArray = commitments.split(',');
   for (const i of commitmentArray) {
     if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) {
-      return res
-        .status(400)
-        .send({
-          error: 'one or more commitments is either empty or nonalphanumeric',
-        });
+      return res.status(400).send({
+        error: 'one or more commitments is either empty or nonalphanumeric',
+      });
     }
   }
 
