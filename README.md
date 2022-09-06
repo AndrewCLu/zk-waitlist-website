@@ -4,7 +4,7 @@
 
 - Update waitlist contract state fetch to not change if there is a new waitlist contract
 - Implement deploy new waitlist
-- Prettier
+- Refactor waitlist display state to use enum
 
 ## Deploy Checklist
 

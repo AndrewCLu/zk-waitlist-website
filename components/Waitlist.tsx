@@ -174,6 +174,7 @@ export default function Waitlist(props: WaitlistProps) {
         return (
           <div>
             <Deploy
+              signer={signer}
               setDeployedWaitlistContractAddress={setWaitlistContractAddress}
             />
           </div>

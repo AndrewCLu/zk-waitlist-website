@@ -1,9 +1,13 @@
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
-import { getErrorMessage } from '../utils/Errors';
-import { getHexFromBigNumberString } from '../utils/Parsing';
-import { WAITLIST_CONTRACT_ADDRESS } from '../utils/WaitlistContract';
-import { WaitlistContractStateType } from './Waitlist';
+import {
+  LOCKER_VERIFIER_ABI,
+  LOCKER_VERIFIER_BYTECODE,
+  REDEEMER_VERIFIER_ABI,
+  REDEEMER_VERIFIER_BYTECODE,
+  WAITLIST_CONTRACT_ABI,
+  WAITLIST_CONTRACT_BYTECODE,
+} from '../utils/WaitlistContract';
 
 enum DeployDisplayStates {
   NOT_DEPLOYED,
@@ -12,6 +16,7 @@ enum DeployDisplayStates {
 }
 
 type DeployProps = {
+  signer: ethers.Signer;
   setDeployedWaitlistContractAddress: (address: string) => void;
 };
 
@@ -20,53 +25,44 @@ export default function Deploy(props: DeployProps) {
     useState<DeployDisplayStates>(DeployDisplayStates.NOT_DEPLOYED);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const deployWaitlistContract = (
+  const deployWaitlistContract = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
-    props.setDeployedWaitlistContractAddress(WAITLIST_CONTRACT_ADDRESS);
-  };
+    const lockerVerifierFactory = new ethers.ContractFactory(
+      LOCKER_VERIFIER_ABI,
+      LOCKER_VERIFIER_BYTECODE,
+      props.signer
+    );
+    const redeemerVerifierFactory = new ethers.ContractFactory(
+      REDEEMER_VERIFIER_ABI,
+      REDEEMER_VERIFIER_BYTECODE,
+      props.signer
+    );
+    const waitlistFactory = new ethers.ContractFactory(
+      WAITLIST_CONTRACT_ABI,
+      WAITLIST_CONTRACT_BYTECODE
+    );
 
-  // const joinWaitlist = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-  //   event.preventDefault();
-  //   if (commitment.length === 0) {
-  //     setErrorMessage('Must provide commitment string!');
-  //     setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //     return;
-  //   }
-  //   if (props.waitlistContractState.isLocked) {
-  //     setErrorMessage('The waitlist has been locked! No more entries are allowed.');
-  //     setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //     return;
-  //   }
-  //   if (props.waitlistContractState.userCommitments.length > 0) {
-  //     setErrorMessage('You have already claimed a spot on the waitlist!');
-  //     setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //     return;
-  //   }
-  //   if (props.waitlistContractState.commitments.length >= props.waitlistContractState.maxWaitlistSpots) {
-  //     setErrorMessage('The waitlist is full! No more entries are allowed.');
-  //     setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //     return;
-  //   }
-  //   for (const c of props.waitlistContractState.commitments) {
-  //     if (commitment === c) {
-  //       setErrorMessage('This secret has already been used to claim a spot. Please try another.');
-  //       setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //       return;
-  //     }
-  //   }
-  //   setCommitDisplayState(CommitDisplayStates.SUBMITTING);
-  //   try {
-  //     const joinTx = await props.waitlistContract.join(commitment);
-  //     await joinTx.wait();
-  //     setCommitDisplayState(CommitDisplayStates.SUCCESS);
-  //   } catch (error) {
-  //     setErrorMessage("Failed to send transaction to claim your spot on the waitlist.");
-  //     console.log(getErrorMessage(error));
-  //     setCommitDisplayState(CommitDisplayStates.FAILURE);
-  //   }
-  // }
+    const lockerVerifier = await lockerVerifierFactory.deploy();
+    const lockerVerifierAddress = lockerVerifier.address;
+    const redeemerVerifier = await redeemerVerifierFactory.deploy();
+    const redeemerVerifierAddress = redeemerVerifier.address;
+    const waitlist = await waitlistFactory.deploy(
+      2,
+      lockerVerifierAddress,
+      redeemerVerifierAddress
+    );
+    const waitlistAddress = waitlist.address;
+
+    await Promise.all([
+      lockerVerifier.deployTransaction.wait(),
+      redeemerVerifier.deployTransaction.wait(),
+      waitlist.deployTransaction.wait(),
+    ]);
+
+    props.setDeployedWaitlistContractAddress(waitlistAddress);
+  };
 
   const getDeployDisplayComponent = () => {
     switch (deployDisplayState) {
