@@ -8,6 +8,7 @@ import Lock from './Lock';
 import Redeem from './Redeem';
 import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 import Deploy from './Deploy';
+import WaitlistDisplay from './WaitlistDisplay';
 
 export enum WaitlistDisplayStates {
   LOADING,
@@ -26,73 +27,6 @@ export type WaitlistContractStateType = {
   merkleRoot: string,
   nullifiers: string[],
   userNullifiers: string[],
-}
-
-type DisplayWaitlistContractStateProps = {
-  waitlistDisplayState: WaitlistDisplayStates,
-  waitlistContractState?: WaitlistContractStateType,
-  waitlistContractStateLoading: boolean,
-  updateWaitlistContractState: () => void
-}
-
-function displayWaitlistContractState(props: DisplayWaitlistContractStateProps) {
-  const updateButton = <button onClick={props.updateWaitlistContractState}>Update Waitlist State</button>;
-  const userCommitments = props.waitlistContractState?.userCommitments;
-  const userNullifiers = props.waitlistContractState?.userNullifiers;
-  if (props.waitlistContractStateLoading) {
-    return (
-      <div>
-        Loading waitlist state...
-      </div>
-    )
-  }
-  if (!props.waitlistContractState) {
-    return (
-      <div>
-        {updateButton}
-        <br/>
-        Could not fetch waitlist state.
-      </div>
-    )
-  }
-  return (
-    <div>
-      {updateButton}
-      <br/>
-      The following commitment(s) are claimed in the waitlist: 
-      <br/>
-      {props.waitlistContractState.commitments.map((c, i) => 
-        <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(c) + '...'}</div>
-      )}
-      { (userCommitments && userCommitments.length > 0) ? 
-        <div>
-          You have claimed the waitlist spot(s) corresponding to the following commitment(s): 
-          <br/>
-          {userCommitments.map((c, i) => 
-            <div key={i+1}>{(i+1) + '. ' + getHexFromBigNumberString(c)}</div>
-          )}
-        </div>
-      : null }
-      The following nullifier(s) have been used: 
-      <br/>
-      {props.waitlistContractState.nullifiers.map((n, i) => 
-        <div key={i+1}>{(i+1) + '. ' + getLeadingHexFromBigNumberString(n) + '...'}</div>
-      )}
-      { (userNullifiers && userNullifiers.length > 0) ? 
-        <div>
-          You have redeemed the waitlist spot(s) corresponding to the following nullifiers(s): 
-          <br/>
-          {userNullifiers.map((n, i) => 
-            <div key={i+1}>{(i+1) + '. ' + getHexFromBigNumberString(n)}</div>
-          )}
-        </div>
-      : null }
-      There are {props.waitlistContractState.maxWaitlistSpots - props.waitlistContractState.commitments.length} spot(s) remaining on the waitlist.
-      <br/>
-      {props.waitlistContractState.isLocked ? <div>The waitlist is locked.</div> : <div>The waitlist is not locked.</div>}
-      Merkle root: {getHexFromBigNumberString(props.waitlistContractState.merkleRoot)}
-    </div>
-  )
 }
 
 type WaitlistProps = {
@@ -163,10 +97,13 @@ export default function Waitlist (props: WaitlistProps) {
 
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
-    const waitlist = waitlistContract;
-    console.log('updating', props, waitlist, waitlistContract)
-    if (!waitlist) { 
+    console.log('updating', props, waitlistContract)
+    if (waitlistContractAddress.length === 0) {
       setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
+      return;
+    }
+    const waitlist = waitlistContract;
+    if (!waitlist) { 
       return; 
     }
     // Set loading animation if the waitlist has not been loaded yet
@@ -236,6 +173,14 @@ export default function Waitlist (props: WaitlistProps) {
   }
 
   const getWaitlistDisplayComponent = () => {
+    const waitlistDisplay = (
+      <WaitlistDisplay 
+        waitlistDisplayState={waitlistDisplayState} 
+        waitlistContractState={waitlistContractState} 
+        waitlistContractStateLoading={waitlistContractStateLoading} 
+        updateWaitlistContractState={updateWaitlistContractState} 
+      />
+    );
     switch (waitlistDisplayState) {
       case WaitlistDisplayStates.LOADING:
         return (
@@ -252,18 +197,24 @@ export default function Waitlist (props: WaitlistProps) {
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
+            {waitlistDisplay}
+            <br/>
             <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
           </div>
         )
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
+            {waitlistDisplay}
+            <br/>
             <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
           </div>
         )
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
+            {waitlistDisplay}
+            <br/>
             <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
           </div>
         )
@@ -276,11 +227,5 @@ export default function Waitlist (props: WaitlistProps) {
     }
   }
 
-  return (
-    <div>
-      {displayWaitlistContractState({ waitlistDisplayState, waitlistContractState, waitlistContractStateLoading, updateWaitlistContractState })}
-      <br/>
-      {getWaitlistDisplayComponent()}
-    </div>
-  )
+  return (getWaitlistDisplayComponent());
 }
