@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
+import { useSessionStorage } from 'usehooks-ts';
 import { WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/WaitlistContract';
 import { getErrorMessage } from '../utils/Errors';
 import Commit from './Commit';
@@ -100,22 +101,30 @@ type WaitlistProps = {
 
 export default function Waitlist (props: WaitlistProps) {
   const { signer, provider } = props;
+  const [waitlistContractAddress, setWaitlistContractAddress] = useSessionStorage('waitlist-contract-address', '');
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
   const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
   const [waitlistDisplayState, setWaitlistDisplayState] = useState<WaitlistDisplayStates>(WaitlistDisplayStates.LOADING);
   const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Fetch new waitlist state if the waitlist contract is ever changed
-  useEffect(() => {
-    updateWaitlistContractState();
-  }, [waitlistContract])
-
   // Connect to the waitlist contract
   useEffect(() => {
+    console.log("Updating wiatlist contract effect", waitlistContractAddress)
+    // Contract address has not been set yet
+    if (waitlistContractAddress.length === 0) {
+      setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
+      return;
+    }
     const waitlistContract: ethers.Contract = new ethers.Contract(WAITLIST_CONTRACT_ADDRESS, WAITLIST_CONTRACT_ABI, signer);
     setWaitlistContract(waitlistContract);
-  }, [signer])
+  }, [signer, waitlistContractAddress])
+
+  // Fetch new waitlist state if the waitlist contract is ever changed
+  useEffect(() => {
+    console.log("Updating waitlist contract state effect", waitlistContract, waitlistContractAddress)
+    updateWaitlistContractState();
+  }, [waitlistContract])
 
   // Set listeners to waitlist update events
   useEffect(() => {
@@ -126,6 +135,7 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(joinFilter, () => {
+      console.log("join filter triggered")
       updateWaitlistContractState();
     })
     const lockFilter = {
@@ -135,6 +145,7 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(lockFilter, () => {
+      console.log("lock filter triggered")
       updateWaitlistContractState();
     })
     const redeemFilter = {
@@ -144,6 +155,7 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(redeemFilter, () => {
+      console.log("redeem filter triggered")
       updateWaitlistContractState();
     })
   }, [provider])
@@ -151,6 +163,7 @@ export default function Waitlist (props: WaitlistProps) {
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
     const waitlist = waitlistContract;
+    console.log('updating', props, waitlist, waitlistContract)
     if (!waitlist) { 
       setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
       return; 
@@ -232,7 +245,9 @@ export default function Waitlist (props: WaitlistProps) {
       case WaitlistDisplayStates.DEPLOY:
         return (
           <div>
-            Need to deploy contract. 
+            Need to deploy waitlist contract. 
+            <br/>
+            <button onClick={deployWaitlistContract}>Deploy Waitlist Contract</button>
           </div>
         )
       case WaitlistDisplayStates.COMMIT:
