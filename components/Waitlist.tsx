@@ -7,6 +7,7 @@ import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
 import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
+import Deploy from './Deploy';
 
 export enum WaitlistDisplayStates {
   LOADING,
@@ -245,9 +246,7 @@ export default function Waitlist (props: WaitlistProps) {
       case WaitlistDisplayStates.DEPLOY:
         return (
           <div>
-            Need to deploy waitlist contract. 
-            <br/>
-            <button onClick={deployWaitlistContract}>Deploy Waitlist Contract</button>
+            <Deploy setDeployedWaitlistContractAddress={setWaitlistContractAddress} />
           </div>
         )
       case WaitlistDisplayStates.COMMIT:
