@@ -19,6 +19,7 @@ type RedeemProps = {
   waitlistContract: ethers.Contract,
   waitlistContractState: WaitlistContractStateType,
   updateWaitlistContractState: () => void,
+  resetWaitlistDisplayState: () => void
 }
 
 export default function Redeem(props: RedeemProps) {
@@ -147,6 +148,11 @@ export default function Redeem(props: RedeemProps) {
     setRedeemDisplayState(RedeemDisplayStates.ENTER_SECRET);
   }
 
+  const resetWaitlist = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    props.resetWaitlistDisplayState();
+  }
+
   const getRedeemDisplayComponent = () => {
     switch(redeemDisplayState) {
       case RedeemDisplayStates.ENTER_SECRET:
@@ -197,6 +203,7 @@ export default function Redeem(props: RedeemProps) {
             {getHexFromBigNumberString(props.waitlistContractState.commitments[redeemableIndex!])}
             <br/>
             <button onClick={resetRedeemDisplayState}>Ok</button>
+            <button onClick={resetWaitlist}>Try a new waitlist</button>
           </div>
         )
       case RedeemDisplayStates.GENERATING_PROOF:

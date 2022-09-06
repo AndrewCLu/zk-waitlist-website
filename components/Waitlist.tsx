@@ -6,7 +6,6 @@ import { getErrorMessage } from '../utils/Errors';
 import Commit from './Commit';
 import Lock from './Lock';
 import Redeem from './Redeem';
-import { getHexFromBigNumberString, getLeadingHexFromBigNumberString } from '../utils/Parsing';
 import Deploy from './Deploy';
 import WaitlistDisplay from './WaitlistDisplay';
 
@@ -45,7 +44,6 @@ export default function Waitlist (props: WaitlistProps) {
 
   // Connect to the waitlist contract
   useEffect(() => {
-    console.log("Updating wiatlist contract effect", waitlistContractAddress)
     // Contract address has not been set yet
     if (waitlistContractAddress.length === 0) {
       setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
@@ -57,7 +55,6 @@ export default function Waitlist (props: WaitlistProps) {
 
   // Fetch new waitlist state if the waitlist contract is ever changed
   useEffect(() => {
-    console.log("Updating waitlist contract state effect", waitlistContract, waitlistContractAddress)
     updateWaitlistContractState();
   }, [waitlistContract])
 
@@ -70,7 +67,6 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(joinFilter, () => {
-      console.log("join filter triggered")
       updateWaitlistContractState();
     })
     const lockFilter = {
@@ -80,7 +76,6 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(lockFilter, () => {
-      console.log("lock filter triggered")
       updateWaitlistContractState();
     })
     const redeemFilter = {
@@ -90,14 +85,12 @@ export default function Waitlist (props: WaitlistProps) {
       ]
     };
     provider.on(redeemFilter, () => {
-      console.log("redeem filter triggered")
       updateWaitlistContractState();
     })
   }, [provider])
 
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
-    console.log('updating', props, waitlistContract)
     if (waitlistContractAddress.length === 0) {
       setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
       return;
@@ -172,6 +165,14 @@ export default function Waitlist (props: WaitlistProps) {
     setWaitlistContractStateLoading(false);
   }
 
+  const resetWaitlistDisplayState = ()  => {
+    setWaitlistContractAddress('');
+    setWaitlistContract(undefined);
+    setWaitlistContractState(undefined);
+    setErrorMessage('');
+    setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
+  }
+
   const getWaitlistDisplayComponent = () => {
     const waitlistDisplay = (
       <WaitlistDisplay 
@@ -215,7 +216,7 @@ export default function Waitlist (props: WaitlistProps) {
           <div>
             {waitlistDisplay}
             <br/>
-            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState} resetWaitlistDisplayState={resetWaitlistDisplayState} />
           </div>
         )
       case WaitlistDisplayStates.FAILURE:
