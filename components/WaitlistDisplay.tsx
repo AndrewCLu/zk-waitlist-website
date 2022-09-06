@@ -13,29 +13,19 @@ type WaitlistDisplayProps = {
 };
 
 export default function WaitlistDisplay(props: WaitlistDisplayProps) {
+  if (props.waitlistContractStateLoading || !props.waitlistContractState) {
+    return <div>Loading waitlist state...</div>;
+  }
+
   const updateButton = (
     <button onClick={props.updateWaitlistContractState}>
       Update Waitlist State
     </button>
   );
+
   const userCommitments = props.waitlistContractState?.userCommitments;
-  const userNullifiers = props.waitlistContractState?.userNullifiers;
-  if (props.waitlistContractStateLoading) {
-    return <div>Loading waitlist state...</div>;
-  }
-  if (!props.waitlistContractState) {
-    return (
-      <div>
-        {updateButton}
-        <br />
-        Could not fetch waitlist state.
-      </div>
-    );
-  }
-  return (
+  const commitmentComponent = (
     <div>
-      {updateButton}
-      <br />
       The following commitment(s) are claimed in the waitlist:
       <br />
       {props.waitlistContractState.commitments.map((c, i) => (
@@ -53,6 +43,12 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           ))}
         </div>
       ) : null}
+    </div>
+  );
+
+  const userNullifiers = props.waitlistContractState?.userNullifiers;
+  const nullifierComponent = (
+    <div>
       The following nullifier(s) have been used:
       <br />
       {props.waitlistContractState.nullifiers.map((n, i) => (
@@ -70,18 +66,79 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           ))}
         </div>
       ) : null}
-      There are{' '}
-      {props.waitlistContractState.maxWaitlistSpots -
-        props.waitlistContractState.commitments.length}{' '}
-      spot(s) remaining on the waitlist.
-      <br />
+    </div>
+  );
+
+  const lockedComponent = (
+    <div>
       {props.waitlistContractState.isLocked ? (
         <div>The waitlist is locked.</div>
       ) : (
         <div>The waitlist is not locked.</div>
       )}
-      Merkle root:{' '}
-      {getHexFromBigNumberString(props.waitlistContractState.merkleRoot)}
     </div>
   );
+
+  const spotsClaimedComponent = (
+    <div>
+      {props.waitlistContractState.commitments.length} out of{' '}
+      {props.waitlistContractState.maxWaitlistSpots} spots on the waitlist have
+      been claimed
+    </div>
+  );
+
+  const spotsRedeemedComponent = (
+    <div>
+      {props.waitlistContractState.nullifiers.length} out of{' '}
+      {props.waitlistContractState.commitments.length} spots on the waitlist
+      have been redeemed
+    </div>
+  );
+
+  const getWaitlistDisplayComponent = () => {
+    switch (props.waitlistDisplayState) {
+      case WaitlistDisplayStates.COMMIT:
+        return (
+          <div>
+            {updateButton}
+            <br />
+            {spotsClaimedComponent}
+            <br />
+            {lockedComponent}
+            <br />
+            {commitmentComponent}
+          </div>
+        );
+      case WaitlistDisplayStates.LOCK:
+        return (
+          <div>
+            {updateButton}
+            <br />
+            {spotsClaimedComponent}
+            <br />
+            {lockedComponent}
+            <br />
+            {commitmentComponent}
+          </div>
+        );
+      case WaitlistDisplayStates.REDEEM:
+        return (
+          <div>
+            {updateButton}
+            <br />
+            {spotsClaimedComponent}
+            <br />
+            {lockedComponent}
+            <br />
+            {commitmentComponent}
+            <br />
+            {spotsRedeemedComponent}
+            <br />
+            {nullifierComponent}
+          </div>
+        );
+    }
+  };
+
+  return <div>{getWaitlistDisplayComponent()}</div>;
 }
