@@ -1,58 +1,71 @@
-import { ethers } from 'ethers';
-import React, { useEffect, useState } from 'react';
-import { useSessionStorage } from 'usehooks-ts';
-import { WAITLIST_CONTRACT_ABI, WAITLIST_CONTRACT_ADDRESS } from '../utils/WaitlistContract';
-import { getErrorMessage } from '../utils/Errors';
-import Commit from './Commit';
-import Lock from './Lock';
-import Redeem from './Redeem';
-import Deploy from './Deploy';
-import WaitlistDisplay from './WaitlistDisplay';
+import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
+import { useSessionStorage } from "usehooks-ts";
+import {
+  WAITLIST_CONTRACT_ABI,
+  WAITLIST_CONTRACT_ADDRESS,
+} from "../utils/WaitlistContract";
+import { getErrorMessage } from "../utils/Errors";
+import Commit from "./Commit";
+import Lock from "./Lock";
+import Redeem from "./Redeem";
+import Deploy from "./Deploy";
+import WaitlistDisplay from "./WaitlistDisplay";
 
 export enum WaitlistDisplayStates {
   LOADING,
-  DEPLOY, 
+  DEPLOY,
   COMMIT,
   LOCK,
   REDEEM,
-  FAILURE
+  FAILURE,
 }
 
 export type WaitlistContractStateType = {
-  maxWaitlistSpots: number,
-  commitments: string[],
-  userCommitments: string[],
-  isLocked: boolean,
-  merkleRoot: string,
-  nullifiers: string[],
-  userNullifiers: string[],
-}
+  maxWaitlistSpots: number;
+  commitments: string[];
+  userCommitments: string[];
+  isLocked: boolean;
+  merkleRoot: string;
+  nullifiers: string[];
+  userNullifiers: string[];
+};
 
 type WaitlistProps = {
   signer: ethers.Signer;
   provider: ethers.providers.Provider;
-}
+};
 
-export default function Waitlist (props: WaitlistProps) {
+export default function Waitlist(props: WaitlistProps) {
   const { signer, provider } = props;
-  const [waitlistContractAddress, setWaitlistContractAddress] = useSessionStorage('waitlist-contract-address', '');
+  const [waitlistContractAddress, setWaitlistContractAddress] =
+    useSessionStorage("waitlist-contract-address", "");
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
-  const [waitlistContractState, setWaitlistContractState] = useState<WaitlistContractStateType>();
-  const [waitlistDisplayState, setWaitlistDisplayState] = useState<WaitlistDisplayStates>(WaitlistDisplayStates.LOADING);
-  const [waitlistContractStateLoading, setWaitlistContractStateLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [waitlistContractState, setWaitlistContractState] =
+    useState<WaitlistContractStateType>();
+  const [waitlistDisplayState, setWaitlistDisplayState] =
+    useState<WaitlistDisplayStates>(WaitlistDisplayStates.LOADING);
+  const [waitlistContractStateLoading, setWaitlistContractStateLoading] =
+    useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Connect to the waitlist contract
   useEffect(() => {
-    if (waitlistContractAddress.length === 0) { return; }
-    const waitlistContract: ethers.Contract = new ethers.Contract(waitlistContractAddress, WAITLIST_CONTRACT_ABI, signer);
+    if (waitlistContractAddress.length === 0) {
+      return;
+    }
+    const waitlistContract: ethers.Contract = new ethers.Contract(
+      waitlistContractAddress,
+      WAITLIST_CONTRACT_ABI,
+      signer
+    );
     setWaitlistContract(waitlistContract);
-  }, [signer, waitlistContractAddress])
+  }, [signer, waitlistContractAddress]);
 
   // Fetch new waitlist state if the waitlist contract is ever changed
   useEffect(() => {
     updateWaitlistContractState();
-  }, [waitlistContract])
+  }, [waitlistContract]);
 
   // Helper to fetch waitlist contract state
   const updateWaitlistContractState = async () => {
@@ -61,23 +74,25 @@ export default function Waitlist (props: WaitlistProps) {
       return;
     }
     const waitlist = waitlistContract;
-    if (!waitlist) { 
-      return; 
+    if (!waitlist) {
+      return;
     }
 
     setWaitlistContractStateLoading(true);
     try {
-      const maxWaitlistSpotsBigNumber: ethers.BigNumber = await waitlist.maxWaitlistSpots();
+      const maxWaitlistSpotsBigNumber: ethers.BigNumber =
+        await waitlist.maxWaitlistSpots();
       const maxWaitlistSpots: number = maxWaitlistSpotsBigNumber.toNumber();
-      const numCommitments: ethers.BigNumber = await waitlist.getNumCommitments();
-      const commitments: string[] = []
-      for (let i=0; i<numCommitments.toNumber(); i++) {
+      const numCommitments: ethers.BigNumber =
+        await waitlist.getNumCommitments();
+      const commitments: string[] = [];
+      for (let i = 0; i < numCommitments.toNumber(); i++) {
         const c = await waitlist.commitments(i);
         commitments.push(c.toString());
       }
       const numNullifiers: ethers.BigNumber = await waitlist.getNumNullifiers();
-      const nullifiers: string[] = []
-      for (let i=0; i<numNullifiers.toNumber(); i++) {
+      const nullifiers: string[] = [];
+      for (let i = 0; i < numNullifiers.toNumber(); i++) {
         const n = await waitlist.nullifiers(i);
         nullifiers.push(n.toString());
       }
@@ -87,21 +102,29 @@ export default function Waitlist (props: WaitlistProps) {
       const commitmentFilter = {
         address: WAITLIST_CONTRACT_ADDRESS,
         topics: [
-            ethers.utils.id("Join(address,uint256)"),
-            ethers.utils.hexZeroPad(await signer.getAddress(), 32),
-        ]
+          ethers.utils.id("Join(address,uint256)"),
+          ethers.utils.hexZeroPad(await signer.getAddress(), 32),
+        ],
       };
-      const commitmentEvents = await waitlistContract.queryFilter(commitmentFilter);
-      const userCommitments: string[] = commitmentEvents.map((event: ethers.Event) => event["args"]!["commitment"].toString());
+      const commitmentEvents = await waitlistContract.queryFilter(
+        commitmentFilter
+      );
+      const userCommitments: string[] = commitmentEvents.map(
+        (event: ethers.Event) => event["args"]!["commitment"].toString()
+      );
       const nullifierFilter = {
         address: WAITLIST_CONTRACT_ADDRESS,
         topics: [
-            ethers.utils.id("Redeem(address,uint256)"),
-            ethers.utils.hexZeroPad(await signer.getAddress(), 32),
-        ]
+          ethers.utils.id("Redeem(address,uint256)"),
+          ethers.utils.hexZeroPad(await signer.getAddress(), 32),
+        ],
       };
-      const nullifierEvents = await waitlistContract.queryFilter(nullifierFilter);
-      const userNullifiers: string[] = nullifierEvents.map((event: ethers.Event) => event["args"]!["nullifier"].toString());
+      const nullifierEvents = await waitlistContract.queryFilter(
+        nullifierFilter
+      );
+      const userNullifiers: string[] = nullifierEvents.map(
+        (event: ethers.Event) => event["args"]!["nullifier"].toString()
+      );
       const newState: WaitlistContractStateType = {
         maxWaitlistSpots,
         commitments,
@@ -109,7 +132,7 @@ export default function Waitlist (props: WaitlistProps) {
         isLocked,
         merkleRoot,
         nullifiers,
-        userNullifiers
+        userNullifiers,
       };
       setWaitlistContractState(newState);
       // Set current "mode" the waitlist is in
@@ -125,70 +148,77 @@ export default function Waitlist (props: WaitlistProps) {
       setWaitlistDisplayState(WaitlistDisplayStates.FAILURE);
     }
     setWaitlistContractStateLoading(false);
-  }
+  };
 
-  const resetWaitlistDisplayState = ()  => {
-    setWaitlistContractAddress('');
+  const resetWaitlistDisplayState = () => {
+    setWaitlistContractAddress("");
     setWaitlistContract(undefined);
     setWaitlistContractState(undefined);
-    setErrorMessage('');
+    setErrorMessage("");
     setWaitlistDisplayState(WaitlistDisplayStates.DEPLOY);
-  }
+  };
 
   const getWaitlistDisplayComponent = () => {
     const waitlistDisplay = (
-      <WaitlistDisplay 
-        waitlistDisplayState={waitlistDisplayState} 
-        waitlistContractState={waitlistContractState} 
-        waitlistContractStateLoading={waitlistContractStateLoading} 
-        updateWaitlistContractState={updateWaitlistContractState} 
+      <WaitlistDisplay
+        waitlistDisplayState={waitlistDisplayState}
+        waitlistContractState={waitlistContractState}
+        waitlistContractStateLoading={waitlistContractStateLoading}
+        updateWaitlistContractState={updateWaitlistContractState}
       />
     );
     switch (waitlistDisplayState) {
       case WaitlistDisplayStates.LOADING:
-        return (
-          <div>
-            Loading waitlist...
-          </div>
-        )
+        return <div>Loading waitlist...</div>;
       case WaitlistDisplayStates.DEPLOY:
         return (
           <div>
-            <Deploy setDeployedWaitlistContractAddress={setWaitlistContractAddress} />
+            <Deploy
+              setDeployedWaitlistContractAddress={setWaitlistContractAddress}
+            />
           </div>
-        )
+        );
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
             {waitlistDisplay}
-            <br/>
-            <Commit waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+            <br />
+            <Commit
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+            />
           </div>
-        )
+        );
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
             {waitlistDisplay}
-            <br/>
-            <Lock waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState}/>
+            <br />
+            <Lock
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+            />
           </div>
-        )
+        );
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
             {waitlistDisplay}
-            <br/>
-            <Redeem waitlistContract={waitlistContract!} waitlistContractState={waitlistContractState!} updateWaitlistContractState={updateWaitlistContractState} resetWaitlistDisplayState={resetWaitlistDisplayState} />
+            <br />
+            <Redeem
+              waitlistContract={waitlistContract!}
+              waitlistContractState={waitlistContractState!}
+              updateWaitlistContractState={updateWaitlistContractState}
+              resetWaitlistDisplayState={resetWaitlistDisplayState}
+            />
           </div>
-        )
+        );
       case WaitlistDisplayStates.FAILURE:
-        return (
-          <div>
-            Error: {errorMessage}
-          </div>
-        )
+        return <div>Error: {errorMessage}</div>;
     }
-  }
+  };
 
-  return (getWaitlistDisplayComponent());
+  return getWaitlistDisplayComponent();
 }

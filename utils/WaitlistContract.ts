@@ -1,254 +1,255 @@
 export const GOERLI_CHAIN_ID = 5;
-export const WAITLIST_CONTRACT_ADDRESS = "0x908B0f7b3DDf9F9844eDD130Fea6f322f07602dE";
+export const WAITLIST_CONTRACT_ADDRESS =
+  "0x908B0f7b3DDf9F9844eDD130Fea6f322f07602dE";
 export const WAITLIST_CONTRACT_ABI = [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "_maxWaitlistSpots",
-        "type": "uint256"
+        internalType: "uint256",
+        name: "_maxWaitlistSpots",
+        type: "uint256",
       },
       {
-        "internalType": "address",
-        "name": "_lockerVerifierAddress",
-        "type": "address"
+        internalType: "address",
+        name: "_lockerVerifierAddress",
+        type: "address",
       },
       {
-        "internalType": "address",
-        "name": "_redeemerVerifierAddress",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "_redeemerVerifierAddress",
+        type: "address",
+      },
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    stateMutability: "nonpayable",
+    type: "constructor",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "joiner",
-        "type": "address"
+        indexed: true,
+        internalType: "address",
+        name: "joiner",
+        type: "address",
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "commitment",
-        "type": "uint256"
-      }
+        indexed: true,
+        internalType: "uint256",
+        name: "commitment",
+        type: "uint256",
+      },
     ],
-    "name": "Join",
-    "type": "event"
+    name: "Join",
+    type: "event",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "locker",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: "address",
+        name: "locker",
+        type: "address",
+      },
     ],
-    "name": "Lock",
-    "type": "event"
+    name: "Lock",
+    type: "event",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "redeemer",
-        "type": "address"
+        indexed: true,
+        internalType: "address",
+        name: "redeemer",
+        type: "address",
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "nullifier",
-        "type": "uint256"
-      }
+        indexed: true,
+        internalType: "uint256",
+        name: "nullifier",
+        type: "uint256",
+      },
     ],
-    "name": "Redeem",
-    "type": "event"
+    name: "Redeem",
+    type: "event",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "name": "commitments",
-    "outputs": [
+    name: "commitments",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "getNumCommitments",
-    "outputs": [
+    inputs: [],
+    name: "getNumCommitments",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "getNumNullifiers",
-    "outputs": [
+    inputs: [],
+    name: "getNumNullifiers",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "isLocked",
-    "outputs": [
+    inputs: [],
+    name: "isLocked",
+    outputs: [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "commitment",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "commitment",
+        type: "uint256",
+      },
     ],
-    "name": "join",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "join",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
+        internalType: "bytes",
+        name: "proof",
+        type: "bytes",
       },
       {
-        "internalType": "uint256[]",
-        "name": "pubSignals",
-        "type": "uint256[]"
-      }
+        internalType: "uint256[]",
+        name: "pubSignals",
+        type: "uint256[]",
+      },
     ],
-    "name": "lock",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "lock",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "lockerVerifier",
-    "outputs": [
+    inputs: [],
+    name: "lockerVerifier",
+    outputs: [
       {
-        "internalType": "contract IVerifier",
-        "name": "",
-        "type": "address"
-      }
+        internalType: "contract IVerifier",
+        name: "",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "maxWaitlistSpots",
-    "outputs": [
+    inputs: [],
+    name: "maxWaitlistSpots",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "merkleRoot",
-    "outputs": [
+    inputs: [],
+    name: "merkleRoot",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "name": "nullifiers",
-    "outputs": [
+    name: "nullifiers",
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
+        internalType: "bytes",
+        name: "proof",
+        type: "bytes",
       },
       {
-        "internalType": "uint256[]",
-        "name": "pubSignals",
-        "type": "uint256[]"
-      }
+        internalType: "uint256[]",
+        name: "pubSignals",
+        type: "uint256[]",
+      },
     ],
-    "name": "redeem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "redeem",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "redeemerVerifier",
-    "outputs": [
+    inputs: [],
+    name: "redeemerVerifier",
+    outputs: [
       {
-        "internalType": "contract IVerifier",
-        "name": "",
-        "type": "address"
-      }
+        internalType: "contract IVerifier",
+        name: "",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
+    stateMutability: "view",
+    type: "function",
+  },
+];

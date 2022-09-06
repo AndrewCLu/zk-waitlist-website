@@ -1,17 +1,17 @@
-import { ethers } from 'ethers';
-import React from 'react';
+import { ethers } from "ethers";
+import React from "react";
 
 export enum MetamaskConnectionStates {
   UNDEFINED,
   NOT_INSTALLED,
   NOT_CONNECTED,
   WRONG_NETWORK,
-  CONNECTED
+  CONNECTED,
 }
 
 type MetamaskProps = {
-  metamaskState: MetamaskConnectionStates
-}
+  metamaskState: MetamaskConnectionStates;
+};
 export function Metamask(props: MetamaskProps) {
   const { metamaskState } = props;
 
@@ -22,13 +22,15 @@ export function Metamask(props: MetamaskProps) {
       console.log("Must have metamask installed!");
       return;
     }
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
     try {
       await provider?.send("eth_requestAccounts", []);
     } catch {
       console.log("Failed to connect to metamask");
     }
-  }
+  };
 
   const getRenderObject = (): JSX.Element => {
     switch (metamaskState) {
@@ -37,17 +39,17 @@ export function Metamask(props: MetamaskProps) {
       case MetamaskConnectionStates.NOT_INSTALLED:
         return <div>Please install metamask and refresh the page</div>;
       case MetamaskConnectionStates.NOT_CONNECTED:
-        return <div><button onClick={connectToMetamask}>Connect To Metamask</button></div>;
+        return (
+          <div>
+            <button onClick={connectToMetamask}>Connect To Metamask</button>
+          </div>
+        );
       case MetamaskConnectionStates.WRONG_NETWORK:
         return <div>Please change to Goerli network</div>;
       case MetamaskConnectionStates.CONNECTED:
         return <div>Connected to metamask!</div>;
     }
-  }
+  };
 
-  return (
-    <div>
-      {getRenderObject()}
-    </div>
-  )
+  return <div>{getRenderObject()}</div>;
 }
