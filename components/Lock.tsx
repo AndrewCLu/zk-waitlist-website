@@ -1,11 +1,11 @@
-import { ethers } from "ethers";
-import React, { useState } from "react";
+import { ethers } from 'ethers';
+import React, { useState } from 'react';
 import {
   getHexFromBigNumberString,
   NONEMPTY_ALPHANUMERIC_REGEX,
-} from "../utils/Parsing";
-import { getErrorMessage } from "../utils/Errors";
-import { WaitlistContractStateType } from "./Waitlist";
+} from '../utils/Parsing';
+import { getErrorMessage } from '../utils/Errors';
+import { WaitlistContractStateType } from './Waitlist';
 
 enum LockDisplayStates {
   LOCKABLE,
@@ -25,20 +25,20 @@ export default function Lock(props: LockProps) {
   const [lockDisplayState, setLockDisplayState] = useState<LockDisplayStates>(
     LockDisplayStates.LOCKABLE
   );
-  const [root, setRoot] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [root, setRoot] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
   const lockWaitlist = async () => {
-    for (let i of props.waitlistContractState.commitments) {
+    for (const i of props.waitlistContractState.commitments) {
       if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) {
-        setErrorMessage("All commitments must be non-empty and alphanumeric!");
+        setErrorMessage('All commitments must be non-empty and alphanumeric!');
         setLockDisplayState(LockDisplayStates.FAILURE);
         return;
       }
     }
     if (props.waitlistContractState.isLocked) {
-      setErrorMessage("The waitlist has already been locked!");
+      setErrorMessage('The waitlist has already been locked!');
       setLockDisplayState(LockDisplayStates.FAILURE);
       return;
     }
@@ -47,14 +47,14 @@ export default function Lock(props: LockProps) {
       props.waitlistContractState.maxWaitlistSpots
     ) {
       setErrorMessage(
-        "The waitlist is not full yet. Please wait for the waitlist to fill up before locking."
+        'The waitlist is not full yet. Please wait for the waitlist to fill up before locking.'
       );
       setLockDisplayState(LockDisplayStates.FAILURE);
       return;
     }
     setLockDisplayState(LockDisplayStates.GENERATING_PROOF);
-    const commitmentString = props.waitlistContractState.commitments.join(",");
-    const url = "/api/locker?commitments=" + commitmentString;
+    const commitmentString = props.waitlistContractState.commitments.join(',');
+    const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
     const json = await res.json();
     if (res.status === 200) {
@@ -73,15 +73,15 @@ export default function Lock(props: LockProps) {
         setLockDisplayState(LockDisplayStates.SUCCESS);
         return;
       } catch (error) {
-        setErrorMessage("Failed to send transaction to lock the waitlist.");
+        setErrorMessage('Failed to send transaction to lock the waitlist.');
         console.log(getErrorMessage(error));
         setLockDisplayState(LockDisplayStates.FAILURE);
         return;
       }
     } else {
-      let errorMessage = "Unable to generate proof to lock waitlist";
+      let errorMessage = 'Unable to generate proof to lock waitlist';
       if (res.status === 400) {
-        errorMessage += ": " + json.error;
+        errorMessage += ': ' + json.error;
       }
       setErrorMessage(errorMessage);
       setLockDisplayState(LockDisplayStates.FAILURE);
@@ -93,48 +93,48 @@ export default function Lock(props: LockProps) {
   ) => {
     event.preventDefault();
     props.updateWaitlistContractState();
-    setRoot("");
-    setErrorMessage("");
+    setRoot('');
+    setErrorMessage('');
     setLockDisplayState(LockDisplayStates.LOCKABLE);
   };
 
   const getLockDisplayComponent = () => {
     switch (lockDisplayState) {
-      case LockDisplayStates.LOCKABLE:
-        return (
-          <div>
-            <button onClick={lockWaitlist}>Lock the waitlist</button>
-          </div>
-        );
-      case LockDisplayStates.GENERATING_PROOF:
-        return (
-          <div>
+    case LockDisplayStates.LOCKABLE:
+      return (
+        <div>
+          <button onClick={lockWaitlist}>Lock the waitlist</button>
+        </div>
+      );
+    case LockDisplayStates.GENERATING_PROOF:
+      return (
+        <div>
             Generating proof to lock the waitlist. This will take a few
             seconds...
-          </div>
-        );
-      case LockDisplayStates.SENDING_LOCK_TX:
-        return (
-          <div>
+        </div>
+      );
+    case LockDisplayStates.SENDING_LOCK_TX:
+      return (
+        <div>
             Sending transaction to lock the waitlist. This may take a while...
-          </div>
-        );
-      case LockDisplayStates.SUCCESS:
-        return (
-          <div>
+        </div>
+      );
+    case LockDisplayStates.SUCCESS:
+      return (
+        <div>
             Successfully locked the waitlist with Merkle root:
-            <br />
-            {getHexFromBigNumberString(root)}
-          </div>
-        );
-      case LockDisplayStates.FAILURE:
-        return (
-          <div>
+          <br />
+          {getHexFromBigNumberString(root)}
+        </div>
+      );
+    case LockDisplayStates.FAILURE:
+      return (
+        <div>
             Failed to lock the waitlist: {errorMessage}
-            <br />
-            <button onClick={resetLockDisplayState}>Go Back</button>
-          </div>
-        );
+          <br />
+          <button onClick={resetLockDisplayState}>Go Back</button>
+        </div>
+      );
     }
   };
 

@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
 
 export const NONEMPTY_ALPHANUMERIC_REGEX = /^[a-z0-9]+$/i;
 // Takes a string s which represents a BigNumber and returns its hex string equivalent
@@ -16,7 +16,7 @@ export const getHexFromBigNumberString = (s: string): string => {
 // Returns the original string if conversion fails
 export const getLeadingHexFromBigNumberString = (
   s: string,
-  numLetters: number = 8
+  numLetters = 8
 ): string => {
   try {
     const bn = ethers.BigNumber.from(s);

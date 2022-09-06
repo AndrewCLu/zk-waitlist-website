@@ -1,11 +1,12 @@
-import Head from "next/head";
-import Script from "next/script";
-import styles from "../styles/Index.module.css";
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { MetamaskConnectionStates, Metamask } from "../components/Metamask";
-import Waitlist from "../components/Waitlist";
-import { GOERLI_CHAIN_ID } from "../utils/WaitlistContract";
+import React from 'react';
+import Head from 'next/head';
+import Script from 'next/script';
+import styles from '../styles/Index.module.css';
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import { MetamaskConnectionStates, Metamask } from '../components/Metamask';
+import Waitlist from '../components/Waitlist';
+import { GOERLI_CHAIN_ID } from '../utils/WaitlistContract';
 
 export default function IndexPage() {
   const [metamaskState, setMetamaskState] = useState<MetamaskConnectionStates>(
@@ -26,12 +27,12 @@ export default function IndexPage() {
       return;
     }
     // Set up event listeners
-    ethereum.on("accountsChanged", reloadPage);
-    ethereum.on("chainChanged", reloadPage);
+    ethereum.on('accountsChanged', reloadPage);
+    ethereum.on('chainChanged', reloadPage);
     // Clean up the event listeners
     return () => {
-      ethereum.removeListener("accountsChanged", reloadPage);
-      ethereum.removeListener("chainChanged", reloadPage);
+      ethereum.removeListener('accountsChanged', reloadPage);
+      ethereum.removeListener('chainChanged', reloadPage);
     };
   });
 

@@ -1,11 +1,13 @@
 // Utils to help with zero knowledge proofs
 
-import { getErrorMessage } from "./Errors";
-const snarkjs = require("snarkjs");
-const path = require("path");
-const fs = require("fs");
+import { getErrorMessage } from './Errors';
+/* eslint-disable */
+const snarkjs = require('snarkjs'); 
+const path = require('path');
+const fs = require('fs');
+/* eslint-enable */ 
 
-export type Circuit = "locker" | "merkle_tree" | "poseidon_2" | "redeemer";
+export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
 
 // Runs the prover specified by circuit with given input
 // Returns the resulting proof and publicSignals, or an error if encountered
@@ -16,8 +18,8 @@ export const generateProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
-      path.join("circuits", circuit, circuit + ".wasm"),
-      path.join("circuits", circuit, circuit + "_final.zkey")
+      path.join('circuits', circuit, circuit + '.wasm'),
+      path.join('circuits', circuit, circuit + '_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
@@ -34,9 +36,9 @@ export const verifyProof = async (
 ): Promise<boolean> => {
   try {
     const verificationKeyPath = path.join(
-      "circuits",
+      'circuits',
       circuit,
-      circuit + "_verification_key.json"
+      circuit + '_verification_key.json'
     );
     const verificationKey = JSON.parse(fs.readFileSync(verificationKeyPath));
     const verified = await snarkjs.plonk.verify(
@@ -46,7 +48,7 @@ export const verifyProof = async (
     );
     return verified;
   } catch (error) {
-    console.log("Error verifiying proof: ", getErrorMessage(error));
+    console.log('Error verifiying proof: ', getErrorMessage(error));
     return false;
   }
 };
@@ -64,10 +66,10 @@ export const getProofSolidityCalldata = async (
     );
     const proofCalldata: string = solidityCalldata.slice(
       0,
-      solidityCalldata.indexOf(",")
+      solidityCalldata.indexOf(',')
     );
     const publicSignalsCalldata: string[] = JSON.parse(
-      solidityCalldata.slice(solidityCalldata.indexOf(",") + 1)
+      solidityCalldata.slice(solidityCalldata.indexOf(',') + 1)
     );
     return { proofCalldata, publicSignalsCalldata };
   } catch (error) {
@@ -88,7 +90,7 @@ export const generateProofWithSolidityCalldata = async (
   const { proof, publicSignals } = generateProofResult;
   const verified = await verifyProof(proof, publicSignals, circuit);
   if (!verified) {
-    return Error("Failed to verify proof.");
+    return Error('Failed to verify proof.');
   }
   const getCalldataResult = await getProofSolidityCalldata(
     proof,

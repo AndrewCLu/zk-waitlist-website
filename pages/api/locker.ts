@@ -1,6 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { NONEMPTY_ALPHANUMERIC_REGEX } from "../../utils/Parsing";
-import { generateProofWithSolidityCalldata } from "../../utils/ZeroKnowledge";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Parsing';
+import { generateProofWithSolidityCalldata } from '../../utils/ZeroKnowledge';
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,21 +11,21 @@ export default async function handler(
   } = req;
 
   // Only allow GET requests
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   // Commitments must all be nonempty alphanumeric strings
-  if (typeof commitments !== "string") {
-    return res.status(400).send({ error: "invalid commitments" });
+  if (typeof commitments !== 'string') {
+    return res.status(400).send({ error: 'invalid commitments' });
   }
-  const commitmentArray = commitments.split(",");
-  for (let i of commitmentArray) {
+  const commitmentArray = commitments.split(',');
+  for (const i of commitmentArray) {
     if (!i.match(NONEMPTY_ALPHANUMERIC_REGEX)) {
       return res
         .status(400)
         .send({
-          error: "one or more commitments is either empty or nonalphanumeric",
+          error: 'one or more commitments is either empty or nonalphanumeric',
         });
     }
   }
@@ -34,7 +34,7 @@ export default async function handler(
   const lockerProofInput = { commitments: commitmentArray };
   const lockerProofResult = await generateProofWithSolidityCalldata(
     lockerProofInput,
-    "locker"
+    'locker'
   );
   if (lockerProofResult instanceof Error) {
     return res.status(400).send({ error: lockerProofResult.message });

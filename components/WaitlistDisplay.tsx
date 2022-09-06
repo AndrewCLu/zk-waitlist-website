@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 import {
   getHexFromBigNumberString,
   getLeadingHexFromBigNumberString,
-} from "../utils/Parsing";
-import { WaitlistContractStateType, WaitlistDisplayStates } from "./Waitlist";
+} from '../utils/Parsing';
+import { WaitlistContractStateType, WaitlistDisplayStates } from './Waitlist';
 
 type WaitlistDisplayProps = {
   waitlistDisplayState: WaitlistDisplayStates;
@@ -40,7 +40,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       <br />
       {props.waitlistContractState.commitments.map((c, i) => (
         <div key={i + 1}>
-          {i + 1 + ". " + getLeadingHexFromBigNumberString(c) + "..."}
+          {i + 1 + '. ' + getLeadingHexFromBigNumberString(c) + '...'}
         </div>
       ))}
       {userCommitments && userCommitments.length > 0 ? (
@@ -49,7 +49,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           commitment(s):
           <br />
           {userCommitments.map((c, i) => (
-            <div key={i + 1}>{i + 1 + ". " + getHexFromBigNumberString(c)}</div>
+            <div key={i + 1}>{i + 1 + '. ' + getHexFromBigNumberString(c)}</div>
           ))}
         </div>
       ) : null}
@@ -57,7 +57,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       <br />
       {props.waitlistContractState.nullifiers.map((n, i) => (
         <div key={i + 1}>
-          {i + 1 + ". " + getLeadingHexFromBigNumberString(n) + "..."}
+          {i + 1 + '. ' + getLeadingHexFromBigNumberString(n) + '...'}
         </div>
       ))}
       {userNullifiers && userNullifiers.length > 0 ? (
@@ -66,13 +66,13 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           nullifiers(s):
           <br />
           {userNullifiers.map((n, i) => (
-            <div key={i + 1}>{i + 1 + ". " + getHexFromBigNumberString(n)}</div>
+            <div key={i + 1}>{i + 1 + '. ' + getHexFromBigNumberString(n)}</div>
           ))}
         </div>
       ) : null}
-      There are{" "}
+      There are{' '}
       {props.waitlistContractState.maxWaitlistSpots -
-        props.waitlistContractState.commitments.length}{" "}
+        props.waitlistContractState.commitments.length}{' '}
       spot(s) remaining on the waitlist.
       <br />
       {props.waitlistContractState.isLocked ? (
@@ -80,7 +80,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       ) : (
         <div>The waitlist is not locked.</div>
       )}
-      Merkle root:{" "}
+      Merkle root:{' '}
       {getHexFromBigNumberString(props.waitlistContractState.merkleRoot)}
     </div>
   );

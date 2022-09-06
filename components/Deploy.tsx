@@ -1,9 +1,9 @@
-import { ethers } from "ethers";
-import React, { useState } from "react";
-import { getErrorMessage } from "../utils/Errors";
-import { getHexFromBigNumberString } from "../utils/Parsing";
-import { WAITLIST_CONTRACT_ADDRESS } from "../utils/WaitlistContract";
-import { WaitlistContractStateType } from "./Waitlist";
+import { ethers } from 'ethers';
+import React, { useState } from 'react';
+import { getErrorMessage } from '../utils/Errors';
+import { getHexFromBigNumberString } from '../utils/Parsing';
+import { WAITLIST_CONTRACT_ADDRESS } from '../utils/WaitlistContract';
+import { WaitlistContractStateType } from './Waitlist';
 
 enum DeployDisplayStates {
   NOT_DEPLOYED,
@@ -18,7 +18,7 @@ type DeployProps = {
 export default function Deploy(props: DeployProps) {
   const [deployDisplayState, setDeployDisplayState] =
     useState<DeployDisplayStates>(DeployDisplayStates.NOT_DEPLOYED);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const deployWaitlistContract = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -70,16 +70,16 @@ export default function Deploy(props: DeployProps) {
 
   const getDeployDisplayComponent = () => {
     switch (deployDisplayState) {
-      case DeployDisplayStates.NOT_DEPLOYED:
-        return (
-          <div>
+    case DeployDisplayStates.NOT_DEPLOYED:
+      return (
+        <div>
             Need to deploy waitlist contract.
-            <br />
-            <button onClick={deployWaitlistContract}>
+          <br />
+          <button onClick={deployWaitlistContract}>
               Deploy Waitlist Contract
-            </button>
-          </div>
-        );
+          </button>
+        </div>
+      );
     }
   };
 
