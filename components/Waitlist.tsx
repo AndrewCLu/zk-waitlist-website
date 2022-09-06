@@ -37,7 +37,7 @@ type WaitlistProps = {
 };
 
 export default function Waitlist(props: WaitlistProps) {
-  const { signer, provider } = props;
+  const { signer } = props;
   const [waitlistContractAddress, setWaitlistContractAddress] =
     useSessionStorage('waitlist-contract-address', '');
   const [waitlistContract, setWaitlistContract] = useState<ethers.Contract>();
