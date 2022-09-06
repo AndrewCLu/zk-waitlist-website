@@ -1,11 +1,12 @@
 import { ethers } from 'ethers';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getHexFromBigNumberString, NONEMPTY_ALPHANUMERIC_REGEX } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
 import { WaitlistContractStateType } from './Waitlist';
 
 enum RedeemDisplayStates {
   ENTER_SECRET,
+  ALL_SPOTS_REDEEMED,
   CHECKING_SECRET,
   REDEEMABLE,
   NOT_REDEEMABLE,
@@ -27,6 +28,12 @@ export default function Redeem(props: RedeemProps) {
   const [secret, setSecret] = useState('');
   const [redeemableIndex, setRedeemableIndex] = useState<number>();
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (props.waitlistContractState.nullifiers.length === props.waitlistContractState.commitments.length) {
+      setRedeemDisplayState(RedeemDisplayStates.ALL_SPOTS_REDEEMED);
+    }
+  })
 
   const updateSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSecret(event.currentTarget.value);
@@ -170,6 +177,14 @@ export default function Redeem(props: RedeemProps) {
             </form>
           </div>
         )
+      case RedeemDisplayStates.ALL_SPOTS_REDEEMED:
+        return (
+          <div>
+            All spots on the waitlist have been redeemed. 
+            <br/>
+            <button onClick={resetWaitlist}>Create a new waitlist</button>
+          </div>
+        )
       case RedeemDisplayStates.CHECKING_SECRET:
         return (
           <div>
@@ -203,7 +218,7 @@ export default function Redeem(props: RedeemProps) {
             {getHexFromBigNumberString(props.waitlistContractState.commitments[redeemableIndex!])}
             <br/>
             <button onClick={resetRedeemDisplayState}>Ok</button>
-            <button onClick={resetWaitlist}>Try a new waitlist</button>
+            <button onClick={resetWaitlist}>Create a new waitlist</button>
           </div>
         )
       case RedeemDisplayStates.GENERATING_PROOF:
