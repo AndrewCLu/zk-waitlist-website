@@ -1,4 +1,4 @@
-import { VStack, Button, Text, Heading, Box } from '@chakra-ui/react';
+import { VStack, Button, Text, Heading, Box, Spinner } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -113,11 +113,38 @@ export default function Deploy(props: DeployProps) {
           </Button>
         );
       case DeployDisplayStates.DEPLOYING_LOCKER_VERIFIER:
-        return <div>Deploying the locker verifier contract...</div>;
+        return (
+          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
+            <VStack spacing={'20%'}>
+              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
+                (1/3) Deploying the locker verifier contract...
+              </Text>
+              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
+            </VStack>
+          </Box>
+        );
       case DeployDisplayStates.DEPLOYING_REDEEMER_VERIFIER:
-        return <div>Deploying the redeemer verifier contract...</div>;
+        return (
+          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
+            <VStack spacing={'20%'}>
+              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
+                (2/3) Deploying the redeemer verifier contract...
+              </Text>
+              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
+            </VStack>
+          </Box>
+        );
       case DeployDisplayStates.DEPLOYING_WAITLIST:
-        return <div>Deploying the waitlist contract...</div>;
+        return (
+          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
+            <VStack spacing={'20%'}>
+              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
+                (3/3) Deploying the waitlist contract...
+              </Text>
+              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
+            </VStack>
+          </Box>
+        );
       case DeployDisplayStates.SUCCESS:
         return (
           <VStack>

@@ -12,6 +12,7 @@ const colors = {
   app: {
     100: '#000000',
     200: '#D781FF',
+    300: '#EDEDED',
     500: '#B71FFF',
   },
   metamask: {
