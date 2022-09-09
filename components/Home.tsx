@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metamask, MetamaskConnectionStates } from './Metamask';
+import { Heading } from '@chakra-ui/react';
 
 type HomeProps = {
   metamaskState: MetamaskConnectionStates;
@@ -7,7 +8,9 @@ type HomeProps = {
 export default function Home(props: HomeProps) {
   return (
     <div>
-      <div>This is the home page</div>
+      <div>
+        <Heading size="4xl">ZK Waitlist</Heading>
+      </div>
       <div>
         <Metamask metamaskState={props.metamaskState} />
       </div>

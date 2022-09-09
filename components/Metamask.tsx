@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import React from 'react';
+import { Button } from '@chakra-ui/react';
 
 export enum MetamaskConnectionStates {
   UNDEFINED,
@@ -41,7 +42,13 @@ export function Metamask(props: MetamaskProps) {
       case MetamaskConnectionStates.NOT_CONNECTED:
         return (
           <div>
-            <button onClick={connectToMetamask}>Connect To Metamask</button>
+            <Button
+              colorScheme="orange"
+              variant="solid"
+              onClick={connectToMetamask}
+            >
+              Connect To Metamask
+            </Button>
           </div>
         );
       case MetamaskConnectionStates.WRONG_NETWORK:
