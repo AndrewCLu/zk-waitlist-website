@@ -40,7 +40,7 @@ export function Metamask(props: MetamaskProps) {
           <Box
             as="button"
             borderRadius="md"
-            bg="yellow.500"
+            bg="errors.200"
             color="white"
             px={'16px'}
             h={'40px'}
@@ -53,7 +53,7 @@ export function Metamask(props: MetamaskProps) {
           <Box
             as="button"
             borderRadius="md"
-            bg="yellow.500"
+            bg="errors.200"
             color="white"
             px={'16px'}
             h={'40px'}
@@ -65,7 +65,7 @@ export function Metamask(props: MetamaskProps) {
         return (
           <div>
             <Button
-              colorScheme="orange"
+              colorScheme="metamask"
               variant="solid"
               onClick={connectToMetamask}
             >
@@ -78,7 +78,7 @@ export function Metamask(props: MetamaskProps) {
           <Box
             as="button"
             borderRadius="md"
-            bg="yellow.500"
+            bg="errors.200"
             color="white"
             px={'16px'}
             h={'40px'}
@@ -91,7 +91,7 @@ export function Metamask(props: MetamaskProps) {
           <Box
             as="button"
             borderRadius="md"
-            bg="yellow.500"
+            bg="errors.200"
             color="white"
             px={'16px'}
             h={'40px'}

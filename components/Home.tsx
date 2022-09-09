@@ -18,10 +18,10 @@ export default function Home(props: HomeProps) {
   return (
     <div>
       <VStack marginTop={'10%'} spacing={'5%'}>
-        <Heading size="4xl" textColor={'purple.500'}>
+        <Heading size="4xl" textColor={'home.100'}>
           ZK Waitlist
         </Heading>
-        <Box textColor={'purple.600'} maxWidth={'60%'}>
+        <Box textColor={'home.400'} maxWidth={'60%'}>
           <Text>
             This app demonstrates a reusable on-chain private waitlist. Through
             the use of zero knowledge proofs, users can join the waitlist with
@@ -60,7 +60,7 @@ export default function Home(props: HomeProps) {
           </Text>
         </Box>
         <Metamask metamaskState={props.metamaskState} />
-        <Text textColor={'purple.800'} maxWidth={'60%'}>
+        <Text textColor={'home.500'} maxWidth={'60%'}>
           Circuits and contracts code:{' '}
           <Link href="https://github.com/AndrewCLu/zk-waitlist" isExternal>
             <u>https://github.com/AndrewCLu/zk-waitlist</u>
