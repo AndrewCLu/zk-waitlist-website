@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import React from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, Box } from '@chakra-ui/react';
 
 export enum MetamaskConnectionStates {
   UNDEFINED,
@@ -36,9 +36,31 @@ export function Metamask(props: MetamaskProps) {
   const getRenderObject = (): JSX.Element => {
     switch (metamaskState) {
       case MetamaskConnectionStates.UNDEFINED:
-        return <div>loading...</div>;
+        return (
+          <Box
+            as="button"
+            borderRadius="md"
+            bg="yellow.500"
+            color="white"
+            px={'16px'}
+            h={'40px'}
+          >
+            Loading...
+          </Box>
+        );
       case MetamaskConnectionStates.NOT_INSTALLED:
-        return <div>Please install metamask and refresh the page</div>;
+        return (
+          <Box
+            as="button"
+            borderRadius="md"
+            bg="yellow.500"
+            color="white"
+            px={'16px'}
+            h={'40px'}
+          >
+            Please install Metamask and refresh the page
+          </Box>
+        );
       case MetamaskConnectionStates.NOT_CONNECTED:
         return (
           <div>
@@ -52,11 +74,37 @@ export function Metamask(props: MetamaskProps) {
           </div>
         );
       case MetamaskConnectionStates.WRONG_NETWORK:
-        return <div>Please change to Goerli network</div>;
+        return (
+          <Box
+            as="button"
+            borderRadius="md"
+            bg="yellow.500"
+            color="white"
+            px={'16px'}
+            h={'40px'}
+          >
+            Please change to Goerli network
+          </Box>
+        );
       case MetamaskConnectionStates.CONNECTED:
-        return <div>Connected to metamask!</div>;
+        return (
+          <Box
+            as="button"
+            borderRadius="md"
+            bg="yellow.500"
+            color="white"
+            px={'16px'}
+            h={'40px'}
+          >
+            Connected to metamask!
+          </Box>
+        );
     }
   };
 
-  return <div>{getRenderObject()}</div>;
+  return (
+    <div>
+      <Box>{getRenderObject()}</Box>
+    </div>
+  );
 }

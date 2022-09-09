@@ -3,12 +3,11 @@ import { Metamask, MetamaskConnectionStates } from './Metamask';
 import {
   VStack,
   Heading,
-  Center,
   Text,
   Link,
-  List,
   OrderedList,
   ListItem,
+  Box,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 
@@ -22,16 +21,17 @@ export default function Home(props: HomeProps) {
         <Heading size="4xl" textColor={'purple.500'}>
           ZK Waitlist
         </Heading>
-        <Text textColor={'purple.600'} maxWidth={'60%'}>
-          This app demonstrates a reusable on-chain private waitlist. Through
-          the use of zero knowledge proofs, users can join the waitlist with one
-          account, and later prove from a different account that they had
-          previously joined the waitlist, all without onlookers being able to
-          link the two accounts.
-          <br />
-          <br />
-          Users interact with the waitlist in 3 phases:
-          <br />
+        <Box textColor={'purple.600'} maxWidth={'60%'}>
+          <Text>
+            This app demonstrates a reusable on-chain private waitlist. Through
+            the use of zero knowledge proofs, users can join the waitlist with
+            one account, and later prove from a different account that they had
+            previously joined the waitlist, all without onlookers being able to
+            link the two accounts.
+            <br />
+            <br />
+            Users interact with the waitlist in 3 phases:
+          </Text>
           <OrderedList>
             <ListItem>
               <u>Commit:</u> A user selects a private secret and hashes the
@@ -52,10 +52,13 @@ export default function Home(props: HomeProps) {
               same secret.
             </ListItem>
           </OrderedList>
-          <br />
-          Connect to Metamask to get started! Code for the zero knowledge proof
-          circuits, waitlist smart contract, and frontend can be found below.
-        </Text>
+          <Text>
+            <br />
+            Connect to Metamask to get started! Code for the zero knowledge
+            proof circuits, waitlist smart contract, and frontend can be found
+            below.
+          </Text>
+        </Box>
         <Metamask metamaskState={props.metamaskState} />
         <Text textColor={'purple.800'} maxWidth={'60%'}>
           Circuits and contracts code:{' '}
