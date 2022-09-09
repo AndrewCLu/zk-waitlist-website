@@ -18,11 +18,11 @@ const colors = {
     500: '#FF981F',
   },
   errors: {
-    100: '#FF5A5A',
+    100: '#FF7A7A',
     200: '#FFC42D',
   },
   success: {
-    100: '#77E5BE',
+    100: '#9FEACF',
   },
 };
 

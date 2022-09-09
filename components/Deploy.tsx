@@ -1,4 +1,4 @@
-import { VStack, Button, Text, Heading } from '@chakra-ui/react';
+import { VStack, Button, Text, Heading, Box } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -119,14 +119,21 @@ export default function Deploy(props: DeployProps) {
       case DeployDisplayStates.DEPLOYING_WAITLIST:
         return <div>Deploying the waitlist contract...</div>;
       case DeployDisplayStates.SUCCESS:
-        return <div>Successfully deployed all contracts.</div>;
+        return (
+          <VStack>
+            <Box bg="success.100" borderRadius="lg" p={3} color="white">
+              Successfully deployed all contracts!
+            </Box>
+          </VStack>
+        );
       case DeployDisplayStates.FAILURE:
         return (
-          <div>
-            Failed to deploy contracts.
-            <br />
-            <button onClick={resetDeployDisplayState}>Go Back</button>
-          </div>
+          <VStack>
+            <Box bg="errors.100" borderRadius="lg" p={3} color="white">
+              Error: Failed to deploy contracts
+            </Box>
+            <Button onClick={resetDeployDisplayState}>Go Back</Button>
+          </VStack>
         );
     }
   };
