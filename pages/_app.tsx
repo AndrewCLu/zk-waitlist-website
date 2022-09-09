@@ -6,7 +6,7 @@ import React from 'react';
 const colors = {
   home: {
     100: '#B71FFF',
-    200: '#6E1797',
+    200: '#B371D2',
     300: '#410060',
   },
   app: {
