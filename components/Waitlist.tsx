@@ -170,12 +170,10 @@ export default function Waitlist(props: WaitlistProps) {
         return <div>Loading waitlist...</div>;
       case WaitlistDisplayStates.DEPLOY:
         return (
-          <div>
-            <Deploy
-              signer={signer}
-              setDeployedWaitlistContractAddress={setWaitlistContractAddress}
-            />
-          </div>
+          <Deploy
+            signer={signer}
+            setDeployedWaitlistContractAddress={setWaitlistContractAddress}
+          />
         );
       case WaitlistDisplayStates.COMMIT:
         return (

@@ -1,3 +1,4 @@
+import { VStack, Button, Text, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -83,17 +84,33 @@ export default function Deploy(props: DeployProps) {
     setDeployDisplayState(DeployDisplayStates.NOT_DEPLOYED);
   };
 
+  const getDeployDisplayText = () => {
+    return (
+      <Text color="app.100" maxWidth={'60%'}>
+        Before we begin, we must deploy the waitlist smart contracts. We
+        actually have three contracts to deploy, as we must create contracts to
+        verify the zero knowledge proofs for locking the waitlist and redeeming
+        a spot, as well as the waitlist itself. This verifier functionality
+        could be included in the waitlist contract, but separating it allows us
+        to swap in verifiers with different verification abilities in the
+        future.
+        <br />
+        <br />
+        Clicking the button below will trigger three deployments to the Goerli
+        testnet. Each deployment will take around 15 seconds and requires
+        Metamask approval. After you are done, we will be able to view the
+        waitlist!
+      </Text>
+    );
+  };
+
   const getDeployDisplayComponent = () => {
     switch (deployDisplayState) {
       case DeployDisplayStates.NOT_DEPLOYED:
         return (
-          <div>
-            Need to deploy waitlist contract.
-            <br />
-            <button onClick={deployWaitlistContract}>
-              Deploy Waitlist Contract
-            </button>
-          </div>
+          <Button color="app.500" onClick={deployWaitlistContract}>
+            Deploy Waitlist Contracts
+          </Button>
         );
       case DeployDisplayStates.DEPLOYING_LOCKER_VERIFIER:
         return <div>Deploying the locker verifier contract...</div>;
@@ -114,5 +131,13 @@ export default function Deploy(props: DeployProps) {
     }
   };
 
-  return <div>{getDeployDisplayComponent()}</div>;
+  return (
+    <VStack marginTop={'10%'} spacing={'5%'}>
+      <Heading size="2xl" textColor={'app.200'}>
+        Deployment
+      </Heading>
+      {getDeployDisplayText()}
+      {getDeployDisplayComponent()}
+    </VStack>
+  );
 }
