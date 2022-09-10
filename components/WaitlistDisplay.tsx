@@ -13,9 +13,13 @@ type WaitlistSpotProps = {
 };
 
 function WaitlistSpot(props: WaitlistSpotProps) {
+  const color = props.isUserOwned ? 'app.500' : 'app.200';
   return (
-    <Box bg="purple" borderRadius="lg" p={8} color="white">
-      {props.text}
+    <Box bg={color} borderRadius="lg" p={8} color="white" height="100px">
+      <Text marginTop="5px">{props.index + '. ' + props.text}</Text>
+      <Text textAlign="center">
+        {props.isUserOwned ? '(claimed by you)' : null}
+      </Text>
     </Box>
   );
 }
@@ -52,19 +56,19 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       <br />
       <Box bg="app.300" borderRadius="lg" p={6}>
         <HStack>
-          <Text>
+          <Text color="app.500">
             {props.waitlistContractState.commitments.length} /{' '}
             {props.waitlistContractState.maxWaitlistSpots} waitlist spots
             claimed
           </Text>
         </HStack>
         <br />
-        <HStack>
+        <HStack spacing={6}>
           {props.waitlistContractState.commitments.map((c, i) =>
             WaitlistSpot({
               index: i,
               text: getLeadingHexFromBigNumberString(c) + '...',
-              isUserOwned: c in userCommitments,
+              isUserOwned: userCommitments.includes(c),
             })
           )}
         </HStack>
