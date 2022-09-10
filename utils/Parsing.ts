@@ -16,7 +16,7 @@ export const getHexFromBigNumberString = (s: string): string => {
 // Returns the original string if conversion fails
 export const getLeadingHexFromBigNumberString = (
   s: string,
-  numLetters = 8
+  numLetters = 12
 ): string => {
   try {
     const bn = ethers.BigNumber.from(s);

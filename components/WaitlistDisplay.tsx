@@ -1,9 +1,24 @@
+import { Box, HStack } from '@chakra-ui/react';
 import React from 'react';
 import {
   getHexFromBigNumberString,
   getLeadingHexFromBigNumberString,
 } from '../utils/Parsing';
 import { WaitlistContractStateType, WaitlistDisplayStates } from './Waitlist';
+
+type WaitlistSpotProps = {
+  index: number;
+  text: string;
+  isUserOwned: boolean;
+};
+
+function WaitlistSpot(props: WaitlistSpotProps) {
+  return (
+    <Box bg="purple" borderRadius="lg" p={8} color="white">
+      {props.text}
+    </Box>
+  );
+}
 
 type WaitlistDisplayProps = {
   waitlistDisplayState: WaitlistDisplayStates;
@@ -35,11 +50,15 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     <div>
       The following commitment(s) are claimed in the waitlist:
       <br />
-      {props.waitlistContractState.commitments.map((c, i) => (
-        <div key={i + 1}>
-          {i + 1 + '. ' + getLeadingHexFromBigNumberString(c) + '...'}
-        </div>
-      ))}
+      <HStack>
+        {props.waitlistContractState.commitments.map((c, i) =>
+          WaitlistSpot({
+            index: i,
+            text: getLeadingHexFromBigNumberString(c) + '...',
+            isUserOwned: c in userCommitments,
+          })
+        )}
+      </HStack>
       {userCommitments && userCommitments.length > 0 ? (
         <div>
           You have claimed the waitlist spot(s) corresponding to the following
