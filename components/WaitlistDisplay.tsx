@@ -26,6 +26,7 @@ function WaitlistSpot(props: WaitlistSpotProps) {
 
 type WaitlistDisplayProps = {
   waitlistDisplayState: WaitlistDisplayStates;
+  waitlistContractAddress: string;
   waitlistContractState?: WaitlistContractStateType;
   waitlistContractStateLoading: boolean;
   updateWaitlistContractState: () => void;
@@ -38,22 +39,16 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   }
 
   const updateButton = (
-    <button onClick={props.updateWaitlistContractState}>
+    <Button onClick={props.updateWaitlistContractState}>
       Update Waitlist State
-    </button>
-  );
-
-  const resetButton = (
-    <button onClick={props.resetWaitlistDisplayState}>
-      Create New Waitlist
-    </button>
+    </Button>
   );
 
   const headerComponent = (
     <div>
       <Box>
         <Flex>
-          <Text>This is the waitlist</Text>
+          <Text>Waitlist Contract: {props.waitlistContractAddress} </Text>
           <Button onClick={props.resetWaitlistDisplayState}>
             Create New Waitlist
           </Button>
@@ -64,39 +59,24 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
 
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
-    <div>
-      The following commitment(s) are claimed in the waitlist:
+    <Box bg="app.300" borderRadius="lg" p={6}>
+      <HStack>
+        <Text color="app.500">
+          {props.waitlistContractState.commitments.length} /{' '}
+          {props.waitlistContractState.maxWaitlistSpots} waitlist spots claimed
+        </Text>
+      </HStack>
       <br />
-      <Box bg="app.300" borderRadius="lg" p={6}>
-        <HStack>
-          <Text color="app.500">
-            {props.waitlistContractState.commitments.length} /{' '}
-            {props.waitlistContractState.maxWaitlistSpots} waitlist spots
-            claimed
-          </Text>
-        </HStack>
-        <br />
-        <HStack spacing={6}>
-          {props.waitlistContractState.commitments.map((c, i) =>
-            WaitlistSpot({
-              index: i,
-              text: getLeadingHexFromBigNumberString(c) + '...',
-              isUserOwned: userCommitments.includes(c),
-            })
-          )}
-        </HStack>
-      </Box>
-      {userCommitments && userCommitments.length > 0 ? (
-        <div>
-          You have claimed the waitlist spot(s) corresponding to the following
-          commitment(s):
-          <br />
-          {userCommitments.map((c, i) => (
-            <div key={i + 1}>{i + 1 + '. ' + getHexFromBigNumberString(c)}</div>
-          ))}
-        </div>
-      ) : null}
-    </div>
+      <HStack spacing={6}>
+        {props.waitlistContractState.commitments.map((c, i) =>
+          WaitlistSpot({
+            index: i,
+            text: getLeadingHexFromBigNumberString(c) + '...',
+            isUserOwned: userCommitments.includes(c),
+          })
+        )}
+      </HStack>
+    </Box>
   );
 
   const userNullifiers = props.waitlistContractState?.userNullifiers;
@@ -153,7 +133,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
-            {updateButton} {resetButton}
+            {updateButton}
             <br />
             {headerComponent}
             <br />
@@ -165,19 +145,16 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
-            {updateButton} {resetButton}
+            {updateButton} {lockedComponent}
             <br />
             {headerComponent}
-            <br />
-            {lockedComponent}
-            <br />
             {commitmentComponent}
           </div>
         );
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
-            {updateButton} {resetButton}
+            {updateButton}
             <br />
             {spotsClaimedComponent}
             <br />

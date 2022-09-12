@@ -159,6 +159,7 @@ export default function Waitlist(props: WaitlistProps) {
     const waitlistDisplay = (
       <WaitlistDisplay
         waitlistDisplayState={waitlistDisplayState}
+        waitlistContractAddress={waitlistContractAddress}
         waitlistContractState={waitlistContractState}
         waitlistContractStateLoading={waitlistContractStateLoading}
         updateWaitlistContractState={updateWaitlistContractState}
