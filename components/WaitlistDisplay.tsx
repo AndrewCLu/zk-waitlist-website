@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from '@chakra-ui/react';
+import { Box, Button, HStack, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 import {
   getHexFromBigNumberString,
@@ -47,6 +47,19 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     <button onClick={props.resetWaitlistDisplayState}>
       Create New Waitlist
     </button>
+  );
+
+  const headerComponent = (
+    <div>
+      <Box>
+        <Flex>
+          <Text>This is the waitlist</Text>
+          <Button onClick={props.resetWaitlistDisplayState}>
+            Create New Waitlist
+          </Button>
+        </Flex>
+      </Box>
+    </div>
   );
 
   const userCommitments = props.waitlistContractState?.userCommitments;
@@ -142,7 +155,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           <div>
             {updateButton} {resetButton}
             <br />
-            {spotsClaimedComponent}
+            {headerComponent}
             <br />
             {lockedComponent}
             <br />
@@ -154,7 +167,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           <div>
             {updateButton} {resetButton}
             <br />
-            {spotsClaimedComponent}
+            {headerComponent}
             <br />
             {lockedComponent}
             <br />
