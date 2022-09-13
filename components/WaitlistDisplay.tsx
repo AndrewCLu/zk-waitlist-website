@@ -1,4 +1,6 @@
 import { Box, Button, HStack, Flex, Text } from '@chakra-ui/react';
+import { LockIcon, UnlockIcon } from '@chakra-ui/icons';
+
 import React from 'react';
 import {
   getHexFromBigNumberString,
@@ -57,10 +59,17 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </div>
   );
 
+  const lockComponent = props.waitlistContractState?.isLocked ? (
+    <LockIcon color="red" />
+  ) : (
+    <UnlockIcon color="green" />
+  );
+
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <Box bg="app.300" borderRadius="lg" p={6}>
-      <HStack>
+      <HStack spacing={2}>
+        {lockComponent}
         <Text color="app.500">
           {props.waitlistContractState.commitments.length} /{' '}
           {props.waitlistContractState.maxWaitlistSpots} waitlist spots claimed
