@@ -23,7 +23,7 @@ const colors = {
     200: '#FFC42D',
   },
   success: {
-    100: '#9FEACF',
+    100: '#69DBB2',
   },
 };
 
