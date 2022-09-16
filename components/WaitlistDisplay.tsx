@@ -55,7 +55,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
 
   if (props.waitlistContractStateLoading || !props.waitlistContractState) {
     return (
-      <Box bg="app.300" marginTop={'10%'} borderRadius="lg" p={6} width="100%">
+      <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
         <Heading>Loading waitlist state...</Heading>
       </Box>
     );
@@ -117,7 +117,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
 
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
-    <Box bg="app.300" borderRadius="lg" p={6} width="100%">
+    <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
       <Flex>
         <Heading textAlign="center">Your Waitlist</Heading>
         <Spacer />
@@ -192,19 +192,9 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const getWaitlistDisplayComponent = () => {
     switch (props.waitlistDisplayState) {
       case WaitlistDisplayStates.COMMIT:
-        return (
-          <div>
-            <br />
-            {commitmentComponent}
-          </div>
-        );
+        return commitmentComponent;
       case WaitlistDisplayStates.LOCK:
-        return (
-          <div>
-            <br />
-            {commitmentComponent}
-          </div>
-        );
+        return commitmentComponent;
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>

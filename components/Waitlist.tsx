@@ -172,7 +172,7 @@ export default function Waitlist(props: WaitlistProps) {
         return (
           <Box
             bg="app.300"
-            marginTop={'10%'}
+            marginTop={'3%'}
             borderRadius="lg"
             p={6}
             width="100%"
