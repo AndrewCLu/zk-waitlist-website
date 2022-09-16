@@ -6,8 +6,10 @@ import {
   Text,
   Heading,
   Spacer,
+  IconButton,
+  useToast,
 } from '@chakra-ui/react';
-import { LockIcon, UnlockIcon } from '@chakra-ui/icons';
+import { CopyIcon, LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
 import React from 'react';
 import {
@@ -44,6 +46,8 @@ type WaitlistDisplayProps = {
 };
 
 export default function WaitlistDisplay(props: WaitlistDisplayProps) {
+  const toast = useToast();
+
   if (props.waitlistContractStateLoading || !props.waitlistContractState) {
     return (
       <Box bg="app.300" borderRadius="lg" p={6} width="100%">
@@ -51,6 +55,18 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       </Box>
     );
   }
+
+  const copyWaitlistAddress = () => {
+    navigator.clipboard.writeText(props.waitlistContractAddress);
+    toast({
+      title: 'Copied address!',
+      // eslint-disable-next-line quotes
+      description: "You've copied the waitlist contract address.",
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+    });
+  };
 
   const updateButton = (
     <Button onClick={props.updateWaitlistContractState}>
@@ -83,9 +99,16 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           </Text>
         </HStack>
         <Spacer />
-        <Text color="app.500">
-          Contract address: {props.waitlistContractAddress}
-        </Text>
+        <HStack>
+          <Text color="app.500">
+            Contract address: {props.waitlistContractAddress}
+          </Text>
+          <IconButton
+            onClick={copyWaitlistAddress}
+            aria-label="Copy waitlist address"
+            icon={<CopyIcon />}
+          ></IconButton>
+        </HStack>
       </Flex>
       <br />
       <HStack spacing={6}>
