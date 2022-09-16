@@ -7,14 +7,12 @@ import {
   Heading,
   Spacer,
   IconButton,
+  Center,
   useToast,
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverHeader,
   PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
 } from '@chakra-ui/react';
 import { CopyIcon, LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
@@ -84,20 +82,19 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const lockComponent = props.waitlistContractState?.isLocked ? (
     <LockIcon color="red" />
   ) : (
-    <Popover>
+    <Popover trigger="hover">
       <PopoverTrigger>
         <IconButton
-          backgroundColor="white"
           aria-label="Unlocked waitlist"
           icon={<UnlockIcon color="green" />}
         ></IconButton>
       </PopoverTrigger>
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>The waitlist is unlocked.</PopoverHeader>
+      <PopoverContent color="white" bg="green.500" borderColor="green.500">
         <PopoverBody>
-          Ensure the waitlist is full and lock it to enable redemptions.
+          <Center>
+            The waitlist is unlocked. Ensure the waitlist is full and lock it to
+            enable redemptions.
+          </Center>
         </PopoverBody>
       </PopoverContent>
     </Popover>
@@ -128,7 +125,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           </Text>
           <IconButton
             onClick={copyWaitlistAddress}
-            backgroundColor="white"
             aria-label="Copy waitlist address"
             icon={<CopyIcon color="app.500" />}
           ></IconButton>
