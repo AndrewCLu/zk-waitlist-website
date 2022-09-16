@@ -1,4 +1,12 @@
-import { Box, Button, HStack, Flex, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  HStack,
+  Flex,
+  Text,
+  Heading,
+  Spacer,
+} from '@chakra-ui/react';
 import { LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
 import React from 'react';
@@ -46,19 +54,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </Button>
   );
 
-  const headerComponent = (
-    <div>
-      <Box>
-        <Flex>
-          <Text>Waitlist Contract: {props.waitlistContractAddress} </Text>
-          <Button onClick={props.resetWaitlistDisplayState}>
-            Create New Waitlist
-          </Button>
-        </Flex>
-      </Box>
-    </div>
-  );
-
   const lockComponent = props.waitlistContractState?.isLocked ? (
     <LockIcon color="red" />
   ) : (
@@ -68,13 +63,27 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <Box bg="app.300" borderRadius="lg" p={6}>
-      <HStack spacing={2}>
-        {lockComponent}
+      <Flex>
+        <Heading textAlign="center">Your Waitlist</Heading>
+        <Spacer />
+        <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
+          Create New Waitlist
+        </Button>
+      </Flex>
+      <Flex>
+        <HStack spacing={2}>
+          {lockComponent}
+          <Text color="app.500">
+            {props.waitlistContractState.commitments.length} /{' '}
+            {props.waitlistContractState.maxWaitlistSpots} waitlist spots
+            claimed
+          </Text>
+        </HStack>
+        <Spacer />
         <Text color="app.500">
-          {props.waitlistContractState.commitments.length} /{' '}
-          {props.waitlistContractState.maxWaitlistSpots} waitlist spots claimed
+          Contract address: {props.waitlistContractAddress}
         </Text>
-      </HStack>
+      </Flex>
       <br />
       <HStack spacing={6}>
         {props.waitlistContractState.commitments.map((c, i) =>
@@ -111,24 +120,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </div>
   );
 
-  const lockedComponent = (
-    <div>
-      {props.waitlistContractState.isLocked ? (
-        <div>The waitlist is locked.</div>
-      ) : (
-        <div>The waitlist is not locked.</div>
-      )}
-    </div>
-  );
-
-  const spotsClaimedComponent = (
-    <div>
-      {props.waitlistContractState.commitments.length} out of{' '}
-      {props.waitlistContractState.maxWaitlistSpots} spots on the waitlist have
-      been claimed
-    </div>
-  );
-
   const spotsRedeemedComponent = (
     <div>
       {props.waitlistContractState.nullifiers.length} out of{' '}
@@ -144,19 +135,14 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           <div>
             {updateButton}
             <br />
-            {headerComponent}
-            <br />
-            {lockedComponent}
-            <br />
             {commitmentComponent}
           </div>
         );
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
-            {updateButton} {lockedComponent}
+            {updateButton}
             <br />
-            {headerComponent}
             {commitmentComponent}
           </div>
         );
@@ -164,10 +150,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
         return (
           <div>
             {updateButton}
-            <br />
-            {spotsClaimedComponent}
-            <br />
-            {lockedComponent}
             <br />
             {commitmentComponent}
             <br />
