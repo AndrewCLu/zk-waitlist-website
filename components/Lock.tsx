@@ -1,4 +1,4 @@
-import { VStack, Button, Text, Heading, Box, Spinner } from '@chakra-ui/react';
+import { VStack, Button, Text, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import {
@@ -117,7 +117,11 @@ export default function Lock(props: LockProps) {
   const getLockDisplayComponent = () => {
     switch (lockDisplayState) {
       case LockDisplayStates.LOCKABLE:
-        return <Button onClick={lockWaitlist}>Lock the waitlist</Button>;
+        return (
+          <Button color="app.500" onClick={lockWaitlist}>
+            Lock the waitlist
+          </Button>
+        );
       case LockDisplayStates.GENERATING_PROOF:
         return (
           <div>
