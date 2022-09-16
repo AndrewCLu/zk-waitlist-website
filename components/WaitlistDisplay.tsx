@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
+  VStack,
 } from '@chakra-ui/react';
 import { CopyIcon, LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
@@ -32,11 +33,17 @@ type WaitlistSpotProps = {
 function WaitlistSpot(props: WaitlistSpotProps) {
   const color = props.isUserOwned ? 'app.500' : 'app.200';
   return (
-    <Box bg={color} borderRadius="lg" p={8} color="white" height="120px">
-      <Text marginTop="15px">{props.index + '. ' + props.text}</Text>
-      <Text textAlign="center">
-        {props.isUserOwned ? '(claimed by you)' : null}
-      </Text>
+    <Box
+      bg={color}
+      borderRadius="lg"
+      p={8}
+      color="white"
+      height="120px"
+      textAlign="center"
+    >
+      <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
+      <Text>{props.text}</Text>
+      <Text>{props.isUserOwned ? '(claimed by you)' : null}</Text>
     </Box>
   );
 }
@@ -72,12 +79,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       isClosable: true,
     });
   };
-
-  const updateButton = (
-    <Button onClick={props.updateWaitlistContractState}>
-      Update Waitlist State
-    </Button>
-  );
 
   const lockComponent = props.waitlistContractState?.isLocked ? (
     <Popover trigger="hover">
@@ -118,43 +119,44 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
-      <Flex>
-        <Heading textAlign="center">Your Waitlist</Heading>
-        <Spacer />
-        <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
-          Create New Waitlist
-        </Button>
-      </Flex>
-      <Flex>
-        <HStack spacing={2}>
-          {lockComponent}
-          <Text color="app.500">
-            {props.waitlistContractState.commitments.length} /{' '}
-            {props.waitlistContractState.maxWaitlistSpots} spots claimed
-          </Text>
+      <VStack align="left" spacing={3}>
+        <Flex>
+          <Heading textAlign="center">Your Waitlist</Heading>
+          <Spacer />
+          <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
+            Create New Waitlist
+          </Button>
+        </Flex>
+        <Flex>
+          <HStack spacing={2}>
+            {lockComponent}
+            <Text color="app.500">
+              {props.waitlistContractState.commitments.length} /{' '}
+              {props.waitlistContractState.maxWaitlistSpots} spots claimed
+            </Text>
+          </HStack>
+          <Spacer />
+          <HStack>
+            <Text color="app.500">
+              Contract address: {props.waitlistContractAddress}
+            </Text>
+            <IconButton
+              onClick={copyWaitlistAddress}
+              aria-label="Copy waitlist address"
+              icon={<CopyIcon color="app.500" />}
+            ></IconButton>
+          </HStack>
+        </Flex>
+        <HStack spacing={6}>
+          {props.waitlistContractState.commitments.map((c, i) =>
+            WaitlistSpot({
+              index: i,
+              text: getLeadingHexFromBigNumberString(c) + '...',
+              isUserOwned: userCommitments.includes(c),
+            })
+          )}
         </HStack>
-        <Spacer />
-        <HStack>
-          <Text color="app.500">
-            Contract address: {props.waitlistContractAddress}
-          </Text>
-          <IconButton
-            onClick={copyWaitlistAddress}
-            aria-label="Copy waitlist address"
-            icon={<CopyIcon color="app.500" />}
-          ></IconButton>
-        </HStack>
-      </Flex>
-      <br />
-      <HStack spacing={6}>
-        {props.waitlistContractState.commitments.map((c, i) =>
-          WaitlistSpot({
-            index: i,
-            text: getLeadingHexFromBigNumberString(c) + '...',
-            isUserOwned: userCommitments.includes(c),
-          })
-        )}
-      </HStack>
+      </VStack>
     </Box>
   );
 
@@ -198,8 +200,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.REDEEM:
         return (
           <div>
-            {updateButton}
-            <br />
             {commitmentComponent}
             <br />
             {spotsRedeemedComponent}
