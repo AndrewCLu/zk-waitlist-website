@@ -7,6 +7,7 @@ import {
 } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
 import { WaitlistContractStateType } from './Waitlist';
+import { FailurePanel, LoadingPanel, SuccessPanel } from './Utils';
 
 enum LockDisplayStates {
   LOCKABLE,
@@ -26,7 +27,7 @@ export default function Lock(props: LockProps) {
   const [lockDisplayState, setLockDisplayState] = useState<LockDisplayStates>(
     LockDisplayStates.LOCKABLE
   );
-  const [root, setRoot] = useState('');
+  const [root, setRoot] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Generates proof to lock the waitlist and submits proof to Ethereum
@@ -124,34 +125,30 @@ export default function Lock(props: LockProps) {
         );
       case LockDisplayStates.GENERATING_PROOF:
         return (
-          <div>
-            Generating proof to lock the waitlist. This will take a few
-            seconds...
-          </div>
+          <LoadingPanel loadingMessage="(1/2) Generating proof to lock the waitlist..." />
         );
       case LockDisplayStates.SENDING_LOCK_TX:
         return (
-          <div>
-            Sending transaction to lock the waitlist. This may take a while...
-          </div>
+          <LoadingPanel loadingMessage="(2/2) Sending transaction to lock the waitlist..." />
         );
       case LockDisplayStates.SUCCESS:
         return (
-          <div>
-            Successfully locked the waitlist with Merkle root:
-            <br />
-            {getHexFromBigNumberString(root)}
-            <br />
-            <button onClick={resetLockDisplayState}>Proceed</button>
-          </div>
+          <SuccessPanel
+            successMessage={
+              'Successfully locked the waitlist with Merkle root:\n' +
+              getHexFromBigNumberString(root)
+            }
+            proceedFunction={resetLockDisplayState}
+            proceedFunctionMessage="Proceed"
+          />
         );
       case LockDisplayStates.FAILURE:
         return (
-          <div>
-            Failed to lock the waitlist: {errorMessage}
-            <br />
-            <button onClick={resetLockDisplayState}>Go Back</button>
-          </div>
+          <FailurePanel
+            failureMessage={'Failed to lock the waitlist:\n' + errorMessage}
+            proceedFunction={resetLockDisplayState}
+            proceedFunctionMessage="Go Back"
+          />
         );
     }
   };
