@@ -84,26 +84,21 @@ export default function Deploy(props: DeployProps) {
     setDeployDisplayState(DeployDisplayStates.NOT_DEPLOYED);
   };
 
-  const getDeployDisplayText = () => {
-    return (
-      <Text color="app.100" maxWidth={'60%'}>
-        Before we begin, we must deploy the waitlist smart contracts. We
-        actually have three contracts to deploy, as we must create contracts to
-        verify the zero knowledge proofs for locking the waitlist and redeeming
-        a spot, as well as the waitlist itself. This verifier functionality
-        could be included in the waitlist contract, but separating it allows us
-        to swap in verifiers with different verification abilities in the
-        future.
-        <br />
-        <br />
-        Clicking the button below will trigger three deployments to the Goerli
-        testnet. Each deployment will take around 15 seconds and requires
-        Metamask approval. After you are done, we will be able to view the
-        waitlist!
-      </Text>
-    );
-  };
-
+  const deployDisplayText = (
+    <Text color="app.100" maxWidth={'60%'}>
+      Before we begin, we must deploy the waitlist smart contracts. We actually
+      have three contracts to deploy, as we must create contracts to verify the
+      zero knowledge proofs for locking the waitlist and redeeming a spot, as
+      well as the waitlist itself. This verifier functionality could be included
+      in the waitlist contract, but separating it allows us to swap in verifiers
+      with different verification abilities in the future.
+      <br />
+      <br />
+      Clicking the button below will trigger three deployments to the Goerli
+      testnet. Each deployment will take around 15 seconds and requires Metamask
+      approval. After you are done, we will be able to view the waitlist!
+    </Text>
+  );
   const getDeployDisplayComponent = () => {
     switch (deployDisplayState) {
       case DeployDisplayStates.NOT_DEPLOYED:
@@ -170,7 +165,7 @@ export default function Deploy(props: DeployProps) {
       <Heading size="2xl" textColor={'app.200'}>
         Deployment
       </Heading>
-      {getDeployDisplayText()}
+      {deployDisplayText}
       {getDeployDisplayComponent()}
     </VStack>
   );

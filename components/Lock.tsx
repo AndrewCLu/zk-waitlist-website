@@ -1,3 +1,4 @@
+import { VStack, Button, Text, Heading, Box, Spinner } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import {
@@ -98,14 +99,25 @@ export default function Lock(props: LockProps) {
     setLockDisplayState(LockDisplayStates.LOCKABLE);
   };
 
+  const lockDisplayText = (
+    <Text color="app.100" maxWidth={'60%'}>
+      Before we begin, we must deploy the waitlist smart contracts. We actually
+      have three contracts to deploy, as we must create contracts to verify the
+      zero knowledge proofs for locking the waitlist and redeeming a spot, as
+      well as the waitlist itself. This verifier functionality could be included
+      in the waitlist contract, but separating it allows us to swap in verifiers
+      with different verification abilities in the future.
+      <br />
+      <br />
+      Clicking the button below will trigger three deployments to the Goerli
+      testnet. Each deployment will take around 15 seconds and requires Metamask
+      approval. After you are done, we will be able to view the waitlist!
+    </Text>
+  );
   const getLockDisplayComponent = () => {
     switch (lockDisplayState) {
       case LockDisplayStates.LOCKABLE:
-        return (
-          <div>
-            <button onClick={lockWaitlist}>Lock the waitlist</button>
-          </div>
-        );
+        return <Button onClick={lockWaitlist}>Lock the waitlist</Button>;
       case LockDisplayStates.GENERATING_PROOF:
         return (
           <div>
@@ -140,5 +152,13 @@ export default function Lock(props: LockProps) {
     }
   };
 
-  return <div>{getLockDisplayComponent()}</div>;
+  return (
+    <VStack marginTop={'5%'} spacing={'5%'}>
+      <Heading size="2xl" textColor={'app.200'}>
+        Lock
+      </Heading>
+      {lockDisplayText}
+      {getLockDisplayComponent()}
+    </VStack>
+  );
 }
