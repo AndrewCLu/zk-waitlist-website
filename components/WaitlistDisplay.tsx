@@ -32,8 +32,8 @@ type WaitlistSpotProps = {
 function WaitlistSpot(props: WaitlistSpotProps) {
   const color = props.isUserOwned ? 'app.500' : 'app.200';
   return (
-    <Box bg={color} borderRadius="lg" p={8} color="white" height="100px">
-      <Text marginTop="5px">{props.index + '. ' + props.text}</Text>
+    <Box bg={color} borderRadius="lg" p={8} color="white" height="120px">
+      <Text marginTop="15px">{props.index + '. ' + props.text}</Text>
       <Text textAlign="center">
         {props.isUserOwned ? '(claimed by you)' : null}
       </Text>

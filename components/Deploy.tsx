@@ -136,7 +136,7 @@ export default function Deploy(props: DeployProps) {
   };
 
   return (
-    <VStack marginTop={'10%'} spacing={'5%'}>
+    <VStack marginTop={'10%'} marginBottom={'3%'} spacing={'5%'}>
       <Heading size="2xl" textColor={'app.200'}>
         Deployment
       </Heading>

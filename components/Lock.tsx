@@ -154,7 +154,7 @@ export default function Lock(props: LockProps) {
   };
 
   return (
-    <VStack marginTop={'3%'} spacing={'3%'}>
+    <VStack marginTop={'3%'} marginBottom={'3%'} spacing={'3%'}>
       <Heading size="2xl" textColor={'app.200'}>
         Lock
       </Heading>

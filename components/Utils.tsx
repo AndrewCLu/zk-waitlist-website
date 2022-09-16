@@ -7,7 +7,7 @@ type LoadingPanelProps = {
 export function LoadingPanel(props: LoadingPanelProps) {
   return (
     <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
-      <VStack spacing={'20%'}>
+      <VStack spacing={'30%'}>
         <Text color="app.200" fontSize="xl" as="b" textAlign="center">
           {props.loadingMessage}
         </Text>
