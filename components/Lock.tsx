@@ -100,18 +100,18 @@ export default function Lock(props: LockProps) {
   };
 
   const lockDisplayText = (
-    <Text color="app.100" maxWidth={'60%'}>
-      Before we begin, we must deploy the waitlist smart contracts. We actually
-      have three contracts to deploy, as we must create contracts to verify the
-      zero knowledge proofs for locking the waitlist and redeeming a spot, as
-      well as the waitlist itself. This verifier functionality could be included
-      in the waitlist contract, but separating it allows us to swap in verifiers
-      with different verification abilities in the future.
+    <Text color="app.100" maxWidth={'50%'}>
+      Before allowing anyone to redeem a claimed spot on the waitlist, we must
+      lock the waitlist. This ensures that nobody else is allowed to join the
+      waitlist. Once the isLocked flag is set in the waitlist smart contract,
+      new commitments are not allowed.
       <br />
       <br />
-      Clicking the button below will trigger three deployments to the Goerli
-      testnet. Each deployment will take around 15 seconds and requires Metamask
-      approval. After you are done, we will be able to view the waitlist!
+      Anyone can lock the waitlist. While doing so, they must provide the Merkle
+      root generated from building a Merkle tree using the commitments submitted
+      until that point. They must also provide a zero knowledge proof showing
+      they computed the Merkle root correctly, as the root is used to validate
+      redemptions.
     </Text>
   );
   const getLockDisplayComponent = () => {
@@ -153,7 +153,7 @@ export default function Lock(props: LockProps) {
   };
 
   return (
-    <VStack marginTop={'5%'} spacing={'5%'}>
+    <VStack marginTop={'3%'} spacing={'3%'}>
       <Heading size="2xl" textColor={'app.200'}>
         Lock
       </Heading>

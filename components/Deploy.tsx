@@ -85,7 +85,7 @@ export default function Deploy(props: DeployProps) {
   };
 
   const deployDisplayText = (
-    <Text color="app.100" maxWidth={'60%'}>
+    <Text color="app.100" maxWidth={'50%'}>
       Before we begin, we must deploy the waitlist smart contracts. We actually
       have three contracts to deploy, as we must create contracts to verify the
       zero knowledge proofs for locking the waitlist and redeeming a spot, as
