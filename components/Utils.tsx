@@ -19,7 +19,9 @@ export function LoadingPanel(props: LoadingPanelProps) {
 
 type SuccessPanelProps = {
   successMessage: string;
-  proceedFunction?: () => void;
+  proceedFunction?: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
   proceedFunctionMessage?: string;
 };
 export function SuccessPanel(props: SuccessPanelProps) {
@@ -39,7 +41,9 @@ export function SuccessPanel(props: SuccessPanelProps) {
 
 type FailurePanelProps = {
   failureMessage: string;
-  proceedFunction: () => void;
+  proceedFunction: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
   proceedFunctionMessage: string;
 };
 export function FailurePanel(props: FailurePanelProps) {

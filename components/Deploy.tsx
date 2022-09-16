@@ -1,4 +1,4 @@
-import { VStack, Button, Text, Heading, Box, Spinner } from '@chakra-ui/react';
+import { VStack, Button, Text, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -10,6 +10,7 @@ import {
   WAITLIST_CONTRACT_ABI,
   WAITLIST_CONTRACT_BYTECODE,
 } from '../utils/WaitlistContract';
+import { FailurePanel, LoadingPanel, SuccessPanel } from './Utils';
 
 enum DeployDisplayStates {
   NOT_DEPLOYED,
@@ -109,53 +110,27 @@ export default function Deploy(props: DeployProps) {
         );
       case DeployDisplayStates.DEPLOYING_LOCKER_VERIFIER:
         return (
-          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
-            <VStack spacing={'20%'}>
-              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
-                (1/3) Deploying the locker verifier contract...
-              </Text>
-              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
-            </VStack>
-          </Box>
+          <LoadingPanel loadingMessage="(1/3) Deploying the locker verifier contract..." />
         );
       case DeployDisplayStates.DEPLOYING_REDEEMER_VERIFIER:
         return (
-          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
-            <VStack spacing={'20%'}>
-              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
-                (2/3) Deploying the redeemer verifier contract...
-              </Text>
-              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
-            </VStack>
-          </Box>
+          <LoadingPanel loadingMessage="(2/3) Deploying the redeemer verifier contract..." />
         );
       case DeployDisplayStates.DEPLOYING_WAITLIST:
         return (
-          <Box backgroundColor="app.300" borderRadius="lg" p={6} width="35%">
-            <VStack spacing={'20%'}>
-              <Text color="app.200" fontSize="xl" as="b" textAlign="center">
-                (3/3) Deploying the waitlist contract...
-              </Text>
-              <Spinner thickness="4px" speed="1s" color="app.200" size="xl" />
-            </VStack>
-          </Box>
+          <LoadingPanel loadingMessage="(3/3) Deploying the waitlist contract..." />
         );
       case DeployDisplayStates.SUCCESS:
         return (
-          <VStack>
-            <Box bg="success.100" borderRadius="lg" p={3} color="white">
-              Successfully deployed all contracts!
-            </Box>
-          </VStack>
+          <SuccessPanel successMessage="Successfully deployed all contracts!" />
         );
       case DeployDisplayStates.FAILURE:
         return (
-          <VStack>
-            <Box bg="errors.100" borderRadius="lg" p={3} color="white">
-              Error: Failed to deploy contracts
-            </Box>
-            <Button onClick={resetDeployDisplayState}>Go Back</Button>
-          </VStack>
+          <FailurePanel
+            failureMessage="Error: Failed to deploy contracts"
+            proceedFunction={resetDeployDisplayState}
+            proceedFunctionMessage="Go Back"
+          />
         );
     }
   };
