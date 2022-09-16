@@ -170,7 +170,13 @@ export default function Waitlist(props: WaitlistProps) {
     switch (waitlistDisplayState) {
       case WaitlistDisplayStates.LOADING:
         return (
-          <Box bg="app.300" borderRadius="lg" p={6} width="100%">
+          <Box
+            bg="app.300"
+            marginTop={'10%'}
+            borderRadius="lg"
+            p={6}
+            width="100%"
+          >
             <Heading>Loading waitlist state...</Heading>
           </Box>
         );
