@@ -106,7 +106,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           <IconButton
             onClick={copyWaitlistAddress}
             aria-label="Copy waitlist address"
-            icon={<CopyIcon />}
+            icon={<CopyIcon color="app.500" />}
           ></IconButton>
         </HStack>
       </Flex>
