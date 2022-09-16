@@ -80,7 +80,22 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   );
 
   const lockComponent = props.waitlistContractState?.isLocked ? (
-    <LockIcon color="red" />
+    <Popover trigger="hover">
+      <PopoverTrigger>
+        <IconButton
+          aria-label="Locked waitlist"
+          icon={<LockIcon color="red" />}
+        ></IconButton>
+      </PopoverTrigger>
+      <PopoverContent color="white" bg="red.500" borderColor="red.500">
+        <PopoverBody>
+          <Center>
+            The waitlist is locked. No more users are allowed to join the
+            waitlist.
+          </Center>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   ) : (
     <Popover trigger="hover">
       <PopoverTrigger>
