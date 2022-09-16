@@ -45,7 +45,11 @@ type WaitlistDisplayProps = {
 
 export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   if (props.waitlistContractStateLoading || !props.waitlistContractState) {
-    return <div>Loading waitlist state...</div>;
+    return (
+      <Box bg="app.300" borderRadius="lg" p={6} width="100%">
+        <Heading>Loading waitlist state...</Heading>
+      </Box>
+    );
   }
 
   const updateButton = (
@@ -62,7 +66,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
 
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
-    <Box bg="app.300" borderRadius="lg" p={6}>
+    <Box bg="app.300" borderRadius="lg" p={6} width="100%">
       <Flex>
         <Heading textAlign="center">Your Waitlist</Heading>
         <Spacer />
@@ -75,8 +79,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
           {lockComponent}
           <Text color="app.500">
             {props.waitlistContractState.commitments.length} /{' '}
-            {props.waitlistContractState.maxWaitlistSpots} waitlist spots
-            claimed
+            {props.waitlistContractState.maxWaitlistSpots} spots claimed
           </Text>
         </HStack>
         <Spacer />

@@ -18,12 +18,12 @@
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "indent": ["error", 2, { "SwitchCase": 1 }],
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
+    "linebreak-style": ["warn", "unix"],
+    "quotes": ["warn", "single"],
+    "semi": ["warn", "always"],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "prettier/prettier": "error"
+    "prettier/prettier": "warn"
   }
 }

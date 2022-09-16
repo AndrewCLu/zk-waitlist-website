@@ -1,3 +1,4 @@
+import { Box, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
@@ -168,7 +169,11 @@ export default function Waitlist(props: WaitlistProps) {
     );
     switch (waitlistDisplayState) {
       case WaitlistDisplayStates.LOADING:
-        return <div>Loading waitlist...</div>;
+        return (
+          <Box bg="app.300" borderRadius="lg" p={6} width="100%">
+            <Heading>Loading waitlist state...</Heading>
+          </Box>
+        );
       case WaitlistDisplayStates.DEPLOY:
         return (
           <Deploy
