@@ -194,7 +194,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.COMMIT:
         return (
           <div>
-            {updateButton}
             <br />
             {commitmentComponent}
           </div>
@@ -202,7 +201,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
       case WaitlistDisplayStates.LOCK:
         return (
           <div>
-            {updateButton}
             <br />
             {commitmentComponent}
           </div>
