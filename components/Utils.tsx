@@ -41,10 +41,10 @@ export function SuccessPanel(props: SuccessPanelProps) {
 
 type FailurePanelProps = {
   failureMessage: string;
-  proceedFunction: (
+  proceedFunction?: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => void;
-  proceedFunctionMessage: string;
+  proceedFunctionMessage?: string;
 };
 export function FailurePanel(props: FailurePanelProps) {
   return (
@@ -52,9 +52,11 @@ export function FailurePanel(props: FailurePanelProps) {
       <Box bg="errors.100" borderRadius="lg" p={3} color="white">
         {props.failureMessage}
       </Box>
-      <Button onClick={props.proceedFunction}>
-        {props.proceedFunctionMessage}
-      </Button>
+      {props.proceedFunction && props.proceedFunctionMessage ? (
+        <Button onClick={props.proceedFunction}>
+          {props.proceedFunctionMessage}
+        </Button>
+      ) : null}
     </VStack>
   );
 }

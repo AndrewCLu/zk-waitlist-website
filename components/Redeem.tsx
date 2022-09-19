@@ -190,13 +190,6 @@ export default function Redeem(props: RedeemProps) {
     setRedeemDisplayState(RedeemDisplayStates.ENTER_SECRET);
   };
 
-  const resetWaitlist = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    event.preventDefault();
-    props.resetWaitlistDisplayState();
-  };
-
   const redeemDisplayText = (
     <Text color="app.100" maxWidth={'50%'}>
       Once the waitlist has been locked, anyone who possesses a secret used to
@@ -232,11 +225,11 @@ export default function Redeem(props: RedeemProps) {
         );
       case RedeemDisplayStates.ALL_SPOTS_REDEEMED:
         return (
-          <div>
-            All spots on the waitlist have been redeemed.
-            <br />
-            <button onClick={resetWaitlist}>Create a new waitlist</button>
-          </div>
+          <FailurePanel
+            failureMessage={
+              'All spots on the waitlist have been redeemed. Create a new waitlist to start again!'
+            }
+          />
         );
       case RedeemDisplayStates.CHECKING_SECRET:
         return (
