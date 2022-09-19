@@ -1,3 +1,4 @@
+import { VStack, Button, Text, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import {
@@ -195,6 +196,22 @@ export default function Redeem(props: RedeemProps) {
     props.resetWaitlistDisplayState();
   };
 
+  const redeemDisplayText = (
+    <Text color="app.100" maxWidth={'50%'}>
+      Once the waitlist has been locked, anyone who possesses a secret used to
+      generate a commitment can redeem the corresponding spot on the waitlist.
+      The user generates a zero knowledge proof that they know the secret
+      corresponding to a commitment which is part of the Merkle tree of
+      commitments.
+      <br />
+      <br />
+      While submitting a redemption, the user must also hash the secret into a
+      nullifier, and prove that they performed the hash correctly. The nullifier
+      is then stored in the waitlist contract so that multiple redemptions for
+      the same commitment are not allowed.
+    </Text>
+  );
+
   const getRedeemDisplayComponent = () => {
     switch (redeemDisplayState) {
       case RedeemDisplayStates.ENTER_SECRET:
@@ -285,5 +302,13 @@ export default function Redeem(props: RedeemProps) {
     }
   };
 
-  return <div>{getRedeemDisplayComponent()}</div>;
+  return (
+    <VStack marginTop={'3%'} marginBottom={'5%'} spacing={'3%'}>
+      <Heading size="2xl" textColor={'app.200'}>
+        Redeem
+      </Heading>
+      {redeemDisplayText}
+      {getRedeemDisplayComponent()}
+    </VStack>
+  );
 }
