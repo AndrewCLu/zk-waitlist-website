@@ -144,7 +144,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     <HStack spacing={2}>
       <Text color="app.500">
         {props.waitlistContractState.nullifiers.length} /{' '}
-        {props.waitlistContractState.commitments.length} spots claimed
+        {props.waitlistContractState.commitments.length} spots redeemed
       </Text>
     </HStack>
   );
@@ -202,6 +202,8 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
             })
           )}
         </HStack>
+        {props.waitlistContractState.isLocked ? spotsRedeemedComponent : null}
+        {props.waitlistContractState.isLocked ? nullifierComponent : null}
       </VStack>
     </Box>
   );
