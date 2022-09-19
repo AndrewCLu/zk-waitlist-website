@@ -1,4 +1,4 @@
-import { VStack, Button, Text, Heading } from '@chakra-ui/react';
+import { VStack, Text, Heading } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import {
@@ -7,6 +7,7 @@ import {
 } from '../utils/Parsing';
 import { getErrorMessage } from '../utils/Errors';
 import { WaitlistContractStateType } from './Waitlist';
+import { FailurePanel, LoadingPanel, SuccessPanel } from './Utils';
 
 enum RedeemDisplayStates {
   ENTER_SECRET,
@@ -239,10 +240,7 @@ export default function Redeem(props: RedeemProps) {
         );
       case RedeemDisplayStates.CHECKING_SECRET:
         return (
-          <div>
-            Checking to see if your secret can be redeemed. This will take a few
-            seconds...
-          </div>
+          <LoadingPanel loadingMessage="Checking to see if your secret can be redeemed..." />
         );
       case RedeemDisplayStates.REDEEMABLE:
         return (
@@ -259,45 +257,44 @@ export default function Redeem(props: RedeemProps) {
         );
       case RedeemDisplayStates.NOT_REDEEMABLE:
         return (
-          <div>
-            The secret you provided does not correspond to any waitlist spot.
-            <br />
-            <button onClick={resetRedeemDisplayState}>Try again</button>
-          </div>
-        );
-      case RedeemDisplayStates.SUCCESS:
-        return (
-          <div>
-            Successfully redeemed the waitlist spot corresponding to commitment:
-            <br />
-            {getHexFromBigNumberString(
-              props.waitlistContractState.commitments[redeemableIndex!]
-            )}
-            <br />
-            <button onClick={resetRedeemDisplayState}>Ok</button>
-            <button onClick={resetWaitlist}>Create a new waitlist</button>
-          </div>
+          <FailurePanel
+            failureMessage={
+              'The secret you provided does not correspond to any waitlist spot.'
+            }
+            proceedFunction={resetRedeemDisplayState}
+            proceedFunctionMessage="Try Again"
+          />
         );
       case RedeemDisplayStates.GENERATING_PROOF:
         return (
-          <div>
-            Generating proof to redeem your spot. This will take a few
-            seconds...
-          </div>
+          <LoadingPanel loadingMessage="(1/2) Generating proof to redeem your waitlist spot..." />
         );
       case RedeemDisplayStates.SENDING_REDEEM_TX:
         return (
-          <div>
-            Sending transaction to redeem your spot. This may take a while...
-          </div>
+          <LoadingPanel loadingMessage="(2/2) Sending transaction to redeem your waitlist spot..." />
+        );
+      case RedeemDisplayStates.SUCCESS:
+        return (
+          <SuccessPanel
+            successMessage={
+              'Successfully redeemed the waitlist spot corresponding to commitment:\n' +
+              getHexFromBigNumberString(
+                props.waitlistContractState.commitments[redeemableIndex!]
+              )
+            }
+            proceedFunction={resetRedeemDisplayState}
+            proceedFunctionMessage="Ok"
+          />
         );
       case RedeemDisplayStates.FAILURE:
         return (
-          <div>
-            Failed to redeem your waitlist spot: {errorMessage}
-            <br />
-            <button onClick={resetRedeemDisplayState}>Go Back</button>
-          </div>
+          <FailurePanel
+            failureMessage={
+              'Failed to redeem your waitlist spot:\n' + errorMessage
+            }
+            proceedFunction={resetRedeemDisplayState}
+            proceedFunctionMessage="Go Back"
+          />
         );
     }
   };
