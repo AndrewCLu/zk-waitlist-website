@@ -18,19 +18,16 @@ import {
 import { CopyIcon, LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
 import React from 'react';
-import {
-  getHexFromBigNumberString,
-  getLeadingHexFromBigNumberString,
-} from '../utils/Parsing';
+import { getLeadingHexFromBigNumberString } from '../utils/Parsing';
 import { WaitlistContractStateType, WaitlistDisplayStates } from './Waitlist';
 
-type WaitlistSpotProps = {
+type CommitmentSpotProps = {
   index: number;
   text: string;
   isUserOwned: boolean;
 };
 
-function WaitlistSpot(props: WaitlistSpotProps) {
+function CommitmentSpot(props: CommitmentSpotProps) {
   const color = props.isUserOwned ? 'app.500' : 'app.200';
   return (
     <Box
@@ -54,7 +51,7 @@ type NullifierSpotProps = {
   isUserOwned: boolean;
 };
 
-function NullifierSpot(props: WaitlistSpotProps) {
+function NullifierSpot(props: NullifierSpotProps) {
   const color = props.isUserOwned ? 'app.500' : 'app.200';
   return (
     <Box
@@ -149,10 +146,23 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </HStack>
   );
 
+  const userCommitments = props.waitlistContractState?.userCommitments;
+  const commitmentComponent = (
+    <HStack spacing={6}>
+      {props.waitlistContractState.commitments.map((c, i) =>
+        CommitmentSpot({
+          index: i,
+          text: getLeadingHexFromBigNumberString(c) + '...',
+          isUserOwned: userCommitments.includes(c),
+        })
+      )}
+    </HStack>
+  );
+
   const userNullifiers = props.waitlistContractState?.userNullifiers;
   const nullifierComponent = (
     <HStack spacing={6}>
-      {props.waitlistContractState.nullifiers.map((n, i) =>
+      {props.waitlistContractState.userNullifiers.map((n, i) =>
         NullifierSpot({
           index: i,
           text: getLeadingHexFromBigNumberString(n) + '...',
@@ -162,8 +172,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </HStack>
   );
 
-  const userCommitments = props.waitlistContractState?.userCommitments;
-  const commitmentComponent = (
+  return (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
       <VStack align="left" spacing={3}>
         <Flex>
@@ -193,39 +202,10 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
             ></IconButton>
           </HStack>
         </Flex>
-        <HStack spacing={6}>
-          {props.waitlistContractState.commitments.map((c, i) =>
-            WaitlistSpot({
-              index: i,
-              text: getLeadingHexFromBigNumberString(c) + '...',
-              isUserOwned: userCommitments.includes(c),
-            })
-          )}
-        </HStack>
+        {commitmentComponent}
         {props.waitlistContractState.isLocked ? spotsRedeemedComponent : null}
         {props.waitlistContractState.isLocked ? nullifierComponent : null}
       </VStack>
     </Box>
   );
-
-  const getWaitlistDisplayComponent = () => {
-    switch (props.waitlistDisplayState) {
-      case WaitlistDisplayStates.COMMIT:
-        return commitmentComponent;
-      case WaitlistDisplayStates.LOCK:
-        return commitmentComponent;
-      case WaitlistDisplayStates.REDEEM:
-        return (
-          <div>
-            {commitmentComponent}
-            <br />
-            {spotsRedeemedComponent}
-            <br />
-            {nullifierComponent}
-          </div>
-        );
-    }
-  };
-
-  return <div>{getWaitlistDisplayComponent()}</div>;
 }
