@@ -48,6 +48,30 @@ function WaitlistSpot(props: WaitlistSpotProps) {
   );
 }
 
+type NullifierSpotProps = {
+  index: number;
+  text: string;
+  isUserOwned: boolean;
+};
+
+function NullifierSpot(props: WaitlistSpotProps) {
+  const color = props.isUserOwned ? 'app.500' : 'app.200';
+  return (
+    <Box
+      bg={color}
+      borderRadius="lg"
+      p={8}
+      color="white"
+      height="120px"
+      textAlign="center"
+    >
+      <Text marginTop="5px">{'Nullifier ' + props.index + ':'}</Text>
+      <Text>{props.text}</Text>
+      <Text>{props.isUserOwned ? '(redeemed by you)' : null}</Text>
+    </Box>
+  );
+}
+
 type WaitlistDisplayProps = {
   waitlistDisplayState: WaitlistDisplayStates;
   waitlistContractAddress: string;
@@ -116,6 +140,28 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </Popover>
   );
 
+  const spotsRedeemedComponent = (
+    <HStack spacing={2}>
+      <Text color="app.500">
+        {props.waitlistContractState.nullifiers.length} /{' '}
+        {props.waitlistContractState.commitments.length} spots claimed
+      </Text>
+    </HStack>
+  );
+
+  const userNullifiers = props.waitlistContractState?.userNullifiers;
+  const nullifierComponent = (
+    <HStack spacing={6}>
+      {props.waitlistContractState.nullifiers.map((n, i) =>
+        NullifierSpot({
+          index: i,
+          text: getLeadingHexFromBigNumberString(n) + '...',
+          isUserOwned: userNullifiers.includes(n),
+        })
+      )}
+    </HStack>
+  );
+
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
@@ -158,37 +204,6 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
         </HStack>
       </VStack>
     </Box>
-  );
-
-  const userNullifiers = props.waitlistContractState?.userNullifiers;
-  const nullifierComponent = (
-    <div>
-      The following nullifier(s) have been used:
-      <br />
-      {props.waitlistContractState.nullifiers.map((n, i) => (
-        <div key={i + 1}>
-          {i + 1 + '. ' + getLeadingHexFromBigNumberString(n) + '...'}
-        </div>
-      ))}
-      {userNullifiers && userNullifiers.length > 0 ? (
-        <div>
-          You have redeemed the waitlist spot(s) corresponding to the following
-          nullifiers(s):
-          <br />
-          {userNullifiers.map((n, i) => (
-            <div key={i + 1}>{i + 1 + '. ' + getHexFromBigNumberString(n)}</div>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-
-  const spotsRedeemedComponent = (
-    <div>
-      {props.waitlistContractState.nullifiers.length} out of{' '}
-      {props.waitlistContractState.commitments.length} spots on the waitlist
-      have been redeemed
-    </div>
   );
 
   const getWaitlistDisplayComponent = () => {
