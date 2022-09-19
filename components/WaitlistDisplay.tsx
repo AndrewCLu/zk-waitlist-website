@@ -137,58 +137,51 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </Popover>
   );
 
-  const spotsRedeemedComponent = (
-    <HStack spacing={2}>
-      <Text color="app.500">
-        {props.waitlistContractState.nullifiers.length} /{' '}
-        {props.waitlistContractState.commitments.length} spots redeemed
-      </Text>
-    </HStack>
-  );
-
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
-    <HStack spacing={6}>
-      {props.waitlistContractState.commitments.map((c, i) =>
-        CommitmentSpot({
-          index: i,
-          text: getLeadingHexFromBigNumberString(c) + '...',
-          isUserOwned: userCommitments.includes(c),
-        })
-      )}
-    </HStack>
+    <VStack>
+      <Text color="app.500">
+        {props.waitlistContractState.commitments.length} /{' '}
+        {props.waitlistContractState.maxWaitlistSpots} spots claimed
+      </Text>
+      <HStack spacing={6}>
+        {props.waitlistContractState.commitments.map((c, i) =>
+          CommitmentSpot({
+            index: i,
+            text: getLeadingHexFromBigNumberString(c) + '...',
+            isUserOwned: userCommitments.includes(c),
+          })
+        )}
+      </HStack>
+    </VStack>
   );
 
   const userNullifiers = props.waitlistContractState?.userNullifiers;
   const nullifierComponent = (
-    <HStack spacing={6}>
-      {props.waitlistContractState.userNullifiers.map((n, i) =>
-        NullifierSpot({
-          index: i,
-          text: getLeadingHexFromBigNumberString(n) + '...',
-          isUserOwned: userNullifiers.includes(n),
-        })
-      )}
-    </HStack>
+    <VStack>
+      <Text color="app.500">
+        {props.waitlistContractState.nullifiers.length} /{' '}
+        {props.waitlistContractState.commitments.length} spots redeemed
+      </Text>
+      <HStack spacing={6}>
+        {props.waitlistContractState.userNullifiers.map((n, i) =>
+          NullifierSpot({
+            index: i,
+            text: getLeadingHexFromBigNumberString(n) + '...',
+            isUserOwned: userNullifiers.includes(n),
+          })
+        )}
+      </HStack>
+    </VStack>
   );
 
   return (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
-      <VStack align="left" spacing={3}>
-        <Flex>
-          <Heading textAlign="center">Your Waitlist</Heading>
-          <Spacer />
-          <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
-            Create New Waitlist
-          </Button>
-        </Flex>
+      <VStack align="left" spacing={4}>
         <Flex>
           <HStack spacing={2}>
+            <Heading textAlign="center">Your Waitlist</Heading>
             {lockComponent}
-            <Text color="app.500">
-              {props.waitlistContractState.commitments.length} /{' '}
-              {props.waitlistContractState.maxWaitlistSpots} spots claimed
-            </Text>
           </HStack>
           <Spacer />
           <HStack>
@@ -201,9 +194,12 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
               icon={<CopyIcon color="app.500" />}
             ></IconButton>
           </HStack>
+          <Spacer />
+          <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
+            Create New Waitlist
+          </Button>
         </Flex>
         {commitmentComponent}
-        {props.waitlistContractState.isLocked ? spotsRedeemedComponent : null}
         {props.waitlistContractState.isLocked ? nullifierComponent : null}
       </VStack>
     </Box>
