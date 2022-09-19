@@ -137,6 +137,30 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </Popover>
   );
 
+  const headerComponent = (
+    <Flex>
+      <HStack spacing={2}>
+        <Heading textAlign="center">Your Waitlist</Heading>
+        {lockComponent}
+      </HStack>
+      <Spacer />
+      <HStack>
+        <Text color="app.500">
+          Contract address: {props.waitlistContractAddress}
+        </Text>
+        <IconButton
+          onClick={copyWaitlistAddress}
+          aria-label="Copy waitlist address"
+          icon={<CopyIcon color="app.500" />}
+        ></IconButton>
+      </HStack>
+      <Spacer />
+      <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
+        Create New Waitlist
+      </Button>
+    </Flex>
+  );
+
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <VStack>
@@ -178,27 +202,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   return (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
       <VStack align="left" spacing={4}>
-        <Flex>
-          <HStack spacing={2}>
-            <Heading textAlign="center">Your Waitlist</Heading>
-            {lockComponent}
-          </HStack>
-          <Spacer />
-          <HStack>
-            <Text color="app.500">
-              Contract address: {props.waitlistContractAddress}
-            </Text>
-            <IconButton
-              onClick={copyWaitlistAddress}
-              aria-label="Copy waitlist address"
-              icon={<CopyIcon color="app.500" />}
-            ></IconButton>
-          </HStack>
-          <Spacer />
-          <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
-            Create New Waitlist
-          </Button>
-        </Flex>
+        {headerComponent}
         {commitmentComponent}
         {props.waitlistContractState.isLocked ? nullifierComponent : null}
       </VStack>
