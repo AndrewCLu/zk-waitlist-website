@@ -1,4 +1,4 @@
-import { VStack, Text, Heading } from '@chakra-ui/react';
+import { VStack, Text, Heading, Box, Button, HStack } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import {
@@ -237,16 +237,18 @@ export default function Redeem(props: RedeemProps) {
         );
       case RedeemDisplayStates.REDEEMABLE:
         return (
-          <div>
-            Your secret can redeem the waitlist spot with commitment:
-            <br />
-            {getHexFromBigNumberString(
-              props.waitlistContractState.commitments[redeemableIndex!]
-            )}
-            <br />
-            <button onClick={submitRedemption}>Redeem my spot</button>
-            <button onClick={resetRedeemDisplayState}>Cancel</button>
-          </div>
+          <VStack>
+            <Box bg="success.100" borderRadius="lg" p={3} color="white">
+              {'Your secret can redeem the waitlist spot with commitment:\n' +
+                getHexFromBigNumberString(
+                  props.waitlistContractState.commitments[redeemableIndex!]
+                )}
+            </Box>
+            <HStack>
+              <Button onClick={submitRedemption}>Redeem Spot</Button>
+              <Button onClick={resetRedeemDisplayState}>Cancel</Button>
+            </HStack>
+          </VStack>
         );
       case RedeemDisplayStates.NOT_REDEEMABLE:
         return (
