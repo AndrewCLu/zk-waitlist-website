@@ -1,4 +1,15 @@
-import { VStack, Text, Heading, Box, Button, HStack } from '@chakra-ui/react';
+import {
+  VStack,
+  Text,
+  Heading,
+  Box,
+  Button,
+  HStack,
+  FormControl,
+  FormLabel,
+  NumberInput,
+  NumberInputField,
+} from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import {
@@ -44,13 +55,12 @@ export default function Redeem(props: RedeemProps) {
     }
   });
 
-  const updateSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSecret(event.currentTarget.value);
+  const updateSecret = (valueAsString: string) => {
+    setSecret(valueAsString);
   };
 
   // Checks to see if provided secret can redeem any of the commitments
-  const checkRedeemable = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const checkRedeemable = async () => {
     if (secret.length === 0) {
       setErrorMessage('Secret cannot be empty!');
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
@@ -210,18 +220,17 @@ export default function Redeem(props: RedeemProps) {
     switch (redeemDisplayState) {
       case RedeemDisplayStates.ENTER_SECRET:
         return (
-          <div>
-            Enter your secret to redeem a waitlist spot:
-            <br />
-            <form onSubmit={checkRedeemable}>
-              <label>
-                Secret:
-                <input type="number" value={secret} onChange={updateSecret} />
-              </label>
-              <br />
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
+          <FormControl width="35%" onSubmit={checkRedeemable}>
+            <FormLabel>
+              Enter secret number to redeem your waitlist spot:
+            </FormLabel>
+            <NumberInput value={secret} onChange={updateSecret}>
+              <NumberInputField />
+            </NumberInput>
+            <Button type="submit" marginTop={3} color="app.500">
+              Submit
+            </Button>
+          </FormControl>
         );
       case RedeemDisplayStates.ALL_SPOTS_REDEEMED:
         return (
