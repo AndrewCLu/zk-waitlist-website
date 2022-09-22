@@ -12,6 +12,7 @@ import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
 import { getHexFromBigNumberString } from '../utils/Parsing';
+import { FailurePanel, LoadingPanel, SuccessPanel } from './Utils';
 import { WaitlistContractStateType } from './Waitlist';
 
 enum CommitDisplayStates {
@@ -149,10 +150,7 @@ export default function Commit(props: CommitProps) {
         );
       case CommitDisplayStates.GENERATING:
         return (
-          <div>
-            Generating a commitment based on the secret you chose. This will
-            take a second...
-          </div>
+          <LoadingPanel loadingMessage="Generating a commitment based on the secret you chose..." />
         );
       case CommitDisplayStates.GENERATED:
         return (
@@ -171,27 +169,28 @@ export default function Commit(props: CommitProps) {
         );
       case CommitDisplayStates.SUBMITTING:
         return (
-          <div>
-            Joining the waitlist using the commitment. This may take a while...
-          </div>
+          <LoadingPanel loadingMessage="Sending your commitment to the waitlist contract..." />
         );
       case CommitDisplayStates.SUCCESS:
         return (
-          <div>
-            Successfully joined the waitlist using commitment:
-            <br />
-            {commitment}
-            <br />
-            <button onClick={resetCommitDisplayState}>Ok</button>
-          </div>
+          <SuccessPanel
+            successMessage={
+              'Successfully joined the waitlist using commitment:\n' +
+              getHexFromBigNumberString(commitment)
+            }
+            proceedFunction={resetCommitDisplayState}
+            proceedFunctionMessage="Ok"
+          />
         );
       case CommitDisplayStates.FAILURE:
         return (
-          <div>
-            Failed to claim your spot on the waitlist: {errorMessage}
-            <br />
-            <button onClick={resetCommitDisplayState}>Try again</button>
-          </div>
+          <FailurePanel
+            failureMessage={
+              'Failed to claim your spot on the waitlist:\n' + errorMessage
+            }
+            proceedFunction={resetCommitDisplayState}
+            proceedFunctionMessage="Try Again"
+          />
         );
     }
   };
