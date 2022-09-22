@@ -60,7 +60,10 @@ export default function Redeem(props: RedeemProps) {
   };
 
   // Checks to see if provided secret can redeem any of the commitments
-  const checkRedeemable = async () => {
+  const checkRedeemable = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
     if (secret.length === 0) {
       setErrorMessage('Secret cannot be empty!');
       setRedeemDisplayState(RedeemDisplayStates.FAILURE);
@@ -220,14 +223,14 @@ export default function Redeem(props: RedeemProps) {
     switch (redeemDisplayState) {
       case RedeemDisplayStates.ENTER_SECRET:
         return (
-          <FormControl width="35%" onSubmit={checkRedeemable}>
+          <FormControl width="35%">
             <FormLabel>
               Enter secret number to redeem your waitlist spot:
             </FormLabel>
             <NumberInput value={secret} onChange={updateSecret}>
               <NumberInputField />
             </NumberInput>
-            <Button type="submit" marginTop={3} color="app.500">
+            <Button onClick={checkRedeemable} marginTop={3} color="app.500">
               Submit
             </Button>
           </FormControl>
