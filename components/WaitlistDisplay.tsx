@@ -29,6 +29,28 @@ type CommitmentSpotProps = {
 
 function CommitmentSpot(props: CommitmentSpotProps) {
   const color = props.isUserOwned ? 'app.500' : 'app.200';
+  if (props.commitment == null) {
+    return (
+      <Box
+        bg={'white'}
+        borderRadius="lg"
+        p={8}
+        color="app.500"
+        height="120px"
+        textAlign="center"
+        border="1px"
+        borderColor="app.500"
+      >
+        <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
+        {props.commitment ? (
+          <Text>{props.commitment}</Text>
+        ) : (
+          <Text>Unclaimed</Text>
+        )}
+        <Text>{props.isUserOwned ? '(claimed by you)' : null}</Text>
+      </Box>
+    );
+  }
   return (
     <Box
       bg={color}
