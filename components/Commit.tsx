@@ -1,8 +1,10 @@
 import {
+  Box,
   Button,
   FormControl,
   FormLabel,
   Heading,
+  HStack,
   NumberInput,
   NumberInputField,
   Text,
@@ -154,18 +156,18 @@ export default function Commit(props: CommitProps) {
         );
       case CommitDisplayStates.GENERATED:
         return (
-          <div>
-            <div>
-              Successfully generated a commitment based on your secret:
-              <br />
-              {getHexFromBigNumberString(commitment)}
-            </div>
-            <br />
-            <button onClick={joinWaitlist}>Join the waitlist</button>
-            <button onClick={resetCommitDisplayState}>
-              Use a different secret
-            </button>
-          </div>
+          <VStack>
+            <Box bg="success.100" borderRadius="lg" p={3} color="white">
+              {'Successfully generated a commitment based on your secret:\n' +
+                getHexFromBigNumberString(commitment)}
+            </Box>
+            <HStack>
+              <Button onClick={joinWaitlist}>Join the Waitlist</Button>
+              <Button onClick={resetCommitDisplayState}>
+                Use a Different Secret
+              </Button>
+            </HStack>
+          </VStack>
         );
       case CommitDisplayStates.SUBMITTING:
         return (
