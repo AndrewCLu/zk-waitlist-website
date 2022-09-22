@@ -1,3 +1,4 @@
+import { Button, FormControl, FormLabel, NumberInput, NumberInputField } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -26,14 +27,14 @@ export default function Commit(props: CommitProps) {
   const [commitment, setCommitment] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const updateSecret = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSecret(event.currentTarget.value);
+  const updateSecret = (valueAsString: string) => {
+    setSecret(valueAsString);
   };
 
   // Generates a commitment by passing the secret to the api/commitment endpoint
   // Displays the commitment if successful
   const generateCommitment = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
     if (secret.length === 0) {
@@ -125,16 +126,17 @@ export default function Commit(props: CommitProps) {
     switch (commitDisplayState) {
       case CommitDisplayStates.ENTER_SECRET:
         return (
-          <div>
-            Choose a secret to join the waitlist:
-            <form onSubmit={generateCommitment}>
-              <label>
-                Secret:
-                <input type="number" value={secret} onChange={updateSecret} />
-              </label>
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
+          <FormControl width="35%">
+            <FormLabel>
+              Enter secret number to redeem your waitlist spot:
+            </FormLabel>
+            <NumberInput value={secret} onChange={updateSecret}>
+              <NumberInputField />
+            </NumberInput>
+            <Button onClick={generateCommitment} marginTop={3} color="app.500">
+              Submit
+            </Button>
+          </FormControl>
         );
       case CommitDisplayStates.GENERATING:
         return (
