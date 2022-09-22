@@ -1,4 +1,13 @@
-import { Button, FormControl, FormLabel, Heading, NumberInput, NumberInputField, VStack } from '@chakra-ui/react';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  NumberInput,
+  NumberInputField,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -128,7 +137,7 @@ export default function Commit(props: CommitProps) {
         return (
           <FormControl width="35%">
             <FormLabel>
-              Enter secret number to redeem your waitlist spot:
+              Enter a secret number to claim your waitlist spot:
             </FormLabel>
             <NumberInput value={secret} onChange={updateSecret}>
               <NumberInputField />
@@ -187,12 +196,27 @@ export default function Commit(props: CommitProps) {
     }
   };
 
-  const commitDisplayText = "asd"
+  const commitDisplayText = (
+    <Text color="app.100" maxWidth={'50%'}>
+      To join the waitlist, a user must first make a commitment. First, they
+      select a secret number - the secret must remain private amongst the
+      parties who wish to be able to redeem the claimed spot later on. This
+      secret is then hashed into a public commitment which is sent to the
+      waitlist smart contract.
+      <br />
+      <br />
+      In this demo, every user is entitled to one spot on the waitlist as long
+      as they provide a commitment corresponding to a unique secret. In the
+      future, it is possible to require users to meet certain requirements to
+      join the waitlist, such as having a certain account balance or having
+      participated in a previous waitlist.
+    </Text>
+  );
 
   return (
     <VStack marginTop={'3%'} marginBottom={'5%'} spacing={'3%'}>
       <Heading size="2xl" textColor={'app.200'}>
-        Redeem
+        Commit
       </Heading>
       {commitDisplayText}
       {getCommitDisplayComponent()}
