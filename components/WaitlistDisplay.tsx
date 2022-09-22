@@ -23,7 +23,7 @@ import { WaitlistContractStateType, WaitlistDisplayStates } from './Waitlist';
 
 type CommitmentSpotProps = {
   index: number;
-  text: string;
+  commitment: string | null;
   isUserOwned: boolean;
 };
 
@@ -39,7 +39,11 @@ function CommitmentSpot(props: CommitmentSpotProps) {
       textAlign="center"
     >
       <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
-      <Text>{props.text}</Text>
+      {props.commitment ? (
+        <Text>{props.commitment}</Text>
+      ) : (
+        <Text>Unclaimed</Text>
+      )}
       <Text>{props.isUserOwned ? '(claimed by you)' : null}</Text>
     </Box>
   );
@@ -161,20 +165,31 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </Flex>
   );
 
+  const commitments = props.waitlistContractState.commitments;
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <VStack>
       <Text color="app.500">
-        {props.waitlistContractState.commitments.length} /{' '}
-        {props.waitlistContractState.maxWaitlistSpots} spots claimed
+        {commitments.length} / {props.waitlistContractState.maxWaitlistSpots}{' '}
+        spots claimed
       </Text>
       <HStack spacing={6}>
-        {props.waitlistContractState.commitments.map((c, i) =>
-          CommitmentSpot({
-            index: i,
-            text: getLeadingHexFromBigNumberString(c) + '...',
-            isUserOwned: userCommitments.includes(c),
-          })
+        {[...Array(props.waitlistContractState.maxWaitlistSpots)].map(
+          (_, i) => {
+            if (i < commitments.length) {
+              return CommitmentSpot({
+                index: i,
+                commitment:
+                  getLeadingHexFromBigNumberString(commitments[i]) + '...',
+                isUserOwned: userCommitments.includes(commitments[i]),
+              });
+            } else
+              return CommitmentSpot({
+                index: i,
+                commitment: null,
+                isUserOwned: false,
+              });
+          }
         )}
       </HStack>
     </VStack>
