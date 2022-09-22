@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, NumberInput, NumberInputField } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Heading, NumberInput, NumberInputField, VStack } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 import { getErrorMessage } from '../utils/Errors';
@@ -187,5 +187,15 @@ export default function Commit(props: CommitProps) {
     }
   };
 
-  return <div>{getCommitDisplayComponent()}</div>;
+  const commitDisplayText = "asd"
+
+  return (
+    <VStack marginTop={'3%'} marginBottom={'5%'} spacing={'3%'}>
+      <Heading size="2xl" textColor={'app.200'}>
+        Redeem
+      </Heading>
+      {commitDisplayText}
+      {getCommitDisplayComponent()}
+    </VStack>
+  );
 }
