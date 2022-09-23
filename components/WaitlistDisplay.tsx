@@ -28,7 +28,6 @@ type CommitmentSpotProps = {
 };
 
 function CommitmentSpot(props: CommitmentSpotProps) {
-  const color = props.isUserOwned ? 'app.500' : 'app.200';
   if (props.commitment == null) {
     return (
       <Box
@@ -42,13 +41,13 @@ function CommitmentSpot(props: CommitmentSpotProps) {
         borderColor="app.500"
       >
         <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
-        <Text>Unclaimed</Text>
+        <Text>Not claimed</Text>
       </Box>
     );
   } else
     return (
       <Box
-        bg={color}
+        bg={props.isUserOwned ? 'app.500' : 'app.200'}
         borderRadius="lg"
         p={8}
         color="white"
@@ -64,26 +63,42 @@ function CommitmentSpot(props: CommitmentSpotProps) {
 
 type NullifierSpotProps = {
   index: number;
-  text: string;
+  nullifier: string | null;
   isUserOwned: boolean;
 };
 
 function NullifierSpot(props: NullifierSpotProps) {
-  const color = props.isUserOwned ? 'app.500' : 'app.200';
-  return (
-    <Box
-      bg={color}
-      borderRadius="lg"
-      p={8}
-      color="white"
-      height="120px"
-      textAlign="center"
-    >
-      <Text marginTop="5px">{'Nullifier ' + props.index + ':'}</Text>
-      <Text>{props.text}</Text>
-      <Text>{props.isUserOwned ? '(redeemed by you)' : null}</Text>
-    </Box>
-  );
+  if (props.nullifier == null) {
+    return (
+      <Box
+        bg={'white'}
+        borderRadius="lg"
+        p={8}
+        color="app.500"
+        height="120px"
+        textAlign="center"
+        border="1px"
+        borderColor="app.500"
+      >
+        <Text marginTop="5px">{'Nullifier ' + props.index + ':'}</Text>
+        <Text>Not redeemed</Text>
+      </Box>
+    );
+  } else
+    return (
+      <Box
+        bg={props.isUserOwned ? 'app.500' : 'app.200'}
+        borderRadius="lg"
+        p={8}
+        color="white"
+        height="120px"
+        textAlign="center"
+      >
+        <Text marginTop="5px">{'Nullifier ' + props.index + ':'}</Text>
+        <Text>{props.nullifier}</Text>
+        <Text>{props.isUserOwned ? '(redeemed by you)' : null}</Text>
+      </Box>
+    );
 }
 
 type WaitlistDisplayProps = {
@@ -208,6 +223,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </VStack>
   );
 
+  const nullifiers = props.waitlistContractState.nullifiers;
   const userNullifiers = props.waitlistContractState?.userNullifiers;
   const nullifierComponent = (
     <VStack>
@@ -216,12 +232,22 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
         {props.waitlistContractState.commitments.length} spots redeemed
       </Text>
       <HStack spacing={6}>
-        {props.waitlistContractState.userNullifiers.map((n, i) =>
-          NullifierSpot({
-            index: i,
-            text: getLeadingHexFromBigNumberString(n) + '...',
-            isUserOwned: userNullifiers.includes(n),
-          })
+        {[...Array(props.waitlistContractState.maxWaitlistSpots)].map(
+          (_, i) => {
+            if (i < nullifiers.length) {
+              return NullifierSpot({
+                index: i,
+                nullifier:
+                  getLeadingHexFromBigNumberString(nullifiers[i]) + '...',
+                isUserOwned: userNullifiers.includes(nullifiers[i]),
+              });
+            } else
+              return NullifierSpot({
+                index: i,
+                nullifier: null,
+                isUserOwned: false,
+              });
+          }
         )}
       </HStack>
     </VStack>
