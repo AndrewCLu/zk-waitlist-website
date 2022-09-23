@@ -42,33 +42,24 @@ function CommitmentSpot(props: CommitmentSpotProps) {
         borderColor="app.500"
       >
         <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
-        {props.commitment ? (
-          <Text>{props.commitment}</Text>
-        ) : (
-          <Text>Unclaimed</Text>
-        )}
+        <Text>Unclaimed</Text>
+      </Box>
+    );
+  } else
+    return (
+      <Box
+        bg={color}
+        borderRadius="lg"
+        p={8}
+        color="white"
+        height="120px"
+        textAlign="center"
+      >
+        <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
+        <Text>{props.commitment}</Text>
         <Text>{props.isUserOwned ? '(claimed by you)' : null}</Text>
       </Box>
     );
-  }
-  return (
-    <Box
-      bg={color}
-      borderRadius="lg"
-      p={8}
-      color="white"
-      height="120px"
-      textAlign="center"
-    >
-      <Text marginTop="5px">{'Commitment ' + props.index + ':'}</Text>
-      {props.commitment ? (
-        <Text>{props.commitment}</Text>
-      ) : (
-        <Text>Unclaimed</Text>
-      )}
-      <Text>{props.isUserOwned ? '(claimed by you)' : null}</Text>
-    </Box>
-  );
 }
 
 type NullifierSpotProps = {
