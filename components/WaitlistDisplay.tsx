@@ -35,6 +35,7 @@ function CommitmentSpot(props: CommitmentSpotProps) {
         borderRadius="lg"
         p={8}
         color="app.500"
+        width="200px"
         height="120px"
         textAlign="center"
         border="1px"
@@ -51,6 +52,7 @@ function CommitmentSpot(props: CommitmentSpotProps) {
         borderRadius="lg"
         p={8}
         color="white"
+        width="200px"
         height="120px"
         textAlign="center"
       >
@@ -75,6 +77,7 @@ function NullifierSpot(props: NullifierSpotProps) {
         borderRadius="lg"
         p={8}
         color="app.500"
+        width="200px"
         height="120px"
         textAlign="center"
         border="1px"
@@ -91,6 +94,7 @@ function NullifierSpot(props: NullifierSpotProps) {
         borderRadius="lg"
         p={8}
         color="white"
+        width="200px"
         height="120px"
         textAlign="center"
       >
