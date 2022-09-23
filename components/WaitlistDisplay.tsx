@@ -201,7 +201,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const userCommitments = props.waitlistContractState?.userCommitments;
   const commitmentComponent = (
     <VStack>
-      <Text color="app.500">
+      <Text color="app.500" as="b">
         {commitments.length} / {props.waitlistContractState.maxWaitlistSpots}{' '}
         spots claimed
       </Text>
@@ -231,7 +231,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const userNullifiers = props.waitlistContractState?.userNullifiers;
   const nullifierComponent = (
     <VStack>
-      <Text color="app.500">
+      <Text color="app.500" as="b">
         {props.waitlistContractState.nullifiers.length} /{' '}
         {props.waitlistContractState.commitments.length} spots redeemed
       </Text>
@@ -259,7 +259,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
 
   return (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
-      <VStack align="left" spacing={4}>
+      <VStack align="left" spacing={5}>
         {headerComponent}
         {commitmentComponent}
         {props.waitlistContractState.isLocked ? nullifierComponent : null}
