@@ -269,15 +269,18 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Modal Title</ModalHeader>
+        <ModalHeader>Confirm Create New Waitlist</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>This is the modal body</ModalBody>
+        <ModalBody>
+          Once you create a new waitlist, you current waitlist state will be
+          refreshed. Do you wish to proceed?
+        </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button colorScheme="app" mr={3} onClick={onClose}>
             Close
           </Button>
-          <Button variant="ghost" onClick={props.resetWaitlistDisplayState}>
+          <Button color="app.500" onClick={props.resetWaitlistDisplayState}>
             Create New Waitlist
           </Button>
         </ModalFooter>
