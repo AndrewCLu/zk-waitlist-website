@@ -14,6 +14,14 @@ import {
   PopoverContent,
   PopoverBody,
   VStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
+  ModalFooter,
 } from '@chakra-ui/react';
 import { CopyIcon, LockIcon, UnlockIcon } from '@chakra-ui/icons';
 
@@ -116,7 +124,7 @@ type WaitlistDisplayProps = {
 
 export default function WaitlistDisplay(props: WaitlistDisplayProps) {
   const toast = useToast();
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
   if (props.waitlistContractStateLoading || !props.waitlistContractState) {
     return (
       <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
@@ -191,7 +199,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
         ></IconButton>
       </HStack>
       <Spacer />
-      <Button onClick={props.resetWaitlistDisplayState} colorScheme="app">
+      <Button onClick={onOpen} colorScheme="app">
         Create New Waitlist
       </Button>
     </Flex>
@@ -257,6 +265,26 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
     </VStack>
   );
 
+  const resetWaitlistModal = (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Modal Title</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>This is the modal body</ModalBody>
+
+        <ModalFooter>
+          <Button colorScheme="blue" mr={3} onClick={onClose}>
+            Close
+          </Button>
+          <Button variant="ghost" onClick={props.resetWaitlistDisplayState}>
+            Create New Waitlist
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+
   return (
     <Box bg="app.300" marginTop={'3%'} borderRadius="lg" p={6} width="100%">
       <VStack align="left" spacing={5}>
@@ -264,6 +292,7 @@ export default function WaitlistDisplay(props: WaitlistDisplayProps) {
         {commitmentComponent}
         {props.waitlistContractState.isLocked ? nullifierComponent : null}
       </VStack>
+      {resetWaitlistModal}
     </Box>
   );
 }
