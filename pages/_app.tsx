@@ -16,7 +16,7 @@ const colors = {
     500: '#B71FFF',
   },
   metamask: {
-    500: '#FF981F',
+    500: '#FFA945',
   },
   errors: {
     100: '#FF7A7A',
