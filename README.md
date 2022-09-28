@@ -11,3 +11,4 @@ This repo also includes Next.js API routes which generate the zero knowledge pro
 - Use circomlibjs for api routes
 - Add redeemer address to proof to prevent frontrunning
 - Option to generate random secrets
+- Support for transferring waitlist spots
