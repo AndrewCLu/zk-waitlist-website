@@ -7,7 +7,6 @@ The frontend allows a user to deploy a waitlist contract onto the Goerli testnet
 This repo also includes Next.js API routes which generate the zero knowledge proofs used to interact with the waitlist smart contract. 
 
 ## Future Improvements
-- Write readme for zk-waitlist
 - Use circomlibjs for api routes
 - Add redeemer address to proof to prevent frontrunning
 - Option to generate random secrets
