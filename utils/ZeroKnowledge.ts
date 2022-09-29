@@ -5,6 +5,7 @@ import { getErrorMessage } from './Errors';
 const snarkjs = require('snarkjs');
 const path = require('path');
 const fs = require('fs');
+require('../circuits');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
