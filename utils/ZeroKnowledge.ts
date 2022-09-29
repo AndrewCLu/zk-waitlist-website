@@ -5,7 +5,6 @@ import { getErrorMessage } from './Errors';
 const snarkjs = require('snarkjs');
 const path = require('path');
 const fs = require('fs');
-require('../circuits');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
@@ -19,8 +18,8 @@ export const generateProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
-      path.join('circuits', circuit, circuit + '.wasm'),
-      path.join('circuits', circuit, circuit + '_final.zkey')
+      path.join('pages/api/circuits', circuit, circuit + '.wasm'),
+      path.join('pages/api/circuits', circuit, circuit + '_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
@@ -37,7 +36,7 @@ export const verifyProof = async (
 ): Promise<boolean> => {
   try {
     const verificationKeyPath = path.join(
-      'circuits',
+      'pages/api/circuits',
       circuit,
       circuit + '_verification_key.json'
     );
