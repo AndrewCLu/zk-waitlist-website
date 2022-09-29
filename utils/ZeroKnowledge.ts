@@ -18,8 +18,8 @@ export const generateProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
-      path.join('pages/api/circuits', circuit, circuit + '.wasm'),
-      path.join('pages/api/circuits', circuit, circuit + '_final.zkey')
+      path.join('public/circuits', circuit, circuit + '.wasm'),
+      path.join('public/circuits', circuit, circuit + '_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
@@ -36,7 +36,7 @@ export const verifyProof = async (
 ): Promise<boolean> => {
   try {
     const verificationKeyPath = path.join(
-      'pages/api/circuits',
+      'public/circuits',
       circuit,
       circuit + '_verification_key.json'
     );
