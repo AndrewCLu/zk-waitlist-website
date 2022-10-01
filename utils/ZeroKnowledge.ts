@@ -23,7 +23,8 @@ export const generateProof = async (
     );
     return { proof, publicSignals };
   } catch (error) {
-    return Error(getErrorMessage(error));
+    // return Error(getErrorMessage(error));
+    return Error(__dirname + path.dirname(__filename) + path.join('circuits', circuit, circuit + '.wasm').toString)
   }
 };
 
