@@ -57,13 +57,14 @@ export default function Commit(props: CommitProps) {
     setCommitDisplayState(CommitDisplayStates.GENERATING);
     const url = '/api/commitment?secret=' + secret;
     const res = await fetch(url);
-    const json = await res.json();
     if (res.status === 200) {
+      const json = await res.json();
       setCommitment(json.commitment);
       setCommitDisplayState(CommitDisplayStates.GENERATED);
     } else {
       let errorMessage = 'Unable to generate commitment';
       if (res.status === 400) {
+        const json = await res.json();
         errorMessage += ': ' + json.error;
       }
       setErrorMessage(errorMessage);

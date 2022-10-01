@@ -58,8 +58,8 @@ export default function Lock(props: LockProps) {
     const commitmentString = props.waitlistContractState.commitments.join(',');
     const url = '/api/locker?commitments=' + commitmentString;
     const res = await fetch(url);
-    const json = await res.json();
     if (res.status === 200) {
+      const json = await res.json();
       setLockDisplayState(LockDisplayStates.SENDING_LOCK_TX);
       try {
         const { proof, publicSignals } = json;
@@ -83,6 +83,7 @@ export default function Lock(props: LockProps) {
     } else {
       let errorMessage = 'Unable to generate proof to lock waitlist';
       if (res.status === 400) {
+        const json = await res.json();
         errorMessage += ': ' + json.error;
       }
       setErrorMessage(errorMessage);

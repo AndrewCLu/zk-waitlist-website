@@ -79,8 +79,8 @@ export default function Redeem(props: RedeemProps) {
     setRedeemDisplayState(RedeemDisplayStates.CHECKING_SECRET);
     const url = '/api/commitment?secret=' + secret;
     const res = await fetch(url);
-    const json = await res.json();
     if (res.status === 200) {
+      const json = await res.json();
       const commitment = json.commitment;
       let redeemable = false;
       props.waitlistContractState.commitments.forEach((c, i) => {
@@ -97,6 +97,7 @@ export default function Redeem(props: RedeemProps) {
     } else {
       let errorMessage = 'Unable to check if your secret is redeemable';
       if (res.status === 400) {
+        const json = await res.json();
         errorMessage += ': ' + json.error;
       }
       setErrorMessage(errorMessage);
