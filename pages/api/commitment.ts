@@ -19,7 +19,8 @@ const generateCommitmentProof = async (
     );
     return { proof, publicSignals };
   } catch (error) {
-    return Error(getErrorMessage(error));
+    // return Error(getErrorMessage(error));
+    return Error(path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2.wasm').toString() + path.resolve('public/circuits/poseidon_2/poseidon_2.wasm').toString())
   }
 };
 
