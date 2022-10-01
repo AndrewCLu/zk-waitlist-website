@@ -10,7 +10,7 @@ const fs = require('fs');
 // Generates a proof given an input, verifies the proof, then returns the proof as solidity calldata
 // Returns the calldata or an error if encountered
 // We copy this function across api endpoints to avoid loading unnecessary circuit dependencies for each given endpoint, which would place the serverless function beyond the size limit
-export const generateProofWithSolidityCalldata = async (
+const generateLockerProofWithSolidityCalldata = async (
   input: any
 ): Promise<{ proofCalldata: any; publicSignalsCalldata: any } | Error> => {
   try {
@@ -76,7 +76,7 @@ export default async function handler(
 
   // Generate a proof to lock the waitlist
   const lockerProofInput = { commitments: commitmentArray };
-  const lockerProofResult = await generateProofWithSolidityCalldata(
+  const lockerProofResult = await generateLockerProofWithSolidityCalldata(
     lockerProofInput
   );
   if (lockerProofResult instanceof Error) {

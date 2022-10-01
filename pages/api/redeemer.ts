@@ -1,16 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Parsing';
-import {
-  generateProof,
-  generateProofWithSolidityCalldata,
-} from '../../utils/ZeroKnowledge';
+import { getErrorMessage } from '../../utils/Errors';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const snarkjs = require('snarkjs');
+const path = require('path');
+const fs = require('fs');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 // Creates a Merkle tree from the given inputs
 const generateMerkleTree = async (
   inputs: string[]
 ): Promise<string[] | Error> => {
   const proofInput = { inputs: inputs };
-  const proofResult = await generateProof(proofInput, 'merkle_tree');
+  const proofResult = await generateMerkleZKProof(proofInput);
   if (proofResult instanceof Error) {
     return proofResult;
   }
@@ -49,6 +51,65 @@ const generateMerkleProof = (
   }
 
   return { merkle_branch, node_is_left };
+};
+
+// Runs the prover specified by circuit with given input
+// Returns the resulting proof and publicSignals, or an error if encountered
+// We copy this function across api endpoints to avoid loading unnecessary circuit dependencies for each given endpoint, which would place the serverless function beyond the size limit
+const generateMerkleZKProof = async (
+  input: any
+): Promise<{ proof: any; publicSignals: any } | Error> => {
+  try {
+    const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+      input,
+      path.resolve('public/circuits/merkle_tree/merkle_tree.wasm'),
+      path.resolve('public/circuits/merkle_tree/merkle_tree_final.zkey')
+    );
+    return { proof, publicSignals };
+  } catch (error) {
+    return Error(getErrorMessage(error));
+  }
+};
+
+// Generates a proof given an input, verifies the proof, then returns the proof as solidity calldata
+// Returns the calldata or an error if encountered
+// We copy this function across api endpoints to avoid loading unnecessary circuit dependencies for each given endpoint, which would place the serverless function beyond the size limit
+const generateRedeemerProofWithSolidityCalldata = async (
+  input: any
+): Promise<{ proofCalldata: any; publicSignalsCalldata: any } | Error> => {
+  try {
+    const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+      input,
+      path.resolve('public/circuits/redeemer/redeemer.wasm'),
+      path.resolve('public/circuits/redeemer/redeemer_final.zkey')
+    );
+    const verificationKeyPath = path.resolve(
+      'public/circuits/redeemer/redeemer_verification_key.json'
+    );
+    const verificationKey = JSON.parse(fs.readFileSync(verificationKeyPath));
+    const verified = await snarkjs.plonk.verify(
+      verificationKey,
+      publicSignals,
+      proof
+    );
+    if (!verified) {
+      return Error('Failed to verify proof.');
+    }
+    const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(
+      proof,
+      publicSignals
+    );
+    const proofCalldata: string = solidityCalldata.slice(
+      0,
+      solidityCalldata.indexOf(',')
+    );
+    const publicSignalsCalldata: string[] = JSON.parse(
+      solidityCalldata.slice(solidityCalldata.indexOf(',') + 1)
+    );
+    return { proofCalldata, publicSignalsCalldata };
+  } catch (error) {
+    return Error(getErrorMessage(error));
+  }
 };
 
 export default async function handler(
@@ -125,9 +186,8 @@ export default async function handler(
     merkle_branch: merkle_branch,
     node_is_left: node_is_left,
   };
-  const redeemerProofResult = await generateProofWithSolidityCalldata(
-    redeemerProofInput,
-    'redeemer'
+  const redeemerProofResult = await generateRedeemerProofWithSolidityCalldata(
+    redeemerProofInput
   );
   if (redeemerProofResult instanceof Error) {
     return res.status(400).send({ error: redeemerProofResult.message });
