@@ -3,7 +3,6 @@ import { getErrorMessage } from '../../utils/Errors';
 /* eslint-disable @typescript-eslint/no-var-requires */
 const snarkjs = require('snarkjs');
 const path = require('path');
-const fs = require('fs')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 // Runs the prover specified by circuit with given input
@@ -13,11 +12,6 @@ const generateCommitmentProof = async (
   input: any
 ): Promise<{ proof: any; publicSignals: any } | Error> => {
   try {
-    const verificationKeyPath = path.resolve(
-      'public/circuits/poseidon_2/poseidon_2_verification_key.json'
-    );
-    const verificationKey = JSON.parse(fs.readFileSync(verificationKeyPath));
-    throw Error(verificationKey.toString())
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
       path.resolve('public/circuits/poseidon_2/poseidon_2.wasm'),
