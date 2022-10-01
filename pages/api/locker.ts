@@ -1,6 +1,52 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NONEMPTY_ALPHANUMERIC_REGEX } from '../../utils/Parsing';
-import { generateProofWithSolidityCalldata } from '../../utils/ZeroKnowledge';
+import { getErrorMessage } from '../../utils/Errors';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const snarkjs = require('snarkjs');
+const path = require('path');
+const fs = require('fs');
+/* eslint-enable @typescript-eslint/no-var-requires */
+
+// Generates a proof given an input, verifies the proof, then returns the proof as solidity calldata
+// Returns the calldata or an error if encountered
+// We copy this function across api endpoints to avoid loading unnecessary circuit dependencies for each given endpoint, which would place the serverless function beyond the size limit
+export const generateProofWithSolidityCalldata = async (
+  input: any
+): Promise<{ proofCalldata: any; publicSignalsCalldata: any } | Error> => {
+  try {
+    const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+      input,
+      path.resolve('public/circuits/locker/locker.wasm'),
+      path.resolve('public/circuits/locker/locker_final.zkey')
+    );
+    const verificationKeyPath = path.resolve(
+      'public/circuits/locker/locker_verification_key.json'
+    );
+    const verificationKey = JSON.parse(fs.readFileSync(verificationKeyPath));
+    const verified = await snarkjs.plonk.verify(
+      verificationKey,
+      publicSignals,
+      proof
+    );
+    if (!verified) {
+      return Error('Failed to verify proof.');
+    }
+    const solidityCalldata = await snarkjs.plonk.exportSolidityCallData(
+      proof,
+      publicSignals
+    );
+    const proofCalldata: string = solidityCalldata.slice(
+      0,
+      solidityCalldata.indexOf(',')
+    );
+    const publicSignalsCalldata: string[] = JSON.parse(
+      solidityCalldata.slice(solidityCalldata.indexOf(',') + 1)
+    );
+    return { proofCalldata, publicSignalsCalldata };
+  } catch (error) {
+    return Error(getErrorMessage(error));
+  }
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,8 +77,7 @@ export default async function handler(
   // Generate a proof to lock the waitlist
   const lockerProofInput = { commitments: commitmentArray };
   const lockerProofResult = await generateProofWithSolidityCalldata(
-    lockerProofInput,
-    'locker'
+    lockerProofInput
   );
   if (lockerProofResult instanceof Error) {
     return res.status(400).send({ error: lockerProofResult.message });
