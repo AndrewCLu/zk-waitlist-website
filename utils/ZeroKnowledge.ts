@@ -9,6 +9,36 @@ const fs = require('fs');
 
 export type Circuit = 'locker' | 'merkle_tree' | 'poseidon_2' | 'redeemer';
 
+// Unused loader function which causes Node File Trace to include circuits as dependencies
+export const loader = () => {
+  fs.readFileSync(path.resolve('public/circuits/locker/locker_final.zkey'));
+  fs.readFileSync(
+    path.resolve('public/circuits/locker/locker_verification_key.json')
+  );
+  fs.readFileSync(path.resolve('public/circuits/locker/locker.wasm'));
+  fs.readFileSync(
+    path.resolve('public/circuits/merkle_tree/merkle_tree_final.zkey')
+  );
+  fs.readFileSync(
+    path.resolve(
+      'public/circuits/merkle_tree/merkle_tree_verification_key.json'
+    )
+  );
+  fs.readFileSync(path.resolve('public/circuits/merkle_tree/merkle_tree.wasm'));
+  fs.readFileSync(
+    path.resolve('public/circuits/poseidon_2/poseidon_2_final.zkey')
+  );
+  fs.readFileSync(
+    path.resolve('public/circuits/poseidon_2/poseidon_2_verification_key.json')
+  );
+  fs.readFileSync(path.resolve('public/circuits/poseidon_2/poseidon_2.wasm'));
+  fs.readFileSync(path.resolve('public/circuits/redeemer/redeemer_final.zkey'));
+  fs.readFileSync(
+    path.resolve('public/circuits/redeemer/redeemer_verification_key.json')
+  );
+  fs.readFileSync(path.resolve('public/circuits/redeemer/redeemer.wasm'));
+};
+
 // Runs the prover specified by circuit with given input
 // Returns the resulting proof and publicSignals, or an error if encountered
 export const generateProof = async (
