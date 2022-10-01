@@ -14,8 +14,8 @@ const generateCommitmentProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
-      path.resolve('public/circuits/poseidon_2/poseidon_2.wasm'),
-      path.resolve('public/circuits/poseidon_2/poseidon_2_final.zkey')
+      path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2.wasm'),
+      path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
