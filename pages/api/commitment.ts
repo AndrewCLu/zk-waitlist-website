@@ -14,13 +14,12 @@ const generateCommitmentProof = async (
   try {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       input,
-      path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2.wasm'),
-      path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2_final.zkey')
+      path.join(__dirname, '../../public/circuits/poseidon_2/poseidon_2.wasm'),
+      path.join(__dirname, '../../public/circuits/poseidon_2/poseidon_2_final.zkey')
     );
     return { proof, publicSignals };
   } catch (error) {
-    // return Error(getErrorMessage(error));
-    return Error(path.join(__dirname, 'public/circuits/poseidon_2/poseidon_2.wasm').toString() + path.resolve('public/circuits/poseidon_2/poseidon_2.wasm').toString())
+    return Error(getErrorMessage(error));
   }
 };
 
